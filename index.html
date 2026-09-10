@@ -361,6 +361,70 @@
     .theme-ela-book #textbook-sidebar-panel {
       display: flex !important;
     }
+
+    /* Flat high-contrast overrides for dark worksheet themes (Midnight Tech & Cyberpunk Edgy) */
+    .theme-midnight-tech .text-slate-900,
+    .theme-midnight-tech .text-slate-800,
+    .theme-midnight-tech .text-slate-700,
+    .theme-midnight-tech .text-slate-600,
+    .theme-midnight-tech .text-indigo-950,
+    .theme-midnight-tech .text-indigo-900,
+    .theme-midnight-tech .text-indigo-800,
+    .theme-midnight-tech .text-indigo-700,
+    .theme-cyberpunk-edgy .text-slate-900,
+    .theme-cyberpunk-edgy .text-slate-800,
+    .theme-cyberpunk-edgy .text-slate-700,
+    .theme-cyberpunk-edgy .text-slate-600,
+    .theme-cyberpunk-edgy .text-indigo-950,
+    .theme-cyberpunk-edgy .text-indigo-900,
+    .theme-cyberpunk-edgy .text-indigo-800,
+    .theme-cyberpunk-edgy .text-indigo-700,
+    .theme-midnight-tech #ws-title,
+    .theme-cyberpunk-edgy #ws-title,
+    .theme-midnight-tech #ws-subtitle,
+    .theme-cyberpunk-edgy #ws-subtitle,
+    .theme-midnight-tech .font-serif,
+    .theme-cyberpunk-edgy .font-serif {
+      color: #f1f5f9 !important;
+    }
+
+    .theme-midnight-tech h1, .theme-midnight-tech h2, .theme-midnight-tech h3, .theme-midnight-tech h4, .theme-midnight-tech p, .theme-midnight-tech span, .theme-midnight-tech div,
+    .theme-cyberpunk-edgy h1, .theme-cyberpunk-edgy h2, .theme-cyberpunk-edgy h3, .theme-cyberpunk-edgy h4, .theme-cyberpunk-edgy p, .theme-cyberpunk-edgy span, .theme-cyberpunk-edgy div {
+      border-color: rgba(255,255,255,0.15) !important;
+    }
+
+    .theme-midnight-tech strong, .theme-midnight-tech .font-bold,
+    .theme-cyberpunk-edgy strong, .theme-cyberpunk-edgy .font-bold {
+      color: #38bdf8 !important;
+    }
+
+    /* Keep the generated background cards sleek and readable in dark themes */
+    .theme-midnight-tech .exercise-block,
+    .theme-midnight-tech .question-item,
+    .theme-midnight-tech .ws-card,
+    .theme-midnight-tech .bg-slate-50\/40,
+    .theme-midnight-tech .bg-amber-50\/30,
+    .theme-midnight-tech .bg-indigo-50\/50,
+    .theme-midnight-tech .bg-indigo-50\/60,
+    .theme-cyberpunk-edgy .exercise-block,
+    .theme-cyberpunk-edgy .question-item,
+    .theme-cyberpunk-edgy .ws-card,
+    .theme-cyberpunk-edgy .bg-slate-50\/40,
+    .theme-cyberpunk-edgy .bg-amber-50\/30,
+    .theme-cyberpunk-edgy .bg-indigo-50\/50,
+    .theme-cyberpunk-edgy .bg-indigo-50\/60 {
+      background-color: #1e293b !important;
+      border-color: #334155 !important;
+      color: #f8fafc !important;
+    }
+
+    /* Word Bank list styles */
+    .theme-midnight-tech span.px-2\.5,
+    .theme-cyberpunk-edgy span.px-2\.5 {
+      background-color: #312e81 !important;
+      color: #e0e7ff !important;
+      border-color: #4338ca !important;
+    }
     
     @media print {
       .theme-ela-book {
@@ -424,7 +488,7 @@
     }
 
     @media print {
-      body {
+      body, html {
         background-color: white !important;
         padding: 0 !important;
         margin: 0 !important;
@@ -440,6 +504,8 @@
         width: 100% !important;
       }
       #worksheet-paper {
+        background-color: white !important;
+        color: black !important;
         box-shadow: none !important;
         border-radius: 0 !important;
         padding: 0 !important;
@@ -447,6 +513,17 @@
         width: 100% !important;
         max-width: 100% !important;
         border: none !important;
+      }
+      #worksheet-paper * {
+        color: black !important;
+        border-color: #cbd5e1 !important;
+      }
+      #worksheet-paper .bg-indigo-50\/30, #worksheet-paper .bg-slate-50\/40, #worksheet-paper .bg-amber-50\/30, #worksheet-paper .exercise-block {
+        background-color: transparent !important;
+        border: 1px solid #cbd5e1 !important;
+      }
+      #textbook-sidebar-panel {
+        display: none !important;
       }
       
       /* PowerPoint Slide print overrides */
