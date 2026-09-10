@@ -1,0 +1,6 @@
+{
+  "name": "English Worksheet Studio",
+  "description": "Responsive mobile application prototype to generate custom English language, grammar, vocabulary, reading, and writing worksheets with premium borders and real-time live preview.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
