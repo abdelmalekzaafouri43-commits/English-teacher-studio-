@@ -2057,8 +2057,7 @@
       document.getElementById('ws-teacher-display').innerText = val || 'Mrs. Davis • English Dept.';
     }
 
-    // Theme Control
-    function applyTheme(themeName) {
+    // App Theme Control
     function changeAppTheme(themeName) {
       document.body.setAttribute('data-app-theme', themeName);
       
@@ -2083,6 +2082,9 @@
       const appThemeSelect = document.getElementById('app-theme-select');
       if (appThemeSelect) appThemeSelect.value = savedAppTheme;
     });
+
+    // Theme Control
+    function applyTheme(themeName) {
       const paper = document.getElementById('worksheet-paper');
       const allThemes = [
         'theme-classic-corporate',
@@ -2479,7 +2481,6 @@
             </div>
           </div>
       `;
-    }  
       const teacherName = document.getElementById('teacher-name-input').value;
       updateTeacherHeader(teacherName);
     }
