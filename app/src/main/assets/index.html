@@ -1524,15 +1524,27 @@
               <span class="text-[9px] text-indigo-200">Worksheets & Slide Decks</span>
             </div>
           </div>
-          <button onclick="openGlassTutorModal()" class="px-2 py-0.5 text-[9px] font-bold bg-white/10 hover:bg-white/20 text-white border border-white/20 rounded-full transition-all flex items-center gap-1" title="Live Tutor Chat">
-            <i data-lucide="bot" class="w-2.5 h-2.5 text-indigo-300"></i>
-            <span>AI Tutor</span>
-          </button>
+          <div class="flex items-center gap-1.5">
+            <button onclick="openFullscreenAIStudio()" class="px-2 py-0.5 text-[9px] font-black bg-indigo-600/90 hover:bg-indigo-500 text-white border border-indigo-500/30 rounded-full transition-all flex items-center gap-1 cursor-pointer" title="Open Fullscreen Workspace">
+              <i data-lucide="expand" class="w-2.5 h-2.5 text-indigo-200"></i>
+              <span>Studio</span>
+            </button>
+            <button onclick="openGlassTutorModal()" class="px-2 py-0.5 text-[9px] font-bold bg-white/10 hover:bg-white/20 text-white border border-white/20 rounded-full transition-all flex items-center gap-1" title="Live Tutor Chat">
+              <i data-lucide="bot" class="w-2.5 h-2.5 text-indigo-300"></i>
+              <span>AI Tutor</span>
+            </button>
+          </div>
         </div>
 
         <div class="space-y-2">
           <div>
-            <label class="text-[10px] font-bold text-indigo-200 block mb-1">Topic / Grammar Focus</label>
+            <div class="flex items-center justify-between mb-1">
+              <label class="text-[10px] font-bold text-indigo-200 block">Topic / Grammar Focus</label>
+              <button onclick="openFullscreenAIStudio()" class="text-[9px] text-indigo-300 hover:text-white font-bold transition-all flex items-center gap-1 cursor-pointer">
+                <i data-lucide="maximize-2" class="w-2.5 h-2.5"></i>
+                <span>Open Fullscreen Workspace</span>
+              </button>
+            </div>
             <textarea id="ai-topic-input" rows="3" placeholder="e.g. Metaphors & Similes with a story about a brave astronaut, or irregular past tense verbs with proofreading drills..." class="w-full bg-slate-950/80 border border-white/20 rounded-xl px-3 py-2 text-xs text-white placeholder-slate-400 focus:outline-none focus:border-indigo-400 focus:ring-1 focus:ring-indigo-400 resize-none custom-scrollbar"></textarea>
           </div>
 
@@ -1588,11 +1600,57 @@
             </div>
           </div>
 
-          <!-- Primary One-Click Generate Button -->
-          <button onclick="generateAIWorksheet()" id="ai-gen-btn" class="w-full py-2.5 bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-600 hover:from-indigo-500 hover:to-pink-500 text-white rounded-xl text-xs font-black shadow-lg shadow-indigo-600/30 flex items-center justify-center gap-2 active:scale-95 transition-all mt-1 cursor-pointer">
-            <i data-lucide="sparkles" class="w-4 h-4"></i>
-            <span>Generate Worksheet & Deck</span>
-          </button>
+          <!-- Primary One-Click Generate Split Button -->
+          <div class="relative w-full mt-1">
+            <div class="flex items-stretch rounded-xl bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-600 hover:from-indigo-500 hover:to-pink-500 text-white shadow-lg shadow-indigo-600/30 overflow-hidden ring-1 ring-white/20 transition-all">
+              <button onclick="generateAIWorksheet()" id="ai-gen-btn" class="flex-1 py-2.5 px-3.5 text-xs font-black flex items-center justify-center gap-2 hover:bg-white/10 active:bg-white/20 transition-all cursor-pointer">
+                <i data-lucide="sparkles" class="w-4 h-4"></i>
+                <span>Generate Worksheet & Deck</span>
+              </button>
+              <div class="w-[1px] bg-white/20 self-stretch"></div>
+              <button onclick="toggleAISplitMenu(event)" id="ai-gen-split-trigger" class="px-2.5 py-2.5 hover:bg-white/15 active:bg-white/25 transition-all cursor-pointer flex items-center justify-center" title="More AI Generation Options">
+                <i data-lucide="chevron-down" id="ai-split-arrow" class="w-4 h-4 transition-transform duration-200"></i>
+              </button>
+            </div>
+
+            <!-- Split Options Dropdown Menu -->
+            <div id="ai-split-menu" class="hidden absolute top-full right-0 mt-1.5 w-64 bg-slate-900/98 backdrop-blur-2xl border border-indigo-500/30 rounded-xl shadow-2xl p-1.5 z-50 text-xs font-semibold space-y-1 ring-1 ring-white/15 animate-fade-in">
+              <div class="px-2 py-1 text-[9px] font-bold uppercase tracking-wider text-indigo-300 border-b border-white/10 mb-1 flex items-center justify-between">
+                <span>AI Launch Modes</span>
+                <i data-lucide="zap" class="w-3 h-3 text-amber-400"></i>
+              </div>
+              <button onclick="generateAIWorksheet(); closeAISplitMenu();" class="w-full px-2.5 py-2 rounded-lg hover:bg-indigo-600/30 text-white text-left flex items-center gap-2.5 transition-colors cursor-pointer">
+                <i data-lucide="sparkles" class="w-3.5 h-3.5 text-indigo-400"></i>
+                <div>
+                  <div class="font-bold text-[11px]">Generate Standard ELA Unit</div>
+                  <div class="text-[9px] text-slate-400 font-normal">Creates A4 worksheet & slide deck</div>
+                </div>
+              </button>
+              <button onclick="openFullscreenAIStudio(); closeAISplitMenu();" class="w-full px-2.5 py-2 rounded-lg hover:bg-indigo-600/30 text-white text-left flex items-center gap-2.5 transition-colors cursor-pointer">
+                <i data-lucide="maximize-2" class="w-3.5 h-3.5 text-purple-400"></i>
+                <div>
+                  <div class="font-bold text-[11px]">Open Fullscreen AI Studio</div>
+                  <div class="text-[9px] text-slate-400 font-normal">Large canvas for complex prompt engineering</div>
+                </div>
+              </button>
+              <button onclick="openGlassTutorModal(); closeAISplitMenu();" class="w-full px-2.5 py-2 rounded-lg hover:bg-indigo-600/30 text-white text-left flex items-center gap-2.5 transition-colors cursor-pointer">
+                <i data-lucide="bot" class="w-3.5 h-3.5 text-pink-400"></i>
+                <div>
+                  <div class="font-bold text-[11px]">Interactive AI Tutor Chat</div>
+                  <div class="text-[9px] text-slate-400 font-normal">Live ELA brainstorming assistant</div>
+                </div>
+              </button>
+              <div class="border-t border-white/10 my-1"></div>
+              <button onclick="generateReadingWorksheet(); closeAISplitMenu();" class="w-full px-2 py-1.5 rounded-lg hover:bg-slate-800 text-slate-300 text-left flex items-center gap-2 transition-colors cursor-pointer text-[11px]">
+                <i data-lucide="glasses" class="w-3.5 h-3.5 text-emerald-400"></i>
+                <span>Quick Reading Passage</span>
+              </button>
+              <button onclick="generateWritingWorksheet(); closeAISplitMenu();" class="w-full px-2 py-1.5 rounded-lg hover:bg-slate-800 text-slate-300 text-left flex items-center gap-2 transition-colors cursor-pointer text-[11px]">
+                <i data-lucide="pen-tool" class="w-3.5 h-3.5 text-amber-400"></i>
+                <span>Quick Writing Prompts</span>
+              </button>
+            </div>
+          </div>
         </div>
       </div>
 
@@ -1684,10 +1742,43 @@
 
       <!-- 4. ACTION HUB (Print, Save, Slide Presentation) -->
       <div class="space-y-2 pt-2 border-t border-slate-800">
-        <button onclick="triggerPrintFromApp()" class="w-full py-2.5 bg-indigo-600 hover:bg-indigo-500 text-white rounded-xl text-xs font-bold flex items-center justify-center gap-2 shadow-lg shadow-indigo-600/25 active:scale-95 transition-all">
-          <i data-lucide="printer" class="w-3.5 h-3.5"></i>
-          <span>Print / Save PDF (A4)</span>
-        </button>
+        <!-- Print / Export Premium Split Button -->
+        <div class="relative w-full">
+          <div class="flex items-stretch rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white shadow-lg shadow-indigo-600/25 overflow-hidden transition-all ring-1 ring-white/10">
+            <button onclick="triggerPrintFromApp()" class="flex-1 py-2.5 px-3 text-xs font-bold flex items-center justify-center gap-2 hover:bg-white/10 active:bg-white/20 transition-all cursor-pointer">
+              <i data-lucide="printer" class="w-3.5 h-3.5"></i>
+              <span>Print / Save PDF (A4)</span>
+            </button>
+            <div class="w-[1px] bg-white/20 self-stretch"></div>
+            <button onclick="togglePrintSplitMenu(event)" id="print-split-trigger" class="px-2.5 py-2.5 hover:bg-white/15 active:bg-white/25 transition-all cursor-pointer flex items-center justify-center" title="Print & Export Options">
+              <i data-lucide="chevron-down" id="print-split-arrow" class="w-3.5 h-3.5 transition-transform duration-200"></i>
+            </button>
+          </div>
+
+          <!-- Split Options Dropdown Menu -->
+          <div id="print-split-menu" class="hidden absolute bottom-full left-0 right-0 mb-1.5 bg-slate-900/98 backdrop-blur-2xl border border-indigo-500/30 rounded-xl shadow-2xl p-1.5 z-50 text-xs font-semibold space-y-1 ring-1 ring-white/15 animate-fade-in">
+            <div class="px-2 py-1 text-[9px] font-bold uppercase tracking-wider text-indigo-300 border-b border-white/10 mb-1 flex items-center justify-between">
+              <span>Print & Export Hub</span>
+              <i data-lucide="file-down" class="w-3 h-3 text-indigo-400"></i>
+            </div>
+            <button onclick="triggerPrintFromApp(); closePrintSplitMenu();" class="w-full px-2 py-1.5 rounded-lg hover:bg-indigo-600/30 text-white text-left flex items-center gap-2 transition-colors cursor-pointer text-[11px]">
+              <i data-lucide="printer" class="w-3.5 h-3.5 text-indigo-400"></i>
+              <span>Quick Print / Save PDF</span>
+            </button>
+            <button onclick="openA4PrintControls(); closePrintSplitMenu();" class="w-full px-2 py-1.5 rounded-lg hover:bg-indigo-600/30 text-white text-left flex items-center gap-2 transition-colors cursor-pointer text-[11px]">
+              <i data-lucide="sliders" class="w-3.5 h-3.5 text-purple-400"></i>
+              <span>Margins & Print Settings</span>
+            </button>
+            <button onclick="openAIPresentationModal(); closePrintSplitMenu();" class="w-full px-2 py-1.5 rounded-lg hover:bg-indigo-600/30 text-white text-left flex items-center gap-2 transition-colors cursor-pointer text-[11px]">
+              <i data-lucide="presentation" class="w-3.5 h-3.5 text-sky-400"></i>
+              <span>AI Slide Deck Export</span>
+            </button>
+            <button onclick="saveCurrentWorksheet(); closePrintSplitMenu();" class="w-full px-2 py-1.5 rounded-lg hover:bg-indigo-600/30 text-white text-left flex items-center gap-2 transition-colors cursor-pointer text-[11px]">
+              <i data-lucide="bookmark-plus" class="w-3.5 h-3.5 text-pink-400"></i>
+              <span>Save Worksheet to Library</span>
+            </button>
+          </div>
+        </div>
 
         <button onclick="openAIPresentationModal()" class="w-full py-2 bg-slate-800 hover:bg-slate-700 text-sky-300 hover:text-white border border-sky-500/30 rounded-xl text-xs font-bold flex items-center justify-center gap-2 active:scale-95 transition-all">
           <i data-lucide="presentation" class="w-3.5 h-3.5"></i>
@@ -7701,6 +7792,221 @@ Schema for each slide object:
       }
     }
 
+    // Fullscreen AI Studio Workspace Controllers
+    function openFullscreenAIStudio() {
+      const modal = document.getElementById('fullscreen-ai-studio-modal');
+      if (!modal) return;
+
+      // Sync data from sidebar input controls into fullscreen modal controls
+      const sbTopic = document.getElementById('ai-topic-input')?.value || '';
+      const sbGrade = document.getElementById('ai-grade-level')?.value || 'Middle School (Grades 6-8)';
+      const sbActivity = document.getElementById('ai-activity-type')?.value || 'Complete ELA Unit';
+      const sbRigor = document.getElementById('ai-rigor-level')?.value || 'Standard Academic Core';
+      const sbSolutions = document.getElementById('ai-solutions-key')?.value || 'Include complete, detailed Answer Keys at the end';
+
+      document.getElementById('ai-fullscreen-topic-input').value = sbTopic;
+      document.getElementById('fs-grade-level').value = sbGrade;
+      document.getElementById('fs-activity-type').value = sbActivity;
+      document.getElementById('fs-rigor-level').value = sbRigor;
+      document.getElementById('fs-solutions-key').value = sbSolutions;
+
+      // Show the modal
+      modal.classList.remove('hidden');
+      modal.classList.add('flex');
+      updateFullscreenPromptMetrics();
+      lucide.createIcons();
+    }
+
+    function closeFullscreenAIStudio() {
+      const modal = document.getElementById('fullscreen-ai-studio-modal');
+      if (!modal) return;
+
+      // Sync data from fullscreen modal controls back to sidebar controls
+      const fsTopic = document.getElementById('ai-fullscreen-topic-input')?.value || '';
+      const fsGrade = document.getElementById('fs-grade-level')?.value;
+      const fsActivity = document.getElementById('fs-activity-type')?.value;
+      const fsRigor = document.getElementById('fs-rigor-level')?.value;
+      const fsSolutions = document.getElementById('fs-solutions-key')?.value;
+
+      document.getElementById('ai-topic-input').value = fsTopic;
+      document.getElementById('ai-grade-level').value = fsGrade;
+      document.getElementById('ai-activity-type').value = fsActivity;
+      document.getElementById('ai-rigor-level').value = fsRigor;
+      document.getElementById('ai-solutions-key').value = fsSolutions;
+
+      // Close the modal
+      modal.classList.add('hidden');
+      modal.classList.remove('flex');
+    }
+
+    function updateFullscreenPromptMetrics() {
+      const input = document.getElementById('ai-fullscreen-topic-input');
+      const countSpan = document.getElementById('prompt-char-count');
+      const labelSpan = document.getElementById('prompt-completeness-label');
+      const bar = document.getElementById('prompt-completeness-bar');
+
+      if (!input || !countSpan) return;
+
+      const len = input.value.length;
+      countSpan.innerText = `${len} / 1200 chars`;
+
+      let score = Math.min(100, Math.floor(len / 3.5));
+      if (len === 0) score = 0;
+
+      if (bar) bar.style.width = `${score}%`;
+
+      if (score < 15) {
+        labelSpan.innerText = 'Minimal / Too Short';
+        if (bar) bar.className = 'bg-rose-500 h-full transition-all duration-300';
+      } else if (score < 45) {
+        labelSpan.innerText = 'Good Core Focus';
+        if (bar) bar.className = 'bg-amber-500 h-full transition-all duration-300';
+      } else if (score < 75) {
+        labelSpan.innerText = 'Pedagogically Rich';
+        if (bar) bar.className = 'bg-indigo-500 h-full transition-all duration-300';
+      } else {
+        labelSpan.innerText = 'Excellent / Masterful';
+        if (bar) bar.className = 'bg-gradient-to-r from-emerald-400 to-teal-500 h-full transition-all duration-300';
+      }
+    }
+
+    function appendToFullscreenPrompt(suffix) {
+      const input = document.getElementById('ai-fullscreen-topic-input');
+      if (input) {
+        input.value = input.value.trim() + suffix;
+        input.focus();
+        updateFullscreenPromptMetrics();
+        showToast('Appended Template Segment', 'Injected structure snippet into prompt workspace.', 'sparkles');
+      }
+    }
+
+    function prefillFSTopic(topic) {
+      const input = document.getElementById('ai-fullscreen-topic-input');
+      if (input) {
+        input.value = topic;
+        input.focus();
+        updateFullscreenPromptMetrics();
+        showToast('Template Selected', 'Workspace loaded with ELA template.', 'info');
+      }
+    }
+
+    async function generateFullscreenAIWorksheet() {
+      const inputVal = document.getElementById('ai-fullscreen-topic-input')?.value || '';
+      if (!inputVal.trim()) {
+        showToast('Prompt is empty', 'Please describe your lesson topic or use standard template buttons.', 'alert-triangle');
+        return;
+      }
+
+      // If user typed custom CCSS code, automatically inject it into prompt
+      const ccssVal = document.getElementById('fs-ccss-code')?.value || '';
+      if (ccssVal.trim()) {
+        document.getElementById('learning-objective-box').innerHTML = `
+          <div class="text-[10px] font-black text-indigo-700 tracking-wider">CCSS ALIGNMENT GUIDE</div>
+          <div class="text-xs font-bold text-indigo-950">${ccssVal.trim()}</div>
+        `;
+      }
+
+      // Sync and close
+      closeFullscreenAIStudio();
+
+      // Trigger standard generation
+      generateAIWorksheet();
+    }
+
+    // ==========================================
+    // PREMIUM SPLIT BUTTON MENU CONTROLLERS
+    // ==========================================
+    function toggleAISplitMenu(e) {
+      if (e) e.stopPropagation();
+      const menu = document.getElementById('ai-split-menu');
+      const arrow = document.getElementById('ai-split-arrow');
+      if (!menu) return;
+
+      closePrintSplitMenu();
+      closeFSAISplitMenu();
+
+      const isHidden = menu.classList.contains('hidden');
+      if (isHidden) {
+        menu.classList.remove('hidden');
+        if (arrow) arrow.classList.add('rotate-180');
+        lucide.createIcons();
+      } else {
+        closeAISplitMenu();
+      }
+    }
+
+    function closeAISplitMenu() {
+      const menu = document.getElementById('ai-split-menu');
+      const arrow = document.getElementById('ai-split-arrow');
+      if (menu) menu.classList.add('hidden');
+      if (arrow) arrow.classList.remove('rotate-180');
+    }
+
+    function togglePrintSplitMenu(e) {
+      if (e) e.stopPropagation();
+      const menu = document.getElementById('print-split-menu');
+      const arrow = document.getElementById('print-split-arrow');
+      if (!menu) return;
+
+      closeAISplitMenu();
+      closeFSAISplitMenu();
+
+      const isHidden = menu.classList.contains('hidden');
+      if (isHidden) {
+        menu.classList.remove('hidden');
+        if (arrow) arrow.classList.add('rotate-180');
+        lucide.createIcons();
+      } else {
+        closePrintSplitMenu();
+      }
+    }
+
+    function closePrintSplitMenu() {
+      const menu = document.getElementById('print-split-menu');
+      const arrow = document.getElementById('print-split-arrow');
+      if (menu) menu.classList.add('hidden');
+      if (arrow) arrow.classList.remove('rotate-180');
+    }
+
+    function toggleFSAISplitMenu(e) {
+      if (e) e.stopPropagation();
+      const menu = document.getElementById('fs-ai-split-menu');
+      const arrow = document.getElementById('fs-ai-split-arrow');
+      if (!menu) return;
+
+      closeAISplitMenu();
+      closePrintSplitMenu();
+
+      const isHidden = menu.classList.contains('hidden');
+      if (isHidden) {
+        menu.classList.remove('hidden');
+        if (arrow) arrow.classList.add('rotate-180');
+        lucide.createIcons();
+      } else {
+        closeFSAISplitMenu();
+      }
+    }
+
+    function closeFSAISplitMenu() {
+      const menu = document.getElementById('fs-ai-split-menu');
+      const arrow = document.getElementById('fs-ai-split-arrow');
+      if (menu) menu.classList.add('hidden');
+      if (arrow) arrow.classList.remove('rotate-180');
+    }
+
+    // Dismiss active split menus when user clicks outside
+    document.addEventListener('click', (e) => {
+      if (!e.target.closest('#ai-gen-split-trigger') && !e.target.closest('#ai-split-menu')) {
+        closeAISplitMenu();
+      }
+      if (!e.target.closest('#print-split-trigger') && !e.target.closest('#print-split-menu')) {
+        closePrintSplitMenu();
+      }
+      if (!e.target.closest('#fs-ai-split-trigger') && !e.target.closest('#fs-ai-split-menu')) {
+        closeFSAISplitMenu();
+      }
+    });
+
     // Save Current Worksheet to Library
     function saveCurrentWorksheet() {
       const title = document.getElementById('ws-title')?.innerText || 'English Worksheet';
@@ -8204,6 +8510,198 @@ Schema for each slide object:
           <i data-lucide="printer" class="w-4 h-4"></i>
           <span>Open Print Dialog</span>
         </button>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- FULLSCREEN AI CREATOR STUDIO HUB MODAL -->
+  <div id="fullscreen-ai-studio-modal" class="fixed inset-0 z-50 bg-slate-950/90 backdrop-blur-md hidden items-center justify-center p-3 sm:p-5 no-print">
+    <div class="glass-card-premium rounded-2xl w-full max-w-5xl overflow-hidden shadow-2xl flex flex-col h-[90vh] md:h-[85vh] border border-white/20 ring-1 ring-white/10 relative animate-fade-in bg-slate-900">
+      
+      <!-- Ambient Lighting Orbs inside modal -->
+      <div class="absolute -top-24 -right-24 w-72 h-72 bg-indigo-600/10 rounded-full blur-3xl pointer-events-none"></div>
+      <div class="absolute -bottom-24 -left-24 w-72 h-72 bg-pink-600/10 rounded-full blur-3xl pointer-events-none"></div>
+
+      <!-- Modal Header -->
+      <div class="p-4 md:p-5 border-b border-slate-800 flex items-center justify-between bg-slate-950/60 relative z-10">
+        <div class="flex items-center gap-3">
+          <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-indigo-500 via-purple-500 to-pink-500 flex items-center justify-center text-white shadow-lg ring-1 ring-white/20">
+            <i data-lucide="sparkles" class="w-5 h-5"></i>
+          </div>
+          <div>
+            <h3 class="text-sm md:text-base font-black text-white tracking-wide flex items-center gap-2">
+              <span>AI English Lesson Creator Studio</span>
+              <span class="px-2 py-0.5 rounded-full bg-indigo-500/25 border border-indigo-400/40 text-[9px] font-bold text-indigo-300">Fullscreen Workspace</span>
+            </h3>
+            <p class="text-[11px] text-slate-400">Collaborate with the Gemini model on a large screen to construct high-rigor, standard-aligned curriculum materials</p>
+          </div>
+        </div>
+        <button onclick="closeFullscreenAIStudio()" class="p-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-400 hover:text-white transition-all cursor-pointer">
+          <i data-lucide="x" class="w-4 h-4"></i>
+        </button>
+      </div>
+
+      <!-- Modal Body (Two Column Workspace) -->
+      <div class="flex-1 overflow-y-auto p-4 md:p-6 space-y-5 custom-scrollbar relative z-10">
+        
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-5 items-stretch">
+          
+          <!-- LEFT COLUMN: PROMPT BUILDER & TEXTAREA (7 cols) -->
+          <div class="lg:col-span-7 flex flex-col space-y-4">
+            <div class="flex-1 flex flex-col space-y-1.5">
+              <div class="flex items-center justify-between">
+                <label class="text-xs font-bold text-indigo-300 flex items-center gap-1.5">
+                  <i data-lucide="edit-3" class="w-3.5 h-3.5"></i>
+                  <span>Spacious Topic Focus & Lesson Objectives</span>
+                </label>
+                <span id="prompt-char-count" class="text-[10px] text-slate-500 font-mono">0 / 1200 chars</span>
+              </div>
+              <textarea id="ai-fullscreen-topic-input" oninput="updateFullscreenPromptMetrics()" rows="8" placeholder="Type here in detail... Describe the exact theme, the story parameters, target ELA vocabulary terms, reading comprehension structures, or specific spelling patterns you want Gemini to build..." class="flex-1 w-full bg-slate-950 border border-slate-700 rounded-xl px-4 py-3 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-indigo-400 focus:ring-1 focus:ring-indigo-400 resize-none custom-scrollbar min-h-[220px]"></textarea>
+            </div>
+
+            <!-- Common Core & Pedagogical Trigger Chips -->
+            <div class="space-y-2 bg-slate-950/60 p-4 rounded-xl border border-slate-800">
+              <span class="text-[10px] text-indigo-400 font-bold block uppercase tracking-wider">Quick Lesson Builders (Click to Append)</span>
+              <div class="flex flex-wrap gap-1.5">
+                <button onclick="appendToFullscreenPrompt(', focusing closely on Common Core evidence-based writing skills')" class="px-2.5 py-1 rounded-lg bg-slate-900 hover:bg-indigo-600/20 text-slate-300 hover:text-white border border-slate-800 text-[10px] font-medium transition-all active:scale-95 cursor-pointer">📐 CCSS Evidence</button>
+                <button onclick="appendToFullscreenPrompt(', with a focus on tier-2 context-clue vocabulary words with definition checks')" class="px-2.5 py-1 rounded-lg bg-slate-900 hover:bg-indigo-600/20 text-slate-300 hover:text-white border border-slate-800 text-[10px] font-medium transition-all active:scale-95 cursor-pointer">📚 Tier-2 Vocab</button>
+                <button onclick="appendToFullscreenPrompt(', including a proofreading drill section targeting incorrect capitalization and missing commas')" class="px-2.5 py-1 rounded-lg bg-slate-900 hover:bg-indigo-600/20 text-slate-300 hover:text-white border border-slate-800 text-[10px] font-medium transition-all active:scale-95 cursor-pointer">✍️ Proofreading</button>
+                <button onclick="appendToFullscreenPrompt(', structured with a high-interest narrative paragraph to maximize engagement')" class="px-2.5 py-1 rounded-lg bg-slate-900 hover:bg-indigo-600/20 text-slate-300 hover:text-white border border-slate-800 text-[10px] font-medium transition-all active:scale-95 cursor-pointer">📖 High-Interest Story</button>
+                <button onclick="appendToFullscreenPrompt(', followed by rigorous multiple choice questions and open-ended text response zones')" class="px-2.5 py-1 rounded-lg bg-slate-900 hover:bg-indigo-600/20 text-slate-300 hover:text-white border border-slate-800 text-[10px] font-medium transition-all active:scale-95 cursor-pointer">📝 Assessment Format</button>
+              </div>
+            </div>
+
+            <!-- Lesson Estimate Quality bar -->
+            <div class="bg-slate-950/40 border border-slate-800/80 rounded-xl p-3 flex items-center justify-between">
+              <div class="space-y-0.5">
+                <span class="text-[10px] font-black text-slate-400 uppercase tracking-wider block">Pedagogical Completeness Gauge</span>
+                <span id="prompt-completeness-label" class="text-xs font-bold text-slate-300">Basic/Minimal prompt</span>
+              </div>
+              <div class="w-1/2 bg-slate-800 h-2 rounded-full overflow-hidden">
+                <div id="prompt-completeness-bar" class="bg-indigo-600 h-full w-[25%] transition-all duration-300"></div>
+              </div>
+            </div>
+          </div>
+
+          <!-- RIGHT COLUMN: PEDAGOGICAL PARAMS & CONTROLS (5 cols) -->
+          <div class="lg:col-span-5 space-y-4 flex flex-col justify-between">
+            <div class="space-y-3.5">
+              
+              <!-- Grade & Activity Type row -->
+              <div class="grid grid-cols-2 gap-3">
+                <div class="space-y-1">
+                  <label class="text-[10px] font-bold text-slate-400 uppercase block">Grade Level</label>
+                  <select id="fs-grade-level" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-2.5 py-2 text-xs text-slate-200 focus:outline-none focus:border-indigo-400 font-medium">
+                    <option value="Elementary (Grades 1-2)">Elementary (Grades 1-2)</option>
+                    <option value="Elementary (Grades 3-5)">Elementary (Grades 3-5)</option>
+                    <option value="Middle School (Grades 6-8)" selected>Middle School (Grades 6-8)</option>
+                    <option value="High School (Grades 9-12)">High School (Grades 9-12)</option>
+                  </select>
+                </div>
+                <div class="space-y-1">
+                  <label class="text-[10px] font-bold text-slate-400 uppercase block">Activity Format</label>
+                  <select id="fs-activity-type" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-2.5 py-2 text-xs text-slate-200 focus:outline-none focus:border-indigo-400 font-medium">
+                    <option value="Complete ELA Unit" selected>Complete Unit</option>
+                    <option value="Reading Passages & Questions">Reading Passage</option>
+                    <option value="Vocabulary Builder Exercises">Vocabulary Drill</option>
+                    <option value="Grammar & Mechanics Drills">Grammar Drills</option>
+                    <option value="Creative Essay Writing Outlines">Essay Outline</option>
+                  </select>
+                </div>
+              </div>
+
+              <!-- Rigor & Solutions row -->
+              <div class="grid grid-cols-2 gap-3">
+                <div class="space-y-1">
+                  <label class="text-[10px] font-bold text-slate-400 uppercase block">Curriculum Rigor</label>
+                  <select id="fs-rigor-level" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-2.5 py-2 text-xs text-slate-200 focus:outline-none focus:border-indigo-400 font-medium">
+                    <option value="Standard Academic Core" selected>Academic Core</option>
+                    <option value="Advanced Challenge Units">Advanced Challenge</option>
+                    <option value="Differentiated Support Focus">Supported / ESL</option>
+                  </select>
+                </div>
+                <div class="space-y-1">
+                  <label class="text-[10px] font-bold text-slate-400 uppercase block">Answer Keys</label>
+                  <select id="fs-solutions-key" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-2.5 py-2 text-xs text-slate-200 focus:outline-none focus:border-indigo-400 font-medium">
+                    <option value="Include complete, detailed Answer Keys at the end" selected>Detailed Key</option>
+                    <option value="Do NOT generate an answer key section">No Answer Key</option>
+                  </select>
+                </div>
+              </div>
+
+              <!-- Custom Common Core Standard Tag alignment -->
+              <div class="space-y-1 bg-slate-950/40 p-3.5 rounded-xl border border-slate-800">
+                <div class="flex items-center justify-between mb-1">
+                  <label class="text-[10px] font-bold text-slate-400 uppercase block">Common Core Standard Code</label>
+                  <span class="text-[9px] text-indigo-400 font-mono">Prints in header</span>
+                </div>
+                <input type="text" id="fs-ccss-code" placeholder="e.g. CCSS.ELA-LITERACY.RL.7.1" class="w-full bg-slate-950 border border-slate-800 rounded-lg px-2.5 py-1.5 text-xs text-white placeholder-slate-600 focus:outline-none focus:border-indigo-400">
+              </div>
+
+              <!-- Direct Topic Library quick select -->
+              <div class="space-y-1.5 bg-slate-950/40 p-3.5 rounded-xl border border-slate-800">
+                <label class="text-[10px] font-bold text-slate-400 uppercase block">Interactive Template Library</label>
+                <div class="grid grid-cols-2 gap-1.5">
+                  <button onclick="prefillFSTopic('Active vs Passive Voice in a detective mystery story. Challenge students to rewrite passive forms.')" class="p-1.5 rounded-lg bg-slate-900 hover:bg-slate-800 text-[10px] text-left text-slate-300 font-medium border border-slate-800 truncate cursor-pointer">🔍 Detective Mystery</button>
+                  <button onclick="prefillFSTopic('Metaphors & Similes featuring a futuristic astronaut exploring a neon jungle planet.')" class="p-1.5 rounded-lg bg-slate-900 hover:bg-slate-800 text-[10px] text-left text-slate-300 font-medium border border-slate-800 truncate cursor-pointer">🚀 Neon Planet Metaphors</button>
+                  <button onclick="prefillFSTopic('Context Clues with tier-2 academic adjectives like: meticulous, ephemeral, and resilient.')" class="p-1.5 rounded-lg bg-slate-900 hover:bg-slate-800 text-[10px] text-left text-slate-300 font-medium border border-slate-800 truncate cursor-pointer">🧠 Tier-2 Adjectives</button>
+                  <button onclick="prefillFSTopic('Analyze Tone and Mood in classic Edgar Allan Poe gothic poetry with evidence checks.')" class="p-1.5 rounded-lg bg-slate-900 hover:bg-slate-800 text-[10px] text-left text-slate-300 font-medium border border-slate-800 truncate cursor-pointer">🦅 Gothic Tone Analysis</button>
+                </div>
+              </div>
+
+            </div>
+
+            <!-- Warning/Info card inside modal -->
+            <div class="p-3 bg-indigo-950/20 rounded-xl border border-indigo-500/10 flex items-start gap-2.5 text-[10px] text-indigo-200 mt-2">
+              <i data-lucide="info" class="w-3.5 h-3.5 shrink-0 mt-0.5 text-indigo-400"></i>
+              <span>Generating from this spacious fullscreen studio automatically formats questions, inserts standard page alignments, creates Word Banks, and renders printable response guides.</span>
+            </div>
+
+          </div>
+
+        </div>
+
+      </div>
+
+      <!-- Modal Footer actions -->
+      <div class="p-4 border-t border-slate-800 flex items-center justify-between bg-slate-950/60 relative z-10">
+        <button onclick="closeFullscreenAIStudio()" class="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-bold rounded-xl transition-all cursor-pointer">
+          Close Workspace
+        </button>
+        <!-- Fullscreen Modal Premium Split Button -->
+        <div class="relative inline-block">
+          <div class="flex items-stretch rounded-xl bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-600 hover:from-indigo-500 hover:to-pink-500 text-white shadow-lg overflow-hidden transition-all ring-1 ring-white/20">
+            <button onclick="generateFullscreenAIWorksheet()" id="fs-ai-gen-btn" class="py-2.5 px-4 text-xs font-black flex items-center justify-center gap-2 hover:bg-white/10 active:bg-white/20 transition-all cursor-pointer">
+              <i data-lucide="sparkles" class="w-4 h-4"></i>
+              <span>Synthesize ELA Materials</span>
+            </button>
+            <div class="w-[1px] bg-white/20 self-stretch"></div>
+            <button onclick="toggleFSAISplitMenu(event)" id="fs-ai-split-trigger" class="px-2.5 py-2.5 hover:bg-white/15 active:bg-white/25 transition-all cursor-pointer flex items-center justify-center" title="More Synthesis Options">
+              <i data-lucide="chevron-down" id="fs-ai-split-arrow" class="w-4 h-4 transition-transform duration-200"></i>
+            </button>
+          </div>
+
+          <!-- Dropdown Menu -->
+          <div id="fs-ai-split-menu" class="hidden absolute bottom-full right-0 mb-1.5 w-60 bg-slate-900/98 backdrop-blur-2xl border border-indigo-500/30 rounded-xl shadow-2xl p-1.5 z-50 text-xs font-semibold space-y-1 ring-1 ring-white/15 animate-fade-in">
+            <div class="px-2 py-1 text-[9px] font-bold uppercase tracking-wider text-indigo-300 border-b border-white/10 mb-1 flex items-center justify-between">
+              <span>Synthesis Mode Targets</span>
+              <i data-lucide="layers" class="w-3 h-3 text-pink-400"></i>
+            </div>
+            <button onclick="generateFullscreenAIWorksheet(); closeFSAISplitMenu();" class="w-full px-2 py-1.5 rounded-lg hover:bg-indigo-600/30 text-white text-left flex items-center gap-2 transition-colors cursor-pointer text-[11px]">
+              <i data-lucide="sparkles" class="w-3.5 h-3.5 text-indigo-400"></i>
+              <span>Full Unit (Worksheet & Slides)</span>
+            </button>
+            <button onclick="document.getElementById('fs-activity-type').value='Reading Passages & Questions'; generateFullscreenAIWorksheet(); closeFSAISplitMenu();" class="w-full px-2 py-1.5 rounded-lg hover:bg-indigo-600/30 text-white text-left flex items-center gap-2 transition-colors cursor-pointer text-[11px]">
+              <i data-lucide="glasses" class="w-3.5 h-3.5 text-emerald-400"></i>
+              <span>Reading Passage Focus</span>
+            </button>
+            <button onclick="document.getElementById('fs-activity-type').value='Vocabulary Builder Exercises'; generateFullscreenAIWorksheet(); closeFSAISplitMenu();" class="w-full px-2 py-1.5 rounded-lg hover:bg-indigo-600/30 text-white text-left flex items-center gap-2 transition-colors cursor-pointer text-[11px]">
+              <i data-lucide="brain-circuit" class="w-3.5 h-3.5 text-pink-400"></i>
+              <span>Vocabulary Builder Focus</span>
+            </button>
+          </div>
+        </div>
       </div>
 
     </div>
