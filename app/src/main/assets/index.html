@@ -1209,6 +1209,25 @@
       color: #ffffff !important;
       box-shadow: 0 0 10px rgba(99, 102, 241, 0.3);
     }
+
+    /* === Premium Slide Typography Pairing Styles === */
+    .slide-font-sans h1, .slide-font-sans h2, .slide-font-sans h3, .slide-font-sans p, .slide-font-sans li, .slide-font-sans span {
+      font-family: ui-sans-serif, system-ui, -apple-system, sans-serif !important;
+    }
+    .slide-font-serif h1, .slide-font-serif h2, .slide-font-serif h3 {
+      font-family: Georgia, Cambria, "Times New Roman", Times, serif !important;
+      letter-spacing: -0.01em !important;
+    }
+    .slide-font-serif p, .slide-font-serif li, .slide-font-serif span {
+      font-family: Georgia, Cambria, serif !important;
+      font-weight: 500 !important;
+    }
+    .slide-font-playful h1, .slide-font-playful h2, .slide-font-playful h3, .slide-font-playful p, .slide-font-playful li, .slide-font-playful span {
+      font-family: "Comic Sans MS", "Chalkboard SE", cursive, sans-serif !important;
+    }
+    .slide-font-mono h1, .slide-font-mono h2, .slide-font-mono h3, .slide-font-mono p, .slide-font-mono li, .slide-font-mono span {
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace !important;
+    }
 </style>
   <!-- App Level Themes -->
   <style id="app-level-themes">
@@ -1384,6 +1403,11 @@
         <i data-lucide="bookmark-plus" class="w-3.5 h-3.5"></i>
         <span class="hidden xs:inline">Save</span>
       </button>
+      <!-- Gallery View Toggle -->
+      <button onclick="openSavedLibraryModal()" class="px-3 py-1.5 bg-slate-800 hover:bg-slate-700 border border-slate-700 text-slate-200 rounded-xl text-xs font-semibold flex items-center gap-1.5 active:scale-95 transition-all" title="View Saved Worksheets Gallery">
+        <i data-lucide="folder-heart" class="w-3.5 h-3.5 text-pink-400"></i>
+        <span>Gallery</span>
+      </button>
 
       <button onclick="toggleDashboard()" class="lg:hidden px-3 py-1.5 bg-indigo-600 hover:bg-indigo-500 text-white rounded-xl text-xs font-semibold flex items-center gap-1.5 shadow-lg shadow-indigo-600/30 active:scale-95 transition-all">
         <i data-lucide="layout-dashboard" class="w-3.5 h-3.5"></i>
@@ -1444,6 +1468,32 @@
 
     <!-- Scrollable Streamlined Dashboard Content -->
     <div class="flex-1 p-4 custom-scrollbar overflow-y-auto space-y-4">
+      <!-- 🏆 ELA WORKSHEET GALLERY (New Premium Feature) -->
+      <div class="p-3.5 rounded-2xl bg-gradient-to-br from-indigo-950/60 to-slate-950/80 border border-indigo-500/30 shadow-xl space-y-3">
+        <div class="flex items-center gap-2.5 pb-2 border-b border-indigo-500/15">
+          <div class="w-8 h-8 rounded-xl bg-indigo-600/30 flex items-center justify-center text-indigo-400 border border-indigo-500/40 shadow-sm shadow-indigo-600/20">
+            <i data-lucide="library" class="w-4 h-4"></i>
+          </div>
+          <div>
+            <h4 class="text-xs font-bold text-white block leading-tight">Worksheet Gallery</h4>
+            <span class="text-[9px] text-slate-400">Manage & restore your custom sheets</span>
+          </div>
+        </div>
+        
+        <div class="grid grid-cols-2 gap-2">
+          <!-- Save Current Action -->
+          <button onclick="saveCurrentWorksheet()" class="py-2 px-3 bg-indigo-600 hover:bg-indigo-500 text-white font-bold rounded-xl text-[11px] flex items-center justify-center gap-1.5 transition-all active:scale-95 shadow-md shadow-indigo-600/20" title="Save current worksheet to local library">
+            <i data-lucide="bookmark-plus" class="w-3.5 h-3.5"></i>
+            <span>Save active</span>
+          </button>
+          
+          <!-- Open Gallery Action -->
+          <button onclick="openSavedLibraryModal()" class="py-2 px-3 bg-slate-800 hover:bg-slate-700 text-slate-200 font-bold rounded-xl text-[11px] flex items-center justify-center gap-1.5 transition-all border border-slate-700 active:scale-95" title="Open the Saved Worksheets Gallery">
+            <i data-lucide="folder-heart" class="w-3.5 h-3.5 text-pink-400"></i>
+            <span>Open Gallery</span>
+          </button>
+        </div>
+      </div>
       
       <!-- 1. AI SMART GENERATOR (Simplified, high-impact) -->
       <div class="glass-card-premium rounded-2xl p-3.5 space-y-3 relative overflow-hidden ring-1 ring-white/15 shadow-xl">
@@ -1952,6 +2002,8 @@
         <div id="presentation-slide-box" class="slide-idle-floating absolute inset-0 bg-white rounded-2xl shadow-2xl border border-slate-200 overflow-hidden flex flex-col justify-between p-6 sm:p-10 text-slate-900 transition-all duration-300 origin-center" style="z-index: 10; transform: translate3d(0,0,0) rotateY(0deg) rotateZ(0deg);">
           <!-- Interactive Smartboard Drawing Canvas -->
           <canvas id="slide-draw-canvas"></canvas>
+          <!-- Confetti Celebration Canvas Overlay -->
+          <canvas id="celebration-canvas" class="absolute inset-0 pointer-events-none z-30"></canvas>
           <!-- Pulsing Laser Pointer Target -->
           <div id="slide-laser-dot" class="laser-dot"></div>
           
@@ -2101,6 +2153,20 @@
           </button>
 
           <!-- Theme Switcher for Slides -->
+          <!-- Dynamic Typography Customizer -->
+          <select id="slide-font-select" onchange="changeSlideFont(this.value)" class="bg-slate-900 border border-slate-700 text-slate-300 rounded-lg px-2.5 py-1.5 text-xs focus:outline-none focus:border-indigo-500 font-semibold" title="Choose Presentation Typography Pairing">
+            <option value="slide-font-sans" selected>🔤 Clean Sans Pairing</option>
+            <option value="slide-font-serif">📖 Editorial Serif (ELA Study)</option>
+            <option value="slide-font-playful">🎈 Comic Chalkboard SE</option>
+            <option value="slide-font-mono">💻 Technical Monospace</option>
+          </select>
+
+          <!-- Confetti Celebration Action -->
+          <button onclick="triggerConfettiCelebration()" id="btn-slide-celebrate" class="py-1.5 px-3 bg-indigo-600 hover:bg-indigo-500 text-white font-bold rounded-lg text-xs flex items-center gap-1.5 transition-all shadow-md shadow-indigo-600/20 active:scale-95" title="Burst Confetti & Fanfare Sound">
+            <i data-lucide="party-popper" class="w-3.5 h-3.5"></i>
+            <span>Celebrate</span>
+          </button>
+
           <select id="slide-theme-select" onchange="applySlideTheme(this.value)" class="bg-slate-900 border border-slate-700 text-slate-300 rounded-lg px-2.5 py-1.5 text-xs focus:outline-none focus:border-indigo-500 font-semibold">
             <option value="slide-theme-clean" selected>💡 Light Classroom</option>
             <option value="slide-theme-chalkboard">🍏 Blackboard Classic</option>
@@ -3319,11 +3385,11 @@
           'nordic-pastel': 'slide-theme-warm',
           'vibrant-gamifier': 'slide-theme-clean',
           'emerald-scholar': 'slide-theme-emerald',
-          'slide-theme-sunset',
-          'slide-theme-forest',
-          'slide-theme-nordic',
-          'slide-theme-luxury',
-          'slide-theme-playful',
+          'sunset-academic': 'slide-theme-sunset',
+          'forest-scholastic': 'slide-theme-forest',
+          'nordic-minimalist': 'slide-theme-nordic',
+          'luxury-obsidian': 'slide-theme-luxury',
+          'playful-comic': 'slide-theme-playful',
           'sunset-minimalist': 'slide-theme-warm',
           'cyberpunk-edgy': 'slide-theme-cyberpunk',
           'oceanic-trust': 'slide-theme-clean'
@@ -3400,7 +3466,12 @@
           'slide-theme-warm',
           'slide-theme-royal-ela',
           'slide-theme-cyberpunk',
-          'slide-theme-emerald'
+          'slide-theme-emerald',
+          'slide-theme-sunset',
+          'slide-theme-forest',
+          'slide-theme-nordic',
+          'slide-theme-luxury',
+          'slide-theme-playful'
         ];
         
         allSlideThemes.forEach(t => box.classList.remove(t));
@@ -3831,6 +3902,7 @@
         currentSlideIndex = 0;
         renderCurrentSlide();
         setTimeout(init3DSwipeHandlers, 50);
+        if (typeof lucide !== 'undefined' && lucide.createIcons) { lucide.createIcons(); }
         setTimeout(() => {
           initSmartboardCanvas();
           setSmartboardTool('laser');
@@ -4229,6 +4301,7 @@
       }
 
       wrapper.innerHTML = html;
+      if (typeof lucide !== 'undefined' && lucide.createIcons) { lucide.createIcons(); }
 
       // Update Answer button UI
       const btnAnswers = document.getElementById('btn-slide-answers');
@@ -4633,7 +4706,6 @@
           x: clientX - rect.left,
           y: clientY - rect.top
         };
-      };
       };
       
       const startDrawing = (e) => {
@@ -6147,6 +6219,102 @@ Schema for each slide object:
 
     // Smartboard Spotlight Mask Controls
     let spotlightActive = false;
+    // Premium Typography Switcher
+    let currentSlideFont = 'slide-font-sans';
+    function changeSlideFont(fontClass) {
+      const box = document.getElementById('presentation-slide-box');
+      if (!box) return;
+      const allFonts = ['slide-font-sans', 'slide-font-serif', 'slide-font-playful', 'slide-font-mono'];
+      allFonts.forEach(f => box.classList.remove(f));
+      box.classList.add(fontClass);
+      currentSlideFont = fontClass;
+      showToast('Typography Style', 'Set slide typography pairing to ' + fontClass.replace('slide-font-', '').toUpperCase(), 'sparkles');
+    }
+
+    // 60fps Canvas-Based Confetti & Audio Fanfare Celebration Engine
+    let celebrationAnimationId = null;
+    function triggerConfettiCelebration() {
+      playSynthesizedSound('fanfare');
+      
+      const canvas = document.getElementById('celebration-canvas');
+      if (!canvas) return;
+      
+      const ctx = canvas.getContext('2d');
+      const rect = canvas.getBoundingClientRect();
+      canvas.width = rect.width;
+      canvas.height = rect.height;
+      
+      let particles = [];
+      const colors = ['#f43f5e', '#3b82f6', '#10b981', '#eab308', '#a855f7', '#6366f1', '#f97316', '#06b6d4'];
+      
+      // Generate 100 colorful physical confetti pieces
+      for (let i = 0; i < 100; i++) {
+        particles.push({
+          x: Math.random() * canvas.width,
+          y: canvas.height + Math.random() * 20,
+          vx: (Math.random() - 0.5) * 10,
+          vy: -12 - Math.random() * 10,
+          radius: 3.5 + Math.random() * 4.5,
+          color: colors[Math.floor(Math.random() * colors.length)],
+          rotation: Math.random() * 360,
+          rotationSpeed: (Math.random() - 0.5) * 12,
+          opacity: 1,
+          gravity: 0.28,
+          friction: 0.985
+        });
+      }
+      
+      if (celebrationAnimationId) {
+        cancelAnimationFrame(celebrationAnimationId);
+      }
+      
+      function renderLoop() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        let active = false;
+        
+        particles.forEach(p => {
+          // Physics
+          p.vy += p.gravity;
+          p.vx *= p.friction;
+          p.vy *= p.friction;
+          p.x += p.vx;
+          p.y += p.vy;
+          p.rotation += p.rotationSpeed;
+          
+          if (p.y > canvas.height - 10 && p.vy > 0) {
+            // bounce gently on bottom
+            p.vy = -p.vy * 0.35;
+          }
+          
+          // Fade out as they settle
+          if (p.vy > 2) {
+            p.opacity -= 0.009;
+          }
+          
+          if (p.opacity > 0) {
+            active = true;
+            ctx.save();
+            ctx.translate(p.x, p.y);
+            ctx.rotate(p.rotation * Math.PI / 180);
+            ctx.fillStyle = p.color;
+            ctx.globalAlpha = p.opacity;
+            
+            // Draw rectangle confetti piece
+            ctx.fillRect(-p.radius, -p.radius * 0.65, p.radius * 2, p.radius * 1.3);
+            ctx.restore();
+          }
+        });
+        
+        if (active) {
+          celebrationAnimationId = requestAnimationFrame(renderLoop);
+        } else {
+          ctx.clearRect(0, 0, canvas.width, canvas.height);
+        }
+      }
+      
+      renderLoop();
+    }
+
     function toggleSpotlight() {
       spotlightActive = !spotlightActive;
       const mask = document.getElementById('smartboard-spotlight-mask');
@@ -7482,10 +7650,13 @@ Schema for each slide object:
       </div>
 
       <!-- Footer action bar -->
-      <div class="p-3 border-t border-slate-800 bg-slate-950/60 flex items-center justify-end">
-        <button onclick="closeVideoModal()" class="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-semibold rounded-xl transition-all">
-          Close Video Player
+      <div class="p-3 border-t border-slate-800 bg-slate-950/60 flex items-center justify-between">
+        <button onclick="saveCurrentWorksheet(); setTimeout(openSavedLibraryModal, 300);" class="px-3 py-1.5 bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold rounded-xl flex items-center gap-1.5 transition-all active:scale-95 shadow-md shadow-emerald-600/20" title="Save active worksheet to library">
+          <i data-lucide="bookmark-plus" class="w-3.5 h-3.5"></i>
+          <span>Save Current Sheet</span>
         </button>
+        <button onclick="closeSavedLibraryModal()" class="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-semibold rounded-xl transition-all">
+          Close        </button>
       </div>
     </div>
   </div>
