@@ -1516,7 +1516,7 @@
         <div class="space-y-2">
           <div>
             <label class="text-[10px] font-bold text-indigo-200 block mb-1">Topic / Grammar Focus</label>
-            <input type="text" id="ai-topic-input" placeholder="e.g. Metaphors & Similes, Irregular Verbs, Rainforest Ecosystem" class="w-full bg-slate-950/80 border border-white/20 rounded-xl px-3 py-2 text-xs text-white placeholder-slate-400 focus:outline-none focus:border-indigo-400 focus:ring-1 focus:ring-indigo-400">
+            <textarea id="ai-topic-input" rows="3" placeholder="e.g. Metaphors & Similes with a story about a brave astronaut, or irregular past tense verbs with proofreading drills..." class="w-full bg-slate-950/80 border border-white/20 rounded-xl px-3 py-2 text-xs text-white placeholder-slate-400 focus:outline-none focus:border-indigo-400 focus:ring-1 focus:ring-indigo-400 resize-none custom-scrollbar"></textarea>
           </div>
 
           <div class="grid grid-cols-2 gap-2">
@@ -2401,13 +2401,17 @@
 
     // Generate AI Worksheet via Gemini API or AI synthesis
     async function generateAIWorksheet() {
-      const promptInput = document.getElementById('ai-prompt-input');
-      const promptText = promptInput ? promptInput.value.trim() : '';
-
-      if (!promptText) {
-        showToast('Enter Prompt', 'Please enter a topic or instruction for the AI Tutor.', 'info');
+      const topicInput = document.getElementById('ai-topic-input');
+      const topicText = topicInput ? topicInput.value.trim() : '';
+      if (!topicText) {
+        showToast('Enter Prompt', 'Please enter an ELA topic or instruction for the AI Tutor.', 'info');
         return;
       }
+      
+      const gradeSelect = document.getElementById('ai-grade-level');
+      const gradeText = gradeSelect ? gradeSelect.value : 'Middle School (Grades 6-8)';
+      const activitySelect = document.getElementById('ai-activity-type');
+      const activityText = activitySelect ? activitySelect.value : 'Complete ELA Unit';
 
       const genBtn = document.getElementById('ai-gen-btn');
       if (genBtn) {
@@ -2415,9 +2419,25 @@
         genBtn.innerHTML = '<i data-lucide="loader-2" class="w-3.5 h-3.5 animate-spin"></i> Generating...';
         lucide.createIcons();
       }
+      
+      // Construct an extremely rich, master-class ELA/English prompt covering any ELA topic!
+      const masterPrompt = `You are an expert English Language Arts (ELA) and ESL educator. 
+Generate a comprehensive, highly engaging, professional educational worksheet for Grade: ${gradeText}.
+The topic or concept to focus on is: "${topicText}".
+The activity focus is: "${activityText}".
+
+Please design a rigorous, beautifully structured ELA worksheet that includes:
+1. A Clear, Catchy Title and Subtitle.
+2. A list of CCSS (Common Core State Standards) addressed by this worksheet.
+3. Warm-up Explanation: A short, engaging story or explanatory concept paragraph introducing the topic to students.
+4. Active Exercise Items:
+   - If vocabulary-focused: A Word Bank followed by matching sentences or context-clue fill-in-the-blanks.
+   - If reading comprehension: A short passage or story followed by text-evidence questions.
+   - If grammar: A list of sentences with parenthesis forms or correction exercises.
+   - If creative writing: Two guided writing prompts or essay outlines.
+Include complete answer guides at the very end of the content. Format the output in clean Markdown with bold headers and spacing.`;
 
       const apiKey = userApiKey || localStorage.getItem('gemini_api_key') || '';
-
       if (apiKey) {
         try {
           const endpoint = `https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash:generateContent?key=${apiKey}`;
@@ -2427,21 +2447,18 @@
             body: JSON.stringify({
               contents: [{
                 parts: [{
-                  text: `You are an expert English Language Arts (ELA) teacher assistant. Generate a high-quality educational worksheet section based on this prompt: "${promptText}". Format the output clearly with Title, Subtitle, and numbered exercise questions or vocabulary items with answers.`
+                  text: masterPrompt
                 }]
               }]
             })
           });
-
           if (!response.ok) {
             throw new Error(`API error HTTP ${response.status}`);
           }
-
           const data = await response.json();
           const resultText = data.candidates?.[0]?.content?.parts?.[0]?.text || '';
-
           if (resultText) {
-            renderAIResultOnPaper(promptText, resultText);
+            renderAIResultOnPaper(topicText, resultText);
             showToast('AI Tutor Success', 'Worksheet generated with Gemini AI!', 'sparkles');
           } else {
             throw new Error('No text returned from Gemini API.');
@@ -2449,16 +2466,15 @@
         } catch (err) {
           console.warn('Gemini API fetch error, falling back to smart ELA synthesis:', err);
           showToast('AI Response', 'Loaded AI synthesized worksheet content.', 'sparkles');
-          renderAISynthesizedFallback(promptText);
+          renderAISynthesizedFallback(topicText);
         }
       } else {
         showToast('AI Tutor Synthesis', 'No API key detected; generated using ELA Tutor engine.', 'sparkles');
-        renderAISynthesizedFallback(promptText);
+        renderAISynthesizedFallback(topicText);
       }
-
       if (genBtn) {
         genBtn.disabled = false;
-        genBtn.innerHTML = '<i data-lucide="sparkles" class="w-3.5 h-3.5"></i> Generate with Gemini AI';
+        genBtn.innerHTML = '<i data-lucide="sparkles" class="w-4 h-4"></i> Generate Worksheet & Deck';
         lucide.createIcons();
       }
     }
