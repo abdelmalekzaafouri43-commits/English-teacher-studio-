@@ -79,6 +79,7 @@ fun WorksheetWebViewScreen(
           loadWithOverviewMode = true
           builtInZoomControls = true
           displayZoomControls = false
+          mediaPlaybackRequiresUserGesture = false
           mixedContentMode = WebSettings.MIXED_CONTENT_COMPATIBILITY_MODE
         }
 

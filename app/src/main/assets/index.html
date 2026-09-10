@@ -151,6 +151,70 @@
     #presentation-container {
       transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
     }
+    #presentation-container.theater-mode {
+      max-width: 100% !important;
+      width: 100% !important;
+      padding: 1.5rem !important;
+    }
+
+    /* 3D Slider Physics & Smooth Card Animations */
+    #slide-3d-viewport {
+      perspective: 1600px;
+      perspective-origin: 50% 50%;
+      transform-style: preserve-3d;
+    }
+    
+    #presentation-slide-box {
+      transform-style: preserve-3d;
+      will-change: transform, opacity, box-shadow;
+      box-shadow: 0 25px 50px -12px rgba(15, 23, 42, 0.35), 0 0 0 1px rgba(255, 255, 255, 0.08);
+      transition: transform 0.45s cubic-bezier(0.19, 1, 0.22, 1), opacity 0.4s ease, box-shadow 0.45s ease;
+    }
+
+    #presentation-slide-box:hover {
+      box-shadow: 0 35px 60px -15px rgba(99, 102, 241, 0.3), 0 0 0 1px rgba(99, 102, 241, 0.35);
+    }
+
+    /* Subtle Idle 3D Floating Animation */
+    @keyframes subtle3DFloat {
+      0%, 100% {
+        transform: translate3d(0, 0, 0) rotateY(0deg) rotateX(0deg);
+      }
+      50% {
+        transform: translate3d(0, -6px, 15px) rotateY(0.6deg) rotateX(-0.6deg);
+      }
+    }
+
+    .slide-idle-floating {
+      animation: subtle3DFloat 6s ease-in-out infinite;
+    }
+
+    /* Dynamic Holographic / Glare Sheen across slides on drag */
+    .slide-glare-overlay {
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      border-radius: inherit;
+      background: linear-gradient(135deg, rgba(255,255,255,0.22) 0%, rgba(255,255,255,0.03) 45%, transparent 70%);
+      opacity: 0;
+      transition: opacity 0.3s ease;
+      z-index: 25;
+    }
+
+    /* Swipe hint gesture bouncing animation */
+    @keyframes swipeGesturePulse {
+      0%, 100% {
+        transform: translateX(0);
+        opacity: 0.8;
+      }
+      50% {
+        transform: translateX(8px);
+        opacity: 1;
+      }
+    }
+    .animate-swipe-pulse {
+      animation: swipeGesturePulse 2s ease-in-out infinite;
+    }
 
     /* Border Styles for Worksheet */
     .border-style-minimalist {
@@ -204,35 +268,35 @@
     /* Animated Border Styles */
     @keyframes borderGlowPulse {
       0% {
-        box-shadow: 0 0 12px rgba(99, 102, 241, 0.4), inset 0 0 6px rgba(99, 102, 241, 0.2);
+        box-shadow: 0 0 15px rgba(99, 102, 241, 0.4), inset 0 0 8px rgba(99, 102, 241, 0.2);
         border-color: #6366f1;
       }
       50% {
-        box-shadow: 0 0 24px rgba(168, 85, 247, 0.7), inset 0 0 12px rgba(168, 85, 247, 0.4);
+        box-shadow: 0 0 30px rgba(168, 85, 247, 0.8), inset 0 0 16px rgba(168, 85, 247, 0.5);
         border-color: #a855f7;
       }
       100% {
-        box-shadow: 0 0 12px rgba(99, 102, 241, 0.4), inset 0 0 6px rgba(99, 102, 241, 0.2);
+        box-shadow: 0 0 15px rgba(99, 102, 241, 0.4), inset 0 0 8px rgba(99, 102, 241, 0.2);
         border-color: #6366f1;
       }
     }
     
     .border-style-glow {
       border: 3px solid #6366f1;
-      animation: borderGlowPulse 4s infinite ease-in-out;
+      animation: borderGlowPulse 3s infinite ease-in-out;
       border-radius: 14px;
       position: relative;
     }
 
     @keyframes neonBorderFlow {
-      0%, 100% { border-color: #06b6d4; box-shadow: 0 0 16px rgba(6, 182, 212, 0.6); }
-      33% { border-color: #ec4899; box-shadow: 0 0 16px rgba(236, 72, 153, 0.6); }
-      66% { border-color: #eab308; box-shadow: 0 0 16px rgba(234, 179, 8, 0.6); }
+      0%, 100% { border-color: #06b6d4; box-shadow: 0 0 20px rgba(6, 182, 212, 0.7); }
+      33% { border-color: #ec4899; box-shadow: 0 0 20px rgba(236, 72, 153, 0.7); }
+      66% { border-color: #eab308; box-shadow: 0 0 20px rgba(234, 179, 8, 0.7); }
     }
 
     .border-style-neon {
       border: 4px solid #06b6d4;
-      animation: neonBorderFlow 5s infinite linear;
+      animation: neonBorderFlow 4s infinite linear;
       border-radius: 14px;
       position: relative;
     }
@@ -254,13 +318,160 @@
       inset: -4px;
       border-radius: 20px;
       padding: 4px;
-      background: linear-gradient(135deg, #6366f1, #a855f7, #ec4899, #06b6d4);
+      background: linear-gradient(135deg, #6366f1, #a855f7, #ec4899, #06b6d4, #6366f1);
       background-size: 300% 300%;
       -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
       -webkit-mask-composite: xor;
       mask-composite: exclude;
       pointer-events: none;
-      animation: cyberGradientFlow 6s infinite ease-in-out alternate;
+      animation: cyberGradientFlow 5s infinite ease-in-out alternate;
+    }
+
+    /* Cosmic Aurora Border */
+    @keyframes auroraBorderSweep {
+      0% { background-position: 0% 50%; filter: hue-rotate(0deg); }
+      50% { background-position: 100% 50%; filter: hue-rotate(60deg); }
+      100% { background-position: 0% 50%; filter: hue-rotate(0deg); }
+    }
+    .border-style-aurora {
+      position: relative;
+      border: 1px solid rgba(16, 185, 129, 0.3);
+      border-radius: 16px;
+      box-shadow: 0 0 25px rgba(16, 185, 129, 0.25);
+    }
+    .border-style-aurora::before {
+      content: '';
+      position: absolute;
+      inset: -5px;
+      border-radius: 20px;
+      padding: 5px;
+      background: linear-gradient(125deg, #10b981, #06b6d4, #8b5cf6, #ec4899, #10b981);
+      background-size: 400% 400%;
+      -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+      -webkit-mask-composite: xor;
+      mask-composite: exclude;
+      pointer-events: none;
+      animation: auroraBorderSweep 6s infinite ease-in-out;
+    }
+
+    /* Golden Shimmer Border */
+    @keyframes goldShimmerSweep {
+      0% { background-position: -200% 0; }
+      100% { background-position: 200% 0; }
+    }
+    .border-style-shimmer {
+      position: relative;
+      border: 3px solid #f59e0b;
+      border-radius: 16px;
+      box-shadow: 0 0 20px rgba(245, 158, 11, 0.35);
+    }
+    .border-style-shimmer::before {
+      content: '';
+      position: absolute;
+      inset: -4px;
+      border-radius: 18px;
+      padding: 4px;
+      background: linear-gradient(90deg, #b45309 0%, #fbbf24 25%, #ffffff 50%, #fbbf24 75%, #b45309 100%);
+      background-size: 200% 100%;
+      -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+      -webkit-mask-composite: xor;
+      mask-composite: exclude;
+      pointer-events: none;
+      animation: goldShimmerSweep 3.5s infinite linear;
+    }
+
+    /* Rainbow Ribbon Border */
+    @keyframes rainbowConicSpin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+    .border-style-rainbow {
+      position: relative;
+      border-radius: 16px;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      box-shadow: 0 0 22px rgba(168, 85, 247, 0.3);
+    }
+    .border-style-rainbow::before {
+      content: '';
+      position: absolute;
+      inset: -4px;
+      border-radius: 20px;
+      padding: 4px;
+      background: conic-gradient(from 0deg, #ef4444, #f97316, #eab308, #22c55e, #06b6d4, #3b82f6, #a855f7, #ec4899, #ef4444);
+      -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+      -webkit-mask-composite: xor;
+      mask-composite: exclude;
+      pointer-events: none;
+      animation: rainbowConicSpin 7s linear infinite;
+    }
+
+    /* Laser Particle Wave Border */
+    @keyframes laserPulseGlow {
+      0%, 100% { box-shadow: 0 0 12px rgba(56, 189, 248, 0.4), inset 0 0 8px rgba(56, 189, 248, 0.2); border-color: #38bdf8; }
+      50% { box-shadow: 0 0 28px rgba(56, 189, 248, 0.9), inset 0 0 16px rgba(56, 189, 248, 0.5); border-color: #7dd3fc; }
+    }
+    .border-style-laser {
+      border: 3px dashed #38bdf8;
+      border-radius: 16px;
+      animation: laserPulseGlow 2.5s infinite ease-in-out;
+      position: relative;
+    }
+
+    /* Frosted Glass Border */
+    @keyframes glassBorderSheen {
+      0%, 100% {
+        border-color: rgba(255, 255, 255, 0.5);
+        box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.25), inset 0 0 16px rgba(255, 255, 255, 0.35);
+      }
+      50% {
+        border-color: rgba(199, 210, 254, 0.9);
+        box-shadow: 0 8px 32px 0 rgba(99, 102, 241, 0.4), inset 0 0 26px rgba(255, 255, 255, 0.7);
+      }
+    }
+    .border-style-glass {
+      border: 3px solid rgba(255, 255, 255, 0.6);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+      border-radius: 18px;
+      position: relative;
+      animation: glassBorderSheen 4s infinite ease-in-out;
+    }
+
+    /* Glass AI Tutor Component & Dialog Styles */
+    .glass-card-premium {
+      background: linear-gradient(135deg, rgba(30, 27, 75, 0.65), rgba(15, 23, 42, 0.8), rgba(88, 28, 135, 0.55));
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border: 1px solid rgba(255, 255, 255, 0.18);
+      box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37), inset 0 1px 1px 0 rgba(255, 255, 255, 0.2);
+    }
+
+    .glass-glow-orb {
+      position: absolute;
+      border-radius: 50%;
+      filter: blur(35px);
+      pointer-events: none;
+      animation: orbFloat 8s ease-in-out infinite alternate;
+    }
+
+    @keyframes orbFloat {
+      0% { transform: translate(0, 0) scale(1); opacity: 0.3; }
+      50% { transform: translate(15px, -15px) scale(1.15); opacity: 0.55; }
+      100% { transform: translate(-10px, 10px) scale(0.95); opacity: 0.35; }
+    }
+
+    .glass-chat-bubble-ai {
+      background: rgba(30, 27, 75, 0.65);
+      border: 1px solid rgba(129, 140, 248, 0.3);
+      backdrop-filter: blur(12px);
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.25), inset 0 1px 1px rgba(255, 255, 255, 0.15);
+    }
+
+    .glass-chat-bubble-user {
+      background: linear-gradient(135deg, rgba(79, 70, 229, 0.85), rgba(124, 58, 237, 0.85));
+      border: 1px solid rgba(255, 255, 255, 0.3);
+      backdrop-filter: blur(12px);
+      box-shadow: 0 4px 16px rgba(79, 70, 229, 0.4), inset 0 1px 1px rgba(255, 255, 255, 0.3);
     }
 
     .border-style-none {
@@ -442,6 +653,11 @@
     }
 
     /* Print & A4 Page Styling Rules */
+    .theater-mode {
+      max-width: 100% !important;
+      width: 100% !important;
+    }
+    
     @page {
       size: A4 portrait;
       margin: 12mm 15mm 15mm 15mm;
@@ -728,6 +944,12 @@
 
     <!-- Quick Action Badges in Header -->
     <div class="flex items-center gap-2">
+      <button onclick="openGlassTutorModal()" class="px-3 py-1.5 bg-gradient-to-r from-indigo-600/80 via-purple-600/80 to-pink-600/80 hover:from-indigo-600 hover:to-pink-600 text-white rounded-xl text-xs font-semibold flex items-center gap-1.5 shadow-lg shadow-indigo-500/20 backdrop-blur-md border border-white/20 active:scale-95 transition-all">
+        <i data-lucide="bot" class="w-3.5 h-3.5 text-indigo-200"></i>
+        <span class="hidden sm:inline">Glass AI Tutor</span>
+        <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+      </button>
+
       <span class="hidden sm:inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-indigo-950/60 border border-indigo-500/30 text-indigo-300 text-xs font-semibold">
         <i data-lucide="file-check-2" class="w-3.5 h-3.5 text-indigo-400"></i>
         <span>A4 Format</span>
@@ -744,6 +966,20 @@
       </button>
     </div>
   </header>
+
+  <!-- Floating Glass AI Tutor Launcher Button -->
+  <button onclick="openGlassTutorModal()" class="fixed bottom-6 right-6 z-30 p-3 rounded-2xl glass-card-premium text-white flex items-center gap-2.5 shadow-2xl hover:scale-105 active:scale-95 transition-all group no-print ring-1 ring-white/30 cursor-pointer" title="Chat with Glass AI Tutor">
+    <div class="w-8 h-8 rounded-xl bg-gradient-to-tr from-indigo-500 via-purple-500 to-pink-500 flex items-center justify-center text-white shadow-md group-hover:rotate-12 transition-transform">
+      <i data-lucide="sparkles" class="w-4 h-4"></i>
+    </div>
+    <div class="text-left pr-1 hidden sm:block">
+      <span class="text-xs font-bold block leading-tight text-white flex items-center gap-1">
+        Glass AI Tutor
+        <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
+      </span>
+      <span class="text-[10px] text-indigo-200">Ask ELA & Grammar</span>
+    </div>
+  </button>
 
   <!-- Overlay Backing for Sidebar -->
   <div id="sidebar-overlay" onclick="toggleDashboard()" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-30 hidden no-print transition-opacity duration-300 lg:hidden"></div>
@@ -791,49 +1027,69 @@
       <!-- TAB 1: GENERATORS (ELA Content Builders) -->
       <div id="tab-generators-content" class="space-y-5">
         <!-- FROSTED GLASS AI TUTOR & GEMINI API SECTION -->
-        <div class="bg-gradient-to-br from-indigo-950/70 via-slate-900/90 to-purple-950/60 backdrop-blur-md border border-indigo-500/40 shadow-xl rounded-2xl p-3.5 space-y-3 relative overflow-hidden ring-1 ring-white/10">
-          <div class="absolute -top-10 -right-10 w-28 h-28 bg-indigo-500/20 rounded-full blur-2xl pointer-events-none"></div>
+        <div class="glass-card-premium rounded-2xl p-4 space-y-3.5 relative overflow-hidden ring-1 ring-white/20 shadow-2xl">
+          <!-- Glass Ambient Glow Orbs -->
+          <div class="glass-glow-orb -top-8 -right-8 w-28 h-28 bg-indigo-500/30"></div>
+          <div class="glass-glow-orb -bottom-8 -left-8 w-24 h-24 bg-purple-500/25"></div>
 
-          <div class="flex items-center justify-between pb-2 border-b border-indigo-500/30">
-            <div class="flex items-center gap-2">
-              <div class="w-7 h-7 rounded-lg bg-gradient-to-tr from-indigo-500 to-purple-500 flex items-center justify-center text-white shadow">
-                <i data-lucide="bot" class="w-4 h-4"></i>
+          <div class="flex items-center justify-between pb-2.5 border-b border-white/10 relative z-10">
+            <div class="flex items-center gap-2.5">
+              <div class="w-8 h-8 rounded-xl bg-gradient-to-tr from-indigo-500 via-purple-500 to-pink-500 flex items-center justify-center text-white shadow-lg shadow-indigo-500/30 ring-1 ring-white/30">
+                <i data-lucide="bot" class="w-4.5 h-4.5"></i>
               </div>
               <div>
-                <span class="text-xs font-bold text-white block leading-none">AI English Tutor</span>
-                <span class="text-[10px] text-indigo-300">Gemini ELA Assistant</span>
+                <span class="text-xs font-bold text-white block leading-none flex items-center gap-1.5">
+                  Glass AI Tutor
+                  <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-ping"></span>
+                </span>
+                <span class="text-[10px] text-indigo-200">Gemini ELA Intelligence</span>
               </div>
             </div>
-            <span id="ai-status-badge" class="px-2 py-0.5 text-[9px] font-bold bg-indigo-500/20 text-indigo-300 border border-indigo-400/30 rounded-full">READY</span>
+            <button onclick="openGlassTutorModal()" class="px-2.5 py-1 text-[10px] font-bold bg-white/10 hover:bg-white/20 text-white border border-white/25 rounded-full backdrop-blur-md flex items-center gap-1 transition-all shadow-sm hover:scale-105 active:scale-95" title="Open Interactive Live AI Tutor Chat">
+              <i data-lucide="messages-square" class="w-3 h-3 text-indigo-300"></i>
+              <span>Live Chat</span>
+            </button>
           </div>
 
           <!-- API Key Config Input -->
-          <div class="space-y-1">
+          <div class="space-y-1 relative z-10">
             <label class="text-[10px] uppercase font-semibold tracking-wider text-indigo-200 flex items-center justify-between">
               <span>Gemini API Key</span>
-              <span id="key-saved-label" class="text-[9px] text-slate-400">Stored in Session</span>
+              <span id="key-saved-label" class="text-[9px] text-slate-300">Stored in Session</span>
             </label>
             <div class="flex items-center gap-1.5">
               <div class="relative flex-1">
-                <input type="password" id="gemini-api-key-input" placeholder="Paste Gemini API Key (e.g. AIzaSy...)" onchange="saveApiKey(this.value)" class="w-full bg-slate-950/90 border border-indigo-500/40 rounded-lg pl-7 pr-2 py-1.5 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-indigo-400 focus:ring-1 focus:ring-indigo-400">
-                <i data-lucide="key" class="w-3.5 h-3.5 text-indigo-400 absolute left-2 top-2.5"></i>
+                <input type="password" id="gemini-api-key-input" placeholder="Paste Gemini API Key (e.g. AIzaSy...)" onchange="saveApiKey(this.value)" class="w-full bg-slate-950/70 border border-white/20 rounded-xl pl-7 pr-2 py-1.5 text-xs text-white placeholder-slate-400 focus:outline-none focus:border-indigo-400 focus:ring-1 focus:ring-indigo-400 backdrop-blur-md">
+                <i data-lucide="key" class="w-3.5 h-3.5 text-indigo-300 absolute left-2 top-2.5"></i>
               </div>
-              <button onclick="pasteApiKey()" class="p-1.5 bg-indigo-600/30 hover:bg-indigo-600 border border-indigo-500/50 text-indigo-200 hover:text-white rounded-lg text-xs font-medium transition-all" title="Paste API Key from Clipboard">
+              <button onclick="pasteApiKey()" class="p-1.5 bg-white/10 hover:bg-white/20 border border-white/20 text-indigo-200 hover:text-white rounded-xl text-xs font-medium transition-all backdrop-blur-md" title="Paste API Key from Clipboard">
                 <i data-lucide="clipboard" class="w-3.5 h-3.5"></i>
               </button>
             </div>
           </div>
 
           <!-- AI Assistant Prompt Generator -->
-          <div class="space-y-1.5 pt-0.5">
-            <label class="text-[10px] uppercase font-semibold tracking-wider text-indigo-200 block">Ask AI Tutor To Generate</label>
-            <div class="relative">
-              <textarea id="ai-prompt-input" rows="2" placeholder="e.g. Vocabulary words about ancient Egypt, reading comprehension, modal verbs..." class="w-full bg-slate-950/90 border border-indigo-500/40 rounded-lg p-2 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-indigo-400 focus:ring-1 focus:ring-indigo-400 resize-none"></textarea>
+          <div class="space-y-1.5 pt-0.5 relative z-10">
+            <div class="flex items-center justify-between">
+              <label class="text-[10px] uppercase font-semibold tracking-wider text-indigo-200">Ask AI Tutor To Generate</label>
+              <button onclick="openGlassTutorModal()" class="text-[9px] text-indigo-300 hover:text-white underline flex items-center gap-0.5">
+                <span>Open full tutor dialog</span>
+                <i data-lucide="external-link" class="w-2.5 h-2.5"></i>
+              </button>
             </div>
-            <button onclick="generateAIWorksheet()" id="ai-gen-btn" class="w-full py-2 bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-500 hover:to-purple-500 text-white rounded-lg text-xs font-semibold flex items-center justify-center gap-1.5 shadow-lg shadow-indigo-600/30 transition-all active:scale-95">
-              <i data-lucide="sparkles" class="w-3.5 h-3.5"></i>
-              <span>Generate with Gemini AI</span>
-            </button>
+            <div class="relative">
+              <textarea id="ai-prompt-input" rows="2" placeholder="e.g. Vocabulary words about ancient Egypt, reading comprehension, modal verbs..." class="w-full bg-slate-950/70 border border-white/20 rounded-xl p-2 text-xs text-white placeholder-slate-400 focus:outline-none focus:border-indigo-400 focus:ring-1 focus:ring-indigo-400 resize-none backdrop-blur-md"></textarea>
+            </div>
+            <div class="grid grid-cols-2 gap-1.5">
+              <button onclick="generateAIWorksheet()" id="ai-gen-btn" class="py-2 bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-600 hover:from-indigo-500 hover:to-pink-500 text-white rounded-xl text-xs font-semibold flex items-center justify-center gap-1.5 shadow-lg shadow-indigo-600/30 transition-all active:scale-95 border border-white/20">
+                <i data-lucide="sparkles" class="w-3.5 h-3.5"></i>
+                <span>Generate Sheet</span>
+              </button>
+              <button onclick="openGlassTutorModal()" class="py-2 bg-white/10 hover:bg-white/20 text-white rounded-xl text-xs font-semibold flex items-center justify-center gap-1.5 backdrop-blur-md transition-all active:scale-95 border border-white/20">
+                <i data-lucide="message-circle-question" class="w-3.5 h-3.5 text-purple-300"></i>
+                <span>Ask AI Question</span>
+              </button>
+            </div>
           </div>
         </div>
         
@@ -964,9 +1220,48 @@
           </label>
 
           <!-- Premium Border Selector -->
-          <div>
-            <label class="text-[11px] text-slate-300 mb-1.5 block">Border Frame</label>
+          <div class="space-y-2">
+            <div class="flex items-center justify-between">
+              <label class="text-[11px] text-slate-300 block font-semibold">Border Frame Style</label>
+              <span class="text-[9px] text-indigo-400 font-bold uppercase tracking-wider">✨ Animated & Static</span>
+            </div>
+            
             <div class="grid grid-cols-2 gap-1.5">
+              <!-- Animated Borders -->
+              <button onclick="setBorder('glow')" class="border-btn border-opt-glow flex items-center gap-1.5 p-1.5 rounded-lg bg-indigo-950/40 border border-indigo-500/50 text-[11px] text-indigo-200 hover:border-indigo-400 hover:text-white transition-all shadow-[0_0_8px_rgba(99,102,241,0.25)]">
+                <span class="w-3.5 h-3.5 rounded-full bg-indigo-500 animate-ping"></span>
+                <span class="truncate">✨ Glow Pulse</span>
+              </button>
+              <button onclick="setBorder('cyber')" class="border-btn border-opt-cyber flex items-center gap-1.5 p-1.5 rounded-lg bg-cyan-950/40 border border-cyan-500/50 text-[11px] text-cyan-200 hover:border-cyan-400 hover:text-white transition-all shadow-[0_0_8px_rgba(6,182,212,0.25)]">
+                <span class="w-3.5 h-3.5 rounded bg-gradient-to-tr from-cyan-400 to-indigo-500"></span>
+                <span class="truncate">⚡ Cyber Flow</span>
+              </button>
+              <button onclick="setBorder('aurora')" class="border-btn border-opt-aurora flex items-center gap-1.5 p-1.5 rounded-lg bg-emerald-950/40 border border-emerald-500/50 text-[11px] text-emerald-200 hover:border-emerald-400 hover:text-white transition-all shadow-[0_0_8px_rgba(16,185,129,0.25)]">
+                <span class="w-3.5 h-3.5 rounded bg-gradient-to-r from-emerald-400 via-teal-300 to-purple-400"></span>
+                <span class="truncate">🌌 Aurora Sweep</span>
+              </button>
+              <button onclick="setBorder('shimmer')" class="border-btn border-opt-shimmer flex items-center gap-1.5 p-1.5 rounded-lg bg-amber-950/40 border border-amber-500/50 text-[11px] text-amber-200 hover:border-amber-400 hover:text-white transition-all shadow-[0_0_8px_rgba(245,158,11,0.25)]">
+                <span class="w-3.5 h-3.5 rounded bg-gradient-to-r from-amber-500 via-yellow-200 to-amber-600"></span>
+                <span class="truncate">🌟 Gold Shimmer</span>
+              </button>
+              <button onclick="setBorder('neon')" class="border-btn border-opt-neon flex items-center gap-1.5 p-1.5 rounded-lg bg-pink-950/40 border border-pink-500/50 text-[11px] text-pink-200 hover:border-pink-400 hover:text-white transition-all shadow-[0_0_8px_rgba(236,72,153,0.25)]">
+                <span class="w-3.5 h-3.5 rounded-sm border border-pink-400 bg-pink-500/30"></span>
+                <span class="truncate">🌈 Neon Glow</span>
+              </button>
+              <button onclick="setBorder('rainbow')" class="border-btn border-opt-rainbow flex items-center gap-1.5 p-1.5 rounded-lg bg-purple-950/40 border border-purple-500/50 text-[11px] text-purple-200 hover:border-purple-400 hover:text-white transition-all shadow-[0_0_8px_rgba(168,85,247,0.25)]">
+                <span class="w-3.5 h-3.5 rounded-full bg-gradient-to-r from-red-400 via-green-400 to-blue-400"></span>
+                <span class="truncate">🎡 Rainbow Spin</span>
+              </button>
+              <button onclick="setBorder('laser')" class="border-btn border-opt-laser flex items-center gap-1.5 p-1.5 rounded-lg bg-sky-950/40 border border-sky-500/50 text-[11px] text-sky-200 hover:border-sky-400 hover:text-white transition-all shadow-[0_0_8px_rgba(56,189,248,0.25)]">
+                <span class="w-3.5 h-3.5 rounded border border-dashed border-sky-400"></span>
+                <span class="truncate">⚡ Laser Wave</span>
+              </button>
+              <button onclick="setBorder('glass')" class="border-btn border-opt-glass flex items-center gap-1.5 p-1.5 rounded-lg bg-white/10 border border-white/30 text-[11px] text-white hover:border-white hover:bg-white/20 transition-all backdrop-blur-sm shadow-[0_0_8px_rgba(255,255,255,0.2)]">
+                <span class="w-3.5 h-3.5 rounded border border-white/60 bg-white/20"></span>
+                <span class="truncate">❄️ Frosted Glass</span>
+              </button>
+
+              <!-- Classic Static Borders -->
               <button onclick="setBorder('minimalist')" class="border-btn border-opt-minimalist flex items-center gap-1.5 p-1.5 rounded-lg bg-slate-800 border border-slate-700 text-[11px] text-slate-300 hover:border-indigo-500 transition-all">
                 <span class="w-3.5 h-3.5 rounded border border-slate-400 flex items-center justify-center text-[7px] font-mono leading-none">||</span>
                 <span class="truncate">Minimalist</span>
@@ -983,21 +1278,9 @@
                 <span class="w-3.5 h-3.5 rounded border border-dashed border-indigo-400"></span>
                 <span class="truncate">Playful</span>
               </button>
-              <button onclick="setBorder('glow')" class="border-btn border-opt-glow flex items-center gap-1.5 p-1.5 rounded-lg bg-slate-850/80 border border-indigo-500/40 text-[11px] text-indigo-300 hover:border-indigo-500 hover:text-white transition-all shadow-[0_0_6px_rgba(99,102,241,0.2)]">
-                <span class="w-3.5 h-3.5 rounded-full bg-indigo-500 animate-pulse"></span>
-                <span class="truncate">✨ Glow Pulse</span>
-              </button>
-              <button onclick="setBorder('cyber')" class="border-btn border-opt-cyber flex items-center gap-1.5 p-1.5 rounded-lg bg-slate-850/80 border border-cyan-500/40 text-[11px] text-cyan-300 hover:border-cyan-500 hover:text-white transition-all shadow-[0_0_6px_rgba(6,182,212,0.2)]">
-                <span class="w-3.5 h-3.5 rounded bg-gradient-to-tr from-cyan-400 to-indigo-500"></span>
-                <span class="truncate">⚡ Cyber Flow</span>
-              </button>
-              <button onclick="setBorder('neon')" class="border-btn border-opt-neon flex items-center gap-1.5 p-1.5 rounded-lg bg-slate-850/80 border border-pink-500/40 text-[11px] text-pink-300 hover:border-pink-500 hover:text-white transition-all shadow-[0_0_6px_rgba(236,72,153,0.2)]">
-                <span class="w-3.5 h-3.5 rounded-sm border border-pink-500"></span>
-                <span class="truncate">🌈 Neon Star</span>
-              </button>
-              <button onclick="setBorder('none')" class="border-btn border-opt-none flex items-center gap-1.5 p-1.5 rounded-lg bg-slate-800 border border-slate-700 text-[11px] text-slate-300 hover:border-indigo-500 transition-all">
+              <button onclick="setBorder('none')" class="border-btn border-opt-none flex items-center gap-1.5 p-1.5 rounded-lg bg-slate-800 border border-slate-700 text-[11px] text-slate-300 hover:border-indigo-500 transition-all col-span-2">
                 <span class="w-3.5 h-3.5 rounded border border-slate-600"></span>
-                <span class="truncate">None</span>
+                <span class="truncate">Clean Minimal (No Special Border)</span>
               </button>
             </div>
           </div>
@@ -1176,7 +1459,7 @@
   <main id="main-content" class="flex-1 lg:pl-80 xl:pl-96 bg-slate-950 min-h-screen p-4 md:p-8 flex flex-col items-center justify-start overflow-y-auto transition-all duration-300">
     
     <!-- Interactive Preview Mode Toggle (Worksheet vs Slideshow) -->
-    <div class="w-full max-w-4xl mb-5 flex flex-wrap items-center justify-between gap-4 text-xs text-slate-400 no-print">
+    <div id="preview-mode-bar" class="w-full max-w-4xl transition-all duration-300 mb-5 flex flex-wrap items-center justify-between gap-4 text-xs text-slate-400 no-print">
       <div class="flex items-center bg-slate-900 p-1 rounded-xl border border-indigo-500/20 shadow-lg">
         <button onclick="setViewMode('worksheet')" id="btn-view-worksheet" class="px-4 py-2 rounded-lg text-xs font-bold flex items-center gap-2 transition-all bg-indigo-600 text-white shadow" title="View A4 Printable Worksheet">
           <i data-lucide="file-text" class="w-4 h-4"></i>
@@ -1319,7 +1602,44 @@
     </div>
 
     <!-- POWERPOINT PRESENTATION CANVAS (Widescreen 16:9 format) -->
-    <div id="presentation-container" class="hidden w-full max-w-4xl bg-slate-900 border-2 border-indigo-500/20 rounded-2xl shadow-2xl p-6 flex flex-col gap-6 no-print-sections">
+    <div id="presentation-container" class="hidden w-full max-w-6xl bg-slate-900 border-2 border-indigo-500/30 rounded-2xl shadow-2xl p-4 md:p-6 flex flex-col gap-5 no-print-sections transition-all duration-300">
+      
+      <!-- Top Presentation Toolbar (Theater, New Slide, Video Present) -->
+      <div class="flex flex-wrap items-center justify-between gap-3 bg-slate-950/90 border border-indigo-500/20 p-3 rounded-xl">
+        <div class="flex items-center gap-3">
+          <div class="flex items-center gap-2">
+            <div class="w-7 h-7 rounded-lg bg-indigo-600/20 border border-indigo-500/40 text-indigo-400 flex items-center justify-center">
+              <i data-lucide="projector" class="w-4 h-4"></i>
+            </div>
+            <div>
+              <h3 class="text-xs font-bold text-white tracking-wide">Interactive Classroom Slideshow</h3>
+              <p class="text-[10px] text-slate-400">Smartboard Presentation & Lecture View</p>
+            </div>
+          </div>
+          <span class="hidden sm:inline-block h-4 w-px bg-slate-800"></span>
+          <span id="slide-count-badge" class="px-2 py-0.5 rounded-full bg-indigo-950 border border-indigo-500/30 text-indigo-300 text-[10px] font-bold">Slide 1 of 5</span>
+        </div>
+
+        <div class="flex items-center gap-2">
+          <!-- Add Custom Slide Button -->
+          <button onclick="openCustomSlideModal()" class="py-1.5 px-3 bg-indigo-600 hover:bg-indigo-500 text-white font-bold rounded-lg text-xs flex items-center gap-1.5 shadow transition-all" title="Create Custom Slide">
+            <i data-lucide="plus-circle" class="w-3.5 h-3.5"></i>
+            <span>Add Slide</span>
+          </button>
+
+          <!-- Present with Video Button -->
+          <button onclick="openVideoModal()" class="py-1.5 px-3 bg-rose-600 hover:bg-rose-500 text-white font-bold rounded-lg text-xs flex items-center gap-1.5 shadow transition-all" title="Present Educational Lesson Videos">
+            <i data-lucide="video" class="w-3.5 h-3.5"></i>
+            <span>Present with Video</span>
+          </button>
+
+          <!-- Theater / Full Width Mode Toggle -->
+          <button onclick="toggleTheaterMode()" id="btn-theater-mode" class="py-1.5 px-2.5 bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white font-bold rounded-lg text-xs flex items-center gap-1.5 transition-all" title="Toggle Widescreen Theater Mode">
+            <i id="theater-mode-icon" data-lucide="maximize" class="w-3.5 h-3.5"></i>
+            <span id="theater-mode-label" class="hidden sm:inline">Wide Mode</span>
+          </button>
+        </div>
+      </div>
       
       <!-- 3D Perspective Viewport Container with Swipe Physics -->
       <div id="slide-3d-viewport" class="relative w-full aspect-[16/9] select-none cursor-grab active:cursor-grabbing" style="perspective: 1400px; transform-style: preserve-3d;">
@@ -1331,8 +1651,11 @@
         <div id="slide-stack-mid" class="absolute inset-0 rounded-xl bg-slate-950/40 border border-slate-800/60 shadow-xl pointer-events-none transition-all duration-300 origin-center" style="transform: translate3d(0, 8px, -60px) scale(0.98); z-index: 2;"></div>
 
         <!-- Presentation Slide Box -->
-        <div id="presentation-slide-box" class="absolute inset-0 bg-white rounded-xl shadow-2xl border border-slate-250 overflow-hidden flex flex-col justify-between p-8 text-slate-900 transition-all duration-300 origin-center" style="z-index: 10; transform: translate3d(0,0,0) rotateY(0deg) rotateZ(0deg);">
+        <div id="presentation-slide-box" class="slide-idle-floating absolute inset-0 bg-white rounded-xl shadow-2xl border border-slate-250 overflow-hidden flex flex-col justify-between p-8 text-slate-900 transition-all duration-300 origin-center" style="z-index: 10; transform: translate3d(0,0,0) rotateY(0deg) rotateZ(0deg);">
           
+          <!-- Dynamic Holographic Glare Sheen -->
+          <div id="slide-glare-overlay" class="slide-glare-overlay"></div>
+
           <!-- Spotlight Focus Overlay -->
           <div id="smartboard-spotlight-mask" class="absolute inset-0 bg-slate-950/85 pointer-events-none transition-opacity duration-300 opacity-0 z-20" style="background: radial-gradient(circle 100px at 50% 50%, transparent 100%, rgba(15, 23, 42, 0.85) 100%);"></div>
 
@@ -1432,9 +1755,9 @@
             <span>Next</span>
             <i data-lucide="chevron-right" class="w-4 h-4"></i>
           </button>
-          <span class="hidden md:inline-flex items-center gap-1 text-[10px] text-slate-500 font-semibold pl-2">
-            <i data-lucide="move-horizontal" class="w-3.5 h-3.5 text-indigo-400"></i>
-            <span>↔ Swipe / Drag to flip in 3D space</span>
+          <span class="hidden md:inline-flex items-center gap-1.5 text-[10px] text-indigo-300 font-semibold pl-2 bg-indigo-950/50 border border-indigo-500/20 px-2.5 py-1 rounded-full">
+            <i data-lucide="move-horizontal" class="w-3.5 h-3.5 text-indigo-400 animate-swipe-pulse"></i>
+            <span>3D Swipe & Physics Active</span>
           </span>
         </div>
 
@@ -1507,9 +1830,11 @@
     // PowerPoint Presentation State
     let viewMode = 'worksheet';
     let presentationSlides = [];
+    let customUserSlides = [];
     let currentSlideIndex = 0;
     let revealSlideAnswers = false;
     let currentSlideTheme = 'slide-theme-clean';
+    let isTheaterMode = false;
 
     // English Teacher Data Bank
     const vocabData = {
@@ -1737,6 +2062,309 @@
         genBtn.innerHTML = '<i data-lucide="sparkles" class="w-3.5 h-3.5"></i> Generate with Gemini AI';
         lucide.createIcons();
       }
+    }
+
+    // ==========================================
+    // GLASS AI TUTOR INTERACTIVE DIALOG CONTROLLER
+    // ==========================================
+    function openGlassTutorModal() {
+      const modal = document.getElementById('glass-ai-tutor-modal');
+      if (modal) {
+        modal.classList.remove('hidden');
+        modal.classList.add('flex');
+        lucide.createIcons();
+        setTimeout(() => {
+          const input = document.getElementById('glass-tutor-input');
+          if (input) input.focus();
+        }, 100);
+      }
+    }
+
+    function closeGlassTutorModal() {
+      const modal = document.getElementById('glass-ai-tutor-modal');
+      if (modal) {
+        modal.classList.add('hidden');
+        modal.classList.remove('flex');
+      }
+    }
+
+    function clearGlassTutorInput() {
+      const input = document.getElementById('glass-tutor-input');
+      if (input) {
+        input.value = '';
+        input.focus();
+      }
+    }
+
+    function useQuickTutorPrompt(promptText) {
+      const input = document.getElementById('glass-tutor-input');
+      if (input) {
+        input.value = promptText;
+        sendGlassTutorMessage();
+      }
+    }
+
+    async function sendGlassTutorMessage() {
+      const input = document.getElementById('glass-tutor-input');
+      const text = input ? input.value.trim() : '';
+      if (!text) return;
+
+      // Append User message bubble
+      appendTutorUserMessage(text);
+      input.value = '';
+
+      // Show typing indicator
+      showTutorTypingIndicator();
+
+      const sendBtn = document.getElementById('glass-tutor-send-btn');
+      if (sendBtn) sendBtn.disabled = true;
+
+      try {
+        const responseData = await generateGlassTutorAIResponse(text);
+        removeTutorTypingIndicator();
+        appendTutorAIMessage(responseData.html, responseData.rawText);
+      } catch (err) {
+        removeTutorTypingIndicator();
+        appendTutorAIMessage(
+          `<p class="text-rose-300">An error occurred while generating a response. Please check your network or try again.</p>`,
+          "An error occurred."
+        );
+      } finally {
+        if (sendBtn) sendBtn.disabled = false;
+      }
+    }
+
+    function appendTutorUserMessage(text) {
+      const history = document.getElementById('glass-tutor-chat-history');
+      if (!history) return;
+
+      const userDiv = document.createElement('div');
+      userDiv.className = 'flex items-start justify-end gap-3 animate-fade-in';
+      userDiv.innerHTML = `
+        <div class="space-y-1 max-w-[85%] text-right">
+          <span class="font-semibold text-[10px] text-indigo-300">You (Teacher / Learner)</span>
+          <div class="glass-chat-bubble-user text-white rounded-2xl rounded-tr-none p-3.5 text-xs sm:text-sm font-sans leading-relaxed text-left">
+            ${escapeHtml(text)}
+          </div>
+        </div>
+        <div class="w-8 h-8 rounded-xl bg-indigo-600 flex-shrink-0 flex items-center justify-center text-white shadow-md ring-1 ring-white/20">
+          <i data-lucide="user" class="w-4 h-4"></i>
+        </div>
+      `;
+      history.appendChild(userDiv);
+      history.scrollTop = history.scrollHeight;
+      lucide.createIcons();
+    }
+
+    function showTutorTypingIndicator() {
+      const history = document.getElementById('glass-tutor-chat-history');
+      if (!history) return;
+
+      let indicator = document.getElementById('tutor-typing-indicator');
+      if (!indicator) {
+        indicator = document.createElement('div');
+        indicator.id = 'tutor-typing-indicator';
+        indicator.className = 'flex items-start gap-3 animate-fade-in';
+        indicator.innerHTML = `
+          <div class="w-8 h-8 rounded-xl bg-gradient-to-tr from-indigo-500 to-purple-600 flex-shrink-0 flex items-center justify-center text-white shadow-md ring-1 ring-white/20">
+            <i data-lucide="bot" class="w-4 h-4 animate-spin"></i>
+          </div>
+          <div class="glass-chat-bubble-ai rounded-2xl rounded-tl-none px-4 py-3 text-slate-300 flex items-center gap-1.5 text-xs">
+            <span class="w-2 h-2 rounded-full bg-indigo-400 animate-bounce" style="animation-delay: 0s;"></span>
+            <span class="w-2 h-2 rounded-full bg-purple-400 animate-bounce" style="animation-delay: 0.2s;"></span>
+            <span class="w-2 h-2 rounded-full bg-pink-400 animate-bounce" style="animation-delay: 0.4s;"></span>
+            <span class="ml-2 text-indigo-200 font-medium">Tutor thinking...</span>
+          </div>
+        `;
+        history.appendChild(indicator);
+        history.scrollTop = history.scrollHeight;
+        lucide.createIcons();
+      }
+    }
+
+    function removeTutorTypingIndicator() {
+      const indicator = document.getElementById('tutor-typing-indicator');
+      if (indicator) indicator.remove();
+    }
+
+    function appendTutorAIMessage(contentHtml, rawText) {
+      const history = document.getElementById('glass-tutor-chat-history');
+      if (!history) return;
+
+      const encodedText = encodeURIComponent(rawText);
+      const aiDiv = document.createElement('div');
+      aiDiv.className = 'flex items-start gap-3 animate-fade-in group';
+      aiDiv.innerHTML = `
+        <div class="w-8 h-8 rounded-xl bg-gradient-to-tr from-indigo-500 to-purple-600 flex-shrink-0 flex items-center justify-center text-white shadow-md ring-1 ring-white/20">
+          <i data-lucide="bot" class="w-4 h-4"></i>
+        </div>
+        <div class="space-y-2 max-w-[88%] flex-1">
+          <div class="flex items-center justify-between">
+            <div class="flex items-center gap-2">
+              <span class="font-bold text-white text-xs">Glass AI Tutor</span>
+              <span class="text-[10px] text-indigo-300 bg-indigo-950/60 px-2 py-0.5 rounded-full border border-indigo-500/30">Pedagogical ELA</span>
+            </div>
+            <div class="flex items-center gap-1 opacity-80 group-hover:opacity-100 transition-opacity">
+              <button onclick="copyTutorMessage('${encodedText}')" class="p-1 rounded-lg bg-white/10 hover:bg-white/20 text-indigo-200 hover:text-white text-[10px] flex items-center gap-1 transition-all" title="Copy Response">
+                <i data-lucide="copy" class="w-3 h-3"></i>
+                <span class="hidden sm:inline">Copy</span>
+              </button>
+              <button onclick="insertTutorResponseIntoWorksheet('${encodedText}')" class="px-2 py-1 rounded-lg bg-indigo-600/60 hover:bg-indigo-600 text-white text-[10px] font-semibold flex items-center gap-1 transition-all border border-indigo-400/30" title="Insert into Worksheet Paper">
+                <i data-lucide="file-plus-2" class="w-3 h-3"></i>
+                <span>Add to Sheet</span>
+              </button>
+              <button onclick="speakTutorMessage('${encodedText}')" class="p-1 rounded-lg bg-white/10 hover:bg-white/20 text-indigo-200 hover:text-white text-[10px] transition-all" title="Read Aloud">
+                <i data-lucide="volume-2" class="w-3 h-3"></i>
+              </button>
+            </div>
+          </div>
+          <div class="glass-chat-bubble-ai rounded-2xl rounded-tl-none p-4 text-slate-100 space-y-2.5 leading-relaxed font-sans text-xs sm:text-sm">
+            ${contentHtml}
+          </div>
+        </div>
+      `;
+      history.appendChild(aiDiv);
+      history.scrollTop = history.scrollHeight;
+      lucide.createIcons();
+    }
+
+    async function generateGlassTutorAIResponse(userText) {
+      const apiKey = userApiKey || localStorage.getItem('gemini_api_key') || '';
+      
+      if (apiKey) {
+        try {
+          const endpoint = `https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash:generateContent?key=${apiKey}`;
+          const response = await fetch(endpoint, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              contents: [{
+                parts: [{
+                  text: `You are the Glass AI English Language Arts Tutor, a master ELA educator. Strictly restrict all answers to English Language Arts (grammar, vocabulary, reading comprehension, writing, phonics, literary analysis, punctuation). User question: "${userText}". Provide a concise, highly engaging, pedagogical answer formatted with clear bullet points, examples, and friendly teaching tone.`
+                }]
+              }]
+            })
+          });
+
+          if (response.ok) {
+            const data = await response.json();
+            const textResult = data.candidates?.[0]?.content?.parts?.[0]?.text;
+            if (textResult) {
+              const html = formatMarkdownToHTML(textResult);
+              return { html: html, rawText: textResult };
+            }
+          }
+        } catch (e) {
+          console.warn('Gemini tutor stream error, falling back to smart ELA knowledge bank:', e);
+        }
+      }
+
+      // Smart ELA Pedagogical Knowledge Fallback
+      return synthesizeELATutorKnowledge(userText);
+    }
+
+    function synthesizeELATutorKnowledge(query) {
+      const lower = query.toLowerCase();
+      let rawText = '';
+      let html = '';
+
+      if (lower.includes('simile') || lower.includes('metaphor')) {
+        rawText = `### Figurative Language: Similes vs. Metaphors\n\n• **Simile**: A comparison between two unlike things using the words **"like"** or **"as"**.\n  *Example:* "Her smile was as radiant **as** the morning sun."\n\n• **Metaphor**: A direct comparison that states one thing **is** another thing (without like/as).\n  *Example:* "Time **is** a thief that steals our precious moments."\n\n💡 **Teacher Tip**: Remind students that metaphors build stronger emotional resonance in poetic and narrative writing.`;
+      } else if (lower.includes('passive') || lower.includes('active')) {
+        rawText = `### Active Voice vs. Passive Voice Guide\n\n• **Active Voice**: The subject performs the action. (Clear, energetic, direct)\n  *Example:* "The student **wrote** an outstanding essay."\n\n• **Passive Voice**: The subject receives the action. (Often uses forms of 'to be' + past participle)\n  *Example:* "An outstanding essay **was written** by the student."\n\n💡 **Classroom Rule**: Use active voice to make student narratives punchy and concise!`;
+      } else if (lower.includes('synonym') || lower.includes('beautiful') || lower.includes('vocabulary') || lower.includes('word')) {
+        rawText = `### Advanced ELA Vocabulary Expansion\n\nHere are 5 sophisticated synonyms to enrich student writing:\n\n1. **Resplendent** (*adj.*): Attractive and impressive through being richly colorful or shining.\n2. **Exquisite** (*adj.*): Extremely beautiful and typically delicate or finely crafted.\n3. **Luminous** (*adj.*): Emitting glowing light; radiant and brilliantly clear.\n4. **Picturesque** (*adj.*): Visually charming or quaint, like a painting.\n5. **Sublime** (*adj.*): Of such excellence or grandeur as to inspire great admiration.\n\n✨ *Practice Challenge:* Write a descriptive sentence using at least two of these words!`;
+      } else if (lower.includes('punctuation') || lower.includes('semicolon') || lower.includes('comma') || lower.includes('colon')) {
+        rawText = `### Essential Punctuation Rules for ELA\n\n• **Semicolon (;)**: Connects two independent clauses that are closely related in thought.\n  *Rule:* "She loves reading classical poetry; he prefers modern drama."\n\n• **Colon (:)**: Introduces a list, explanation, or quotation after a complete thought.\n  *Rule:* "The curriculum contains three primary pillars: reading, writing, and rhetoric."\n\n• **Oxford Comma**: The final comma in a list before 'and'.\n  *Rule:* "We studied verbs, adjectives, and adverbs."`;
+      } else if (lower.includes('reading') || lower.includes('comprehension') || lower.includes('question') || lower.includes('theme')) {
+        rawText = `### Deep Reading Comprehension Discussion Points\n\nHere are 3 critical thinking questions to assess student understanding of literary texts:\n\n1. **Theme & Message**: What central truth about human nature is the author conveying through the protagonist's decisions?\n2. **Textual Evidence**: Cite two specific quotes from paragraph 3 that reveal the speaker's shifting tone.\n3. **Character Motivation**: How does the antagonist's background influence the climax of the conflict?`;
+      } else {
+        rawText = `### English Language Arts Pedagogical Guidance: "${escapeHtml(query)}"\n\n• **Key Concept**: When analyzing and mastering English language skills, focus on identifying grammatical structure, contextual vocabulary, and authorial purpose.\n• **Student Application**: Practice applying this concept by writing complete sentences and identifying textual evidence.\n• **Pedagogical Takeaway**: Regular interactive feedback reinforces accurate spelling, syntax mechanics, and reading comprehension.\n\n💡 *Ask me to generate a complete worksheet or lesson slide on this topic anytime!*`;
+      }
+
+      html = formatMarkdownToHTML(rawText);
+      return { html: html, rawText: rawText };
+    }
+
+    function formatMarkdownToHTML(text) {
+      if (!text) return '';
+      let formatted = text
+        .replace(/### (.*?)\n/g, '<h4 class="text-sm font-bold text-indigo-300 pb-1 border-b border-white/10 mb-2">$1</h4>')
+        .replace(/## (.*?)\n/g, '<h3 class="text-base font-black text-white pb-1 border-b border-white/10 mb-2">$1</h3>')
+        .replace(/\*\*(.*?)\*\*/g, '<strong class="text-indigo-200 font-bold">$1</strong>')
+        .replace(/\*(.*?)\*/g, '<em class="text-indigo-100 italic">$1</em>')
+        .replace(/\n\s*• (.*?)(?=\n|$)/g, '<li class="ml-4 list-disc text-slate-200">$1</li>')
+        .replace(/\n\s*\d+\.\s*(.*?)(?=\n|$)/g, '<li class="ml-4 list-decimal text-slate-200">$1</li>')
+        .replace(/\n\n/g, '</p><p class="mt-2 text-slate-200">');
+
+      return `<div class="space-y-2 text-slate-100">${formatted}</div>`;
+    }
+
+    function copyTutorMessage(encodedText) {
+      try {
+        const text = decodeURIComponent(encodedText);
+        navigator.clipboard.writeText(text);
+        showToast('Copied to Clipboard', 'AI Tutor explanation copied.', 'copy');
+      } catch (e) {
+        showToast('Copy Error', 'Could not copy message.', 'alert-circle');
+      }
+    }
+
+    function insertTutorResponseIntoWorksheet(encodedText) {
+      try {
+        const text = decodeURIComponent(encodedText);
+        const body = document.getElementById('worksheet-body');
+        if (!body) return;
+
+        const card = document.createElement('div');
+        card.className = 'exercise-block question-item p-4 rounded-xl border border-indigo-200 bg-indigo-50/40 text-slate-900 font-serif text-xs leading-relaxed space-y-2 relative';
+        card.contentEditable = "true";
+
+        let formatted = formatMarkdownToHTML(text);
+        card.innerHTML = `
+          <div class="flex justify-between font-bold text-indigo-900 text-[11px] uppercase tracking-wider mb-1 no-print">
+            <span>Glass AI Tutor Knowledge Card</span>
+            <span class="bg-indigo-100 text-indigo-800 px-2 py-0.5 rounded">ELA Insight</span>
+          </div>
+          <div class="whitespace-pre-line text-slate-900">${formatted}</div>
+        `;
+
+        body.appendChild(card);
+        closeGlassTutorModal();
+        showToast('Added to Worksheet', 'Glass AI Tutor content inserted into canvas!', 'sparkles');
+        lucide.createIcons();
+      } catch (e) {
+        showToast('Insert Error', 'Could not insert into worksheet.', 'alert-circle');
+      }
+    }
+
+    function speakTutorMessage(encodedText) {
+      try {
+        const text = decodeURIComponent(encodedText).replace(/[#*•_]/g, '');
+        if ('speechSynthesis' in window) {
+          window.speechSynthesis.cancel();
+          const utterance = new SpeechSynthesisUtterance(text);
+          utterance.rate = 0.95;
+          utterance.pitch = 1.0;
+          utterance.lang = 'en-US';
+          window.speechSynthesis.speak(utterance);
+          showToast('Reading Aloud', 'Glass AI Tutor speaking...', 'volume-2');
+        } else {
+          showToast('Text to Speech', 'Speech synthesis is not supported on this browser.', 'info');
+        }
+      } catch (e) {
+        showToast('Speech Error', 'Could not synthesize speech.', 'alert-circle');
+      }
+    }
+
+    function escapeHtml(str) {
+      if (!str) return '';
+      return str
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
     }
 
     // Format and sanitize prompt text into a clean, professional ELA worksheet title
@@ -2232,7 +2860,14 @@
       const paper = document.getElementById('worksheet-paper');
       const artdeco = document.getElementById('artdeco-corners');
 
-      paper.classList.remove('border-style-minimalist', 'border-style-geometric', 'border-style-artdeco', 'border-style-playful', 'border-style-none', 'border-style-glow', 'border-style-cyber', 'border-style-neon');
+      const allBorderStyles = [
+        'border-style-minimalist', 'border-style-geometric', 'border-style-artdeco', 
+        'border-style-playful', 'border-style-none', 'border-style-glow', 
+        'border-style-cyber', 'border-style-neon', 'border-style-aurora', 
+        'border-style-shimmer', 'border-style-rainbow', 'border-style-laser', 
+        'border-style-glass'
+      ];
+      allBorderStyles.forEach(b => paper.classList.remove(b));
       paper.classList.add(`border-style-${borderType}`);
 
       if (borderType === 'artdeco') {
@@ -2242,11 +2877,28 @@
       }
 
       // Add special visual effects toast
-      const animBorders = ['glow', 'cyber', 'neon'];
+      const animBorders = ['glow', 'cyber', 'neon', 'aurora', 'shimmer', 'rainbow', 'laser', 'glass'];
+      const borderNames = {
+        glow: 'Glow Pulse',
+        cyber: 'Cyber Flow',
+        neon: 'Neon Glow',
+        aurora: 'Cosmic Aurora',
+        shimmer: 'Golden Shimmer',
+        rainbow: 'Rainbow Spin',
+        laser: 'Laser Wave',
+        glass: 'Frosted Glass Frame',
+        minimalist: 'Minimalist',
+        geometric: 'Geometric',
+        artdeco: 'Art Deco',
+        playful: 'Playful',
+        none: 'Clean Minimal'
+      };
+
+      const titleName = borderNames[borderType] || borderType.toUpperCase();
       if (animBorders.includes(borderType)) {
-        showToast('Animated Frame!', `Activated ${borderType.toUpperCase()} dynamic border frame.`, 'sparkles');
+        showToast('Animated Border Active', `Activated ${titleName} animated frame!`, 'sparkles');
       } else {
-        showToast('Border Updated', `Applied ${borderType.toUpperCase()} static border frame.`, 'layout');
+        showToast('Border Updated', `Applied ${titleName} border frame.`, 'layout');
       }
     }
 
@@ -2601,6 +3253,12 @@
         if (zoomWrapper) zoomWrapper.classList.remove('hidden');
         if (presentationContainer) presentationContainer.classList.add('hidden');
         
+        const previewBar = document.getElementById('preview-mode-bar');
+        if (previewBar) {
+          previewBar.classList.remove('max-w-6xl', 'max-w-full');
+          previewBar.classList.add('max-w-4xl');
+        }
+
         const splitBtn = document.getElementById('btn-split-page');
         if (splitBtn) splitBtn.classList.remove('hidden');
       } else {
@@ -2609,6 +3267,12 @@
         if (zoomWrapper) zoomWrapper.classList.add('hidden');
         if (presentationContainer) presentationContainer.classList.remove('hidden');
         
+        const previewBar = document.getElementById('preview-mode-bar');
+        if (previewBar) {
+          previewBar.classList.remove('max-w-4xl');
+          previewBar.classList.add(isTheaterMode ? 'max-w-full' : 'max-w-6xl');
+        }
+
         const splitBtn = document.getElementById('btn-split-page');
         if (splitBtn) splitBtn.classList.add('hidden');
         
@@ -2765,6 +3429,11 @@
           });
         }
       }
+
+      // Append any teacher custom-created slides
+      if (customUserSlides && customUserSlides.length > 0) {
+        presentationSlides = presentationSlides.concat(customUserSlides);
+      }
     }
 
     function renderCurrentSlide() {
@@ -2775,6 +3444,11 @@
       const counter = document.getElementById('slide-number-display');
       if (counter) {
         counter.innerText = `Slide ${currentSlideIndex + 1} of ${presentationSlides.length}`;
+      }
+
+      const countBadge = document.getElementById('slide-count-badge');
+      if (countBadge) {
+        countBadge.innerText = `Slide ${currentSlideIndex + 1} of ${presentationSlides.length}`;
       }
       
       let html = '';
@@ -2834,6 +3508,24 @@
             </div>
           </div>
         `;
+      } else if (slide.layout === 'custom') {
+        html = `
+          <div class="flex-1 flex flex-col justify-between py-2">
+            <div>
+              <div class="flex items-center justify-between">
+                <span class="text-[9px] uppercase font-bold text-indigo-600 tracking-wider animate-slide-up">${slide.subtitle || 'Teacher Custom Slide'}</span>
+                <button onclick="removeCustomSlide(${slide.customId || 0})" class="text-[10px] text-rose-500 hover:text-rose-700 font-bold px-2 py-0.5 rounded bg-rose-50 border border-rose-200 transition-all flex items-center gap-1" title="Delete this slide">
+                  <i data-lucide="trash-2" class="w-3 h-3"></i>
+                  <span>Delete</span>
+                </button>
+              </div>
+              <h2 class="text-2xl font-bold text-slate-900 mt-1 mb-4 font-sans border-b pb-2 border-slate-100 animate-slide-up delay-75">${slide.title}</h2>
+            </div>
+            <div class="flex-1 flex flex-col justify-center animate-slide-up delay-150 text-slate-800 text-sm leading-relaxed whitespace-pre-line bg-slate-50/70 p-6 rounded-xl border border-slate-200">
+              ${slide.content}
+            </div>
+          </div>
+        `;
       }
       
       wrapper.innerHTML = html;
@@ -2862,6 +3554,8 @@
           noteText = "Ask student volunteers to read the left-hand text in a clean reading circle. Use the right-hand vector diagram to visually anchor the vocabulary definitions before writing sentences.";
         } else if (slide.layout === 'activity') {
           noteText = "Interactive smartboard challenge! Direct student volunteers to tap, write, or fill in their answers on the projector. Click 'Reveal Answers' below once the discussion has finished.";
+        } else if (slide.layout === 'custom') {
+          noteText = `Teacher custom slide for discussion: "${slide.title}". Lead classroom interaction and invite students to respond.`;
         } else {
           noteText = `Review this slide block together. Emphasize: "${slide.title}". Instruct students to take notes of key terms and rules in their exercise books.`;
         }
@@ -2926,6 +3620,7 @@
       
       const slideBox = document.getElementById('presentation-slide-box');
       if (slideBox) {
+        slideBox.classList.remove('slide-idle-floating');
         slideBox.style.transition = 'none';
       }
     }
@@ -2950,6 +3645,7 @@
       
       const slideBox = document.getElementById('presentation-slide-box');
       if (slideBox) {
+        slideBox.classList.remove('slide-idle-floating');
         slideBox.style.transition = 'none';
       }
     }
@@ -2972,32 +3668,44 @@
       const stackMid = document.getElementById('slide-stack-mid');
       const stackDeep = document.getElementById('slide-stack-deep');
       const viewport = document.getElementById('slide-3d-viewport');
+      const glareOverlay = document.getElementById('slide-glare-overlay');
       if (!slideBox || !viewport) return;
 
       const viewportWidth = viewport.clientWidth || 800;
       const deltaX = slideCurrentX - slideStartX;
       const percentage = Math.min(Math.max(deltaX / viewportWidth, -1), 1);
 
-      // 3D Matrix transform rules (translation + multi-axis perspective rotations)
-      const transX = deltaX;
-      const rotateY = percentage * 40; 
-      const rotateZ = percentage * -8; 
-      const translateZ = -Math.abs(percentage) * 150; 
+      // Advanced 3D Matrix transform rules (translation + yaw rotation + pitch tilt + depth extrusion)
+      const transX = deltaX * 1.08;
+      const rotateY = percentage * 48; 
+      const rotateZ = percentage * -9; 
+      const rotateX = Math.abs(percentage) * -4;
+      const translateZ = -Math.abs(percentage) * 190; 
 
-      slideBox.style.transform = `translate3d(${transX}px, 0px, ${translateZ}px) rotateY(${rotateY}deg) rotateZ(${rotateZ}deg)`;
+      slideBox.style.transform = `translate3d(${transX}px, 0px, ${translateZ}px) rotateY(${rotateY}deg) rotateZ(${rotateZ}deg) rotateX(${rotateX}deg)`;
 
-      // Animate background stacks responding dynamically in reverse
+      // Dynamic Holographic Glare Sheen intensity
+      if (glareOverlay) {
+        const glareOpacity = Math.min(Math.abs(percentage) * 1.3, 0.75);
+        glareOverlay.style.opacity = glareOpacity;
+        const glareX = 50 + (percentage * 50);
+        glareOverlay.style.background = `radial-gradient(circle at ${glareX}% 50%, rgba(255,255,255,0.3) 0%, rgba(255,255,255,0.05) 50%, transparent 80%)`;
+      }
+
+      // Responsive 3D background stacks responding smoothly in depth
       if (stackMid) {
-        const stackX = -percentage * 15;
-        const stackZ = -60 + (Math.abs(percentage) * 40);
-        const scale = 0.98 + (Math.abs(percentage) * 0.02);
-        stackMid.style.transform = `translate3d(${stackX}px, 8px, ${stackZ}px) scale(${scale})`;
+        const stackX = -percentage * 24;
+        const stackZ = -60 + (Math.abs(percentage) * 55);
+        const stackRotateY = -percentage * 14;
+        const scale = 0.98 + (Math.abs(percentage) * 0.025);
+        stackMid.style.transform = `translate3d(${stackX}px, 8px, ${stackZ}px) rotateY(${stackRotateY}deg) scale(${scale})`;
       }
       if (stackDeep) {
-        const stackX = -percentage * 25;
-        const stackZ = -120 + (Math.abs(percentage) * 60);
-        const scale = 0.95 + (Math.abs(percentage) * 0.03);
-        stackDeep.style.transform = `translate3d(${stackX}px, 16px, ${stackZ}px) scale(${scale})`;
+        const stackX = -percentage * 42;
+        const stackZ = -120 + (Math.abs(percentage) * 85);
+        const stackRotateY = -percentage * 22;
+        const scale = 0.95 + (Math.abs(percentage) * 0.038);
+        stackDeep.style.transform = `translate3d(${stackX}px, 16px, ${stackZ}px) rotateY(${stackRotateY}deg) scale(${scale})`;
       }
     }
 
@@ -3006,51 +3714,55 @@
       const stackMid = document.getElementById('slide-stack-mid');
       const stackDeep = document.getElementById('slide-stack-deep');
       const viewport = document.getElementById('slide-3d-viewport');
+      const glareOverlay = document.getElementById('slide-glare-overlay');
       if (!slideBox || !viewport) return;
 
       const deltaX = slideCurrentX - slideStartX;
-      const threshold = (viewport.clientWidth || 800) * 0.20; 
+      const threshold = (viewport.clientWidth || 800) * 0.18; 
 
-      // Restore transitions
-      slideBox.style.transition = 'all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275)';
-      if (stackMid) stackMid.style.transition = 'all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275)';
-      if (stackDeep) stackDeep.style.transition = 'all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275)';
+      // Restore silky spring transitions
+      slideBox.style.transition = 'all 0.45s cubic-bezier(0.19, 1, 0.22, 1)';
+      if (stackMid) stackMid.style.transition = 'all 0.45s cubic-bezier(0.19, 1, 0.22, 1)';
+      if (stackDeep) stackDeep.style.transition = 'all 0.45s cubic-bezier(0.19, 1, 0.22, 1)';
+      if (glareOverlay) glareOverlay.style.opacity = '0';
 
       if (deltaX < -threshold) {
         if (currentSlideIndex < presentationSlides.length - 1) {
-          slideBox.style.transform = 'translate3d(-120%, -30px, -250px) rotateY(-75deg) rotateZ(-20deg)';
+          slideBox.style.transform = 'translate3d(-130%, -40px, -320px) rotateY(-82deg) rotateZ(-22deg)';
           slideBox.style.opacity = '0';
           setTimeout(() => {
             currentSlideIndex++;
             renderCurrentSlide();
             slideBox.style.transition = 'none';
-            slideBox.style.transform = 'translate3d(120%, 30px, -250px) rotateY(75deg) rotateZ(20deg)';
+            slideBox.style.transform = 'translate3d(130%, 40px, -320px) rotateY(82deg) rotateZ(22deg)';
             slideBox.style.opacity = '0';
             slideBox.offsetHeight; // Force reflow
-            slideBox.style.transition = 'all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.15)';
-            slideBox.style.transform = 'translate3d(0, 0, 0) rotateY(0) rotateZ(0)';
+            slideBox.style.transition = 'all 0.48s cubic-bezier(0.175, 0.885, 0.32, 1.15)';
+            slideBox.style.transform = 'translate3d(0, 0, 0) rotateY(0) rotateZ(0) rotateX(0)';
             slideBox.style.opacity = '1';
             resetStackElements();
-          }, 250);
+            setTimeout(() => slideBox.classList.add('slide-idle-floating'), 500);
+          }, 240);
         } else {
           bounceSlideBack();
         }
       } else if (deltaX > threshold) {
         if (currentSlideIndex > 0) {
-          slideBox.style.transform = 'translate3d(120%, -30px, -250px) rotateY(75deg) rotateZ(20deg)';
+          slideBox.style.transform = 'translate3d(130%, -40px, -320px) rotateY(82deg) rotateZ(22deg)';
           slideBox.style.opacity = '0';
           setTimeout(() => {
             currentSlideIndex--;
             renderCurrentSlide();
             slideBox.style.transition = 'none';
-            slideBox.style.transform = 'translate3d(-120%, 30px, -250px) rotateY(-75deg) rotateZ(-20deg)';
+            slideBox.style.transform = 'translate3d(-130%, 40px, -320px) rotateY(-82deg) rotateZ(-22deg)';
             slideBox.style.opacity = '0';
             slideBox.offsetHeight; // Force reflow
-            slideBox.style.transition = 'all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.15)';
-            slideBox.style.transform = 'translate3d(0, 0, 0) rotateY(0) rotateZ(0)';
+            slideBox.style.transition = 'all 0.48s cubic-bezier(0.175, 0.885, 0.32, 1.15)';
+            slideBox.style.transform = 'translate3d(0, 0, 0) rotateY(0) rotateZ(0) rotateX(0)';
             slideBox.style.opacity = '1';
             resetStackElements();
-          }, 250);
+            setTimeout(() => slideBox.classList.add('slide-idle-floating'), 500);
+          }, 240);
         } else {
           bounceSlideBack();
         }
@@ -3062,8 +3774,9 @@
     function bounceSlideBack() {
       const slideBox = document.getElementById('presentation-slide-box');
       if (slideBox) {
-        slideBox.style.transform = 'translate3d(0, 0, 0) rotateY(0) rotateZ(0)';
+        slideBox.style.transform = 'translate3d(0, 0, 0) rotateY(0) rotateZ(0) rotateX(0)';
         slideBox.style.opacity = '1';
+        setTimeout(() => slideBox.classList.add('slide-idle-floating'), 460);
       }
       resetStackElements();
     }
@@ -3072,10 +3785,10 @@
       const stackMid = document.getElementById('slide-stack-mid');
       const stackDeep = document.getElementById('slide-stack-deep');
       if (stackMid) {
-        stackMid.style.transform = 'translate3d(0, 8px, -60px) scale(0.98)';
+        stackMid.style.transform = 'translate3d(0, 8px, -60px) rotateY(0deg) scale(0.98)';
       }
       if (stackDeep) {
-        stackDeep.style.transform = 'translate3d(0, 16px, -120px) scale(0.95)';
+        stackDeep.style.transform = 'translate3d(0, 16px, -120px) rotateY(0deg) scale(0.95)';
       }
     }
 
@@ -3083,8 +3796,9 @@
       if (currentSlideIndex > 0) {
         const slideBox = document.getElementById('presentation-slide-box');
         if (slideBox) {
-          slideBox.style.transition = 'all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275)';
-          slideBox.style.transform = 'translate3d(120%, -30px, -250px) rotateY(75deg) rotateZ(20deg)';
+          slideBox.classList.remove('slide-idle-floating');
+          slideBox.style.transition = 'all 0.45s cubic-bezier(0.19, 1, 0.22, 1)';
+          slideBox.style.transform = 'translate3d(130%, -40px, -320px) rotateY(82deg) rotateZ(22deg)';
           slideBox.style.opacity = '0';
         }
         setTimeout(() => {
@@ -3092,15 +3806,16 @@
           renderCurrentSlide();
           if (slideBox) {
             slideBox.style.transition = 'none';
-            slideBox.style.transform = 'translate3d(-120%, 30px, -250px) rotateY(-75deg) rotateZ(-20deg)';
+            slideBox.style.transform = 'translate3d(-130%, 40px, -320px) rotateY(-82deg) rotateZ(-22deg)';
             slideBox.style.opacity = '0';
             slideBox.offsetHeight;
-            slideBox.style.transition = 'all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.15)';
-            slideBox.style.transform = 'translate3d(0, 0, 0) rotateY(0) rotateZ(0)';
+            slideBox.style.transition = 'all 0.48s cubic-bezier(0.175, 0.885, 0.32, 1.15)';
+            slideBox.style.transform = 'translate3d(0, 0, 0) rotateY(0) rotateZ(0) rotateX(0)';
             slideBox.style.opacity = '1';
+            setTimeout(() => slideBox.classList.add('slide-idle-floating'), 500);
           }
           resetStackElements();
-        }, 250);
+        }, 240);
       }
     }
     
@@ -3108,8 +3823,9 @@
       if (currentSlideIndex < presentationSlides.length - 1) {
         const slideBox = document.getElementById('presentation-slide-box');
         if (slideBox) {
-          slideBox.style.transition = 'all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275)';
-          slideBox.style.transform = 'translate3d(-120%, -30px, -250px) rotateY(-75deg) rotateZ(-20deg)';
+          slideBox.classList.remove('slide-idle-floating');
+          slideBox.style.transition = 'all 0.45s cubic-bezier(0.19, 1, 0.22, 1)';
+          slideBox.style.transform = 'translate3d(-130%, -40px, -320px) rotateY(-82deg) rotateZ(-22deg)';
           slideBox.style.opacity = '0';
         }
         setTimeout(() => {
@@ -3117,15 +3833,16 @@
           renderCurrentSlide();
           if (slideBox) {
             slideBox.style.transition = 'none';
-            slideBox.style.transform = 'translate3d(120%, 30px, -250px) rotateY(75deg) rotateZ(20deg)';
+            slideBox.style.transform = 'translate3d(130%, 40px, -320px) rotateY(82deg) rotateZ(22deg)';
             slideBox.style.opacity = '0';
             slideBox.offsetHeight;
-            slideBox.style.transition = 'all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.15)';
-            slideBox.style.transform = 'translate3d(0, 0, 0) rotateY(0) rotateZ(0)';
+            slideBox.style.transition = 'all 0.48s cubic-bezier(0.175, 0.885, 0.32, 1.15)';
+            slideBox.style.transform = 'translate3d(0, 0, 0) rotateY(0) rotateZ(0) rotateX(0)';
             slideBox.style.opacity = '1';
+            setTimeout(() => slideBox.classList.add('slide-idle-floating'), 500);
           }
           resetStackElements();
-        }, 250);
+        }, 240);
       }
     }
     
@@ -3149,6 +3866,106 @@
       setTimeout(() => {
         document.body.classList.remove('print-slideshow-active');
       }, 1000);
+    }
+
+    // Theater / Full Width Mode Toggle
+    function toggleTheaterMode() {
+      isTheaterMode = !isTheaterMode;
+      const container = document.getElementById('presentation-container');
+      const previewBar = document.getElementById('preview-mode-bar');
+      const theaterLabel = document.getElementById('theater-mode-label');
+      const theaterIcon = document.getElementById('theater-mode-icon');
+      
+      if (container) {
+        if (isTheaterMode) {
+          container.classList.add('theater-mode');
+          if (previewBar) {
+            previewBar.classList.remove('max-w-6xl');
+            previewBar.classList.add('max-w-full');
+          }
+          if (theaterLabel) theaterLabel.innerText = "Standard";
+          if (theaterIcon) theaterIcon.setAttribute('data-lucide', 'minimize');
+          showToast('Theater Mode Enabled', 'Presentation expanded to full container width.', 'maximize');
+        } else {
+          container.classList.remove('theater-mode');
+          if (previewBar) {
+            previewBar.classList.remove('max-w-full');
+            previewBar.classList.add('max-w-6xl');
+          }
+          if (theaterLabel) theaterLabel.innerText = "Wide Mode";
+          if (theaterIcon) theaterIcon.setAttribute('data-lucide', 'maximize');
+          showToast('Standard Mode', 'Presentation restored to standard widescreen.', 'minimize');
+        }
+        lucide.createIcons();
+      }
+    }
+
+    // Custom Slide Modal Controls
+    function openCustomSlideModal() {
+      const modal = document.getElementById('custom-slide-modal');
+      if (modal) {
+        modal.classList.remove('hidden');
+        modal.classList.add('flex');
+        const titleInput = document.getElementById('custom-slide-title');
+        if (titleInput) {
+          titleInput.value = '';
+          titleInput.focus();
+        }
+        const subtitleInput = document.getElementById('custom-slide-subtitle');
+        if (subtitleInput) subtitleInput.value = '';
+        const contentInput = document.getElementById('custom-slide-content');
+        if (contentInput) contentInput.value = '';
+      }
+    }
+
+    function closeCustomSlideModal() {
+      const modal = document.getElementById('custom-slide-modal');
+      if (modal) {
+        modal.classList.add('hidden');
+        modal.classList.remove('flex');
+      }
+    }
+
+    function saveCustomSlide() {
+      const titleInput = document.getElementById('custom-slide-title');
+      const subtitleInput = document.getElementById('custom-slide-subtitle');
+      const contentInput = document.getElementById('custom-slide-content');
+
+      const title = titleInput ? titleInput.value.trim() : '';
+      const subtitle = subtitleInput ? subtitleInput.value.trim() : '';
+      const content = contentInput ? contentInput.value.trim() : '';
+
+      if (!title) {
+        showToast('Title Required', 'Please enter a title for your custom presentation slide.', 'alert-triangle');
+        return;
+      }
+
+      const newSlide = {
+        layout: 'custom',
+        customId: Date.now(),
+        title: title,
+        subtitle: subtitle || 'Teacher Slide',
+        content: content || 'Interactive discussion notes and practice items for the class.'
+      };
+
+      customUserSlides.push(newSlide);
+      generatePresentationSlides();
+      // Jump to newly created slide
+      currentSlideIndex = presentationSlides.length - 1;
+      renderCurrentSlide();
+      closeCustomSlideModal();
+      showToast('Slide Created', `New slide "${title}" added to your presentation.`, 'check-circle');
+    }
+
+    function removeCustomSlide(customId) {
+      if (!customId) return;
+      customUserSlides = customUserSlides.filter(s => s.customId !== customId);
+      generatePresentationSlides();
+      if (currentSlideIndex >= presentationSlides.length) {
+        currentSlideIndex = Math.max(0, presentationSlides.length - 1);
+      }
+      renderCurrentSlide();
+      showToast('Slide Removed', 'Custom slide has been deleted.', 'trash-2');
     }
 
     // Presenter Speaking Notes Toggle
@@ -4351,22 +5168,27 @@
             ];
           }
 
-          videoGrid.innerHTML = videos.map(vid => `
-            <div class="bg-slate-950 p-3 rounded-xl border border-slate-800 flex flex-col justify-between">
+          videoGrid.innerHTML = videos.map((vid, idx) => `
+            <div id="video-card-${vid.id}" class="video-suggestion-card bg-slate-950 p-3 rounded-xl border border-slate-800 flex flex-col justify-between transition-all">
               <div class="space-y-1.5">
-                <span class="text-[9px] uppercase font-black text-rose-500 tracking-widest">★ Recommended Video ★</span>
+                <span class="text-[9px] uppercase font-black ${idx === 0 ? 'text-rose-400 font-bold' : 'text-slate-400'} tracking-widest">${idx === 0 ? '★ Now Playing ★' : '★ Recommended Lesson ★'}</span>
                 <h4 class="text-xs font-bold text-slate-100">${vid.title}</h4>
                 <p class="text-[10px] text-slate-400">${vid.desc}</p>
               </div>
               <div class="mt-3">
                 <button onclick="playEmbeddedVideo('${vid.id}')" class="w-full py-1.5 bg-rose-600 hover:bg-rose-500 text-white text-[11px] font-bold rounded-lg flex items-center justify-center gap-1 transition-all">
                   <i data-lucide="play" class="w-3.5 h-3.5"></i>
-                  <span>Play Interactive Video</span>
+                  <span>${idx === 0 ? 'Playing in Classroom' : 'Play Interactive Video'}</span>
                 </button>
               </div>
             </div>
           `).join('');
           lucide.createIcons();
+
+          // Automatically play the first educational lesson video on modal load
+          if (videos.length > 0) {
+            playEmbeddedVideo(videos[0].id);
+          }
         }
       }
     }
@@ -4394,8 +5216,18 @@
       const playerWrapper = document.getElementById('video-player-wrapper');
       if (playerWrapper) {
         playerWrapper.innerHTML = `
-          <iframe class="w-full h-full rounded-xl" src="https://www.youtube.com/embed/${id}?autoplay=1" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
+          <iframe class="w-full h-full rounded-xl" src="https://www.youtube.com/embed/${id}?autoplay=1&mute=0&enablejsapi=1" title="Educational Video Player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
         `;
+      }
+      // Update visual card highlights
+      document.querySelectorAll('.video-suggestion-card').forEach(card => {
+        card.classList.remove('border-rose-500', 'bg-rose-950/20');
+        card.classList.add('border-slate-800', 'bg-slate-950');
+      });
+      const activeCard = document.getElementById(`video-card-${id}`);
+      if (activeCard) {
+        activeCard.classList.remove('border-slate-800', 'bg-slate-950');
+        activeCard.classList.add('border-rose-500', 'bg-rose-950/20');
       }
     }
 
@@ -4589,6 +5421,156 @@
         <button onclick="closeSavedLibraryModal()" class="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-semibold rounded-xl transition-all">
           Close
         </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Teacher Custom Slide Creator Modal -->
+  <div id="custom-slide-modal" class="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-sm hidden items-center justify-center p-4">
+    <div class="bg-slate-900 border border-slate-800 rounded-2xl w-full max-w-lg overflow-hidden shadow-2xl flex flex-col animate-fade-in">
+      <!-- Modal Header -->
+      <div class="p-4 border-b border-slate-800 flex items-center justify-between bg-slate-950/60">
+        <div class="flex items-center gap-2.5">
+          <div class="w-8 h-8 rounded-lg bg-indigo-600/20 border border-indigo-500/40 text-indigo-400 flex items-center justify-center">
+            <i data-lucide="presentation" class="w-4 h-4"></i>
+          </div>
+          <div>
+            <h3 class="text-sm font-bold text-white">Create Custom Lesson Slide</h3>
+            <p class="text-[11px] text-slate-400">Design custom slides directly without requiring an external AI agent</p>
+          </div>
+        </div>
+        <button onclick="closeCustomSlideModal()" class="p-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-400 hover:text-white transition-all">
+          <i data-lucide="x" class="w-4 h-4"></i>
+        </button>
+      </div>
+
+      <!-- Modal Body -->
+      <div class="p-5 space-y-4">
+        <div>
+          <label class="block text-xs font-semibold text-slate-300 mb-1">Slide Title <span class="text-rose-400">*</span></label>
+          <input type="text" id="custom-slide-title" placeholder="e.g. Grammar Challenge: Relative Pronouns" class="w-full px-3 py-2 bg-slate-950 border border-slate-700 rounded-xl text-xs text-white placeholder-slate-500 focus:outline-none focus:border-indigo-500">
+        </div>
+
+        <div>
+          <label class="block text-xs font-semibold text-slate-300 mb-1">Subtitle / Category Tag</label>
+          <input type="text" id="custom-slide-subtitle" placeholder="e.g. Unit 4 Practice • Whiteboard Activity" class="w-full px-3 py-2 bg-slate-950 border border-slate-700 rounded-xl text-xs text-white placeholder-slate-500 focus:outline-none focus:border-indigo-500">
+        </div>
+
+        <div>
+          <div class="flex items-center justify-between mb-1">
+            <label class="block text-xs font-semibold text-slate-300">Slide Content & Discussion Points</label>
+            <span class="text-[10px] text-slate-400">Multi-line text supported</span>
+          </div>
+          <textarea id="custom-slide-content" rows="6" placeholder="Enter key teaching points, questions, vocabulary words, or discussion prompts:&#10;• Point 1: Review definition together&#10;• Point 2: Ask volunteers to supply examples&#10;• Challenge: Write 2 sentences using the new vocabulary" class="w-full px-3 py-2 bg-slate-950 border border-slate-700 rounded-xl text-xs text-white placeholder-slate-500 focus:outline-none focus:border-indigo-500 font-sans"></textarea>
+        </div>
+      </div>
+
+      <!-- Modal Footer -->
+      <div class="p-3 border-t border-slate-800 bg-slate-950/60 flex items-center justify-between">
+        <button onclick="closeCustomSlideModal()" class="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-semibold rounded-xl transition-all">
+          Cancel
+        </button>
+        <button onclick="saveCustomSlide()" class="px-4 py-2 bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-bold rounded-xl flex items-center gap-1.5 shadow transition-all">
+          <i data-lucide="check" class="w-3.5 h-3.5"></i>
+          <span>Add Slide to Presentation</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- GLASS AI TUTOR INTERACTIVE DIALOG MODAL -->
+  <div id="glass-ai-tutor-modal" class="fixed inset-0 z-50 bg-slate-950/75 backdrop-blur-md hidden items-center justify-center p-3 sm:p-4 no-print">
+    <div class="glass-card-premium rounded-3xl w-full max-w-2xl overflow-hidden shadow-2xl flex flex-col max-h-[90vh] border border-white/25 ring-1 ring-white/20 relative animate-fade-in">
+      <!-- Ambient Orbs -->
+      <div class="glass-glow-orb -top-12 -right-12 w-48 h-48 bg-indigo-500/25"></div>
+      <div class="glass-glow-orb -bottom-12 -left-12 w-48 h-48 bg-purple-500/25"></div>
+
+      <!-- Modal Header -->
+      <div class="p-4 sm:p-5 border-b border-white/10 flex items-center justify-between bg-slate-950/40 relative z-10 backdrop-blur-lg">
+        <div class="flex items-center gap-3">
+          <div class="w-10 h-10 rounded-2xl bg-gradient-to-tr from-indigo-500 via-purple-500 to-pink-500 flex items-center justify-center text-white shadow-xl shadow-indigo-500/30 ring-1 ring-white/30">
+            <i data-lucide="bot" class="w-5 h-5"></i>
+          </div>
+          <div>
+            <div class="flex items-center gap-2">
+              <h3 class="text-sm sm:text-base font-bold text-white tracking-wide">Glass AI English Tutor</h3>
+              <span class="px-2 py-0.5 text-[9px] font-bold bg-emerald-500/20 text-emerald-300 border border-emerald-400/40 rounded-full flex items-center gap-1">
+                <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-ping"></span>
+                ACTIVE
+              </span>
+            </div>
+            <p class="text-[11px] text-indigo-200">Pedagogical ELA Grammar, Vocabulary & Comprehension Assistant</p>
+          </div>
+        </div>
+        <button onclick="closeGlassTutorModal()" class="p-2 rounded-xl bg-white/10 hover:bg-white/20 text-white transition-all backdrop-blur-md border border-white/15">
+          <i data-lucide="x" class="w-4 h-4"></i>
+        </button>
+      </div>
+
+      <!-- Quick Suggestion Chips -->
+      <div class="p-3 bg-slate-950/30 border-b border-white/10 overflow-x-auto flex items-center gap-1.5 custom-scrollbar relative z-10">
+        <span class="text-[10px] text-indigo-300 font-semibold uppercase tracking-wider flex-shrink-0 mr-1 flex items-center gap-1">
+          <i data-lucide="sparkles" class="w-3 h-3 text-indigo-400"></i> Prompts:
+        </span>
+        <button onclick="useQuickTutorPrompt('Explain the difference between Simile and Metaphor with 3 creative examples for students.')" class="px-2.5 py-1 rounded-full text-[11px] font-medium bg-white/10 hover:bg-indigo-600/60 text-indigo-100 hover:text-white border border-white/15 transition-all whitespace-nowrap backdrop-blur-sm active:scale-95">
+          📖 Metaphor vs Simile
+        </button>
+        <button onclick="useQuickTutorPrompt('Provide 5 high-level vocabulary synonyms for &quot;Beautiful&quot; with definitions and example sentences.')" class="px-2.5 py-1 rounded-full text-[11px] font-medium bg-white/10 hover:bg-purple-600/60 text-indigo-100 hover:text-white border border-white/15 transition-all whitespace-nowrap backdrop-blur-sm active:scale-95">
+          ✨ 5 Sophisticated Synonyms
+        </button>
+        <button onclick="useQuickTutorPrompt('Explain how to convert Passive Voice sentences into Active Voice with 3 clear before-and-after sentences.')" class="px-2.5 py-1 rounded-full text-[11px] font-medium bg-white/10 hover:bg-emerald-600/60 text-indigo-100 hover:text-white border border-white/15 transition-all whitespace-nowrap backdrop-blur-sm active:scale-95">
+          🔄 Active vs Passive Voice
+        </button>
+        <button onclick="useQuickTutorPrompt('Generate 3 deep reading comprehension questions about theme, tone, and character motivation.')" class="px-2.5 py-1 rounded-full text-[11px] font-medium bg-white/10 hover:bg-pink-600/60 text-indigo-100 hover:text-white border border-white/15 transition-all whitespace-nowrap backdrop-blur-sm active:scale-95">
+          🎯 ELA Comprehension Questions
+        </button>
+        <button onclick="useQuickTutorPrompt('Explain the correct use of semicolons, colons, and em-dashes with simple classroom rules.')" class="px-2.5 py-1 rounded-full text-[11px] font-medium bg-white/10 hover:bg-cyan-600/60 text-indigo-100 hover:text-white border border-white/15 transition-all whitespace-nowrap backdrop-blur-sm active:scale-95">
+          🖋️ Punctuation Rules
+        </button>
+      </div>
+
+      <!-- Chat History Container -->
+      <div id="glass-tutor-chat-history" class="p-4 sm:p-5 overflow-y-auto space-y-4 custom-scrollbar flex-1 relative z-10 text-xs sm:text-sm">
+        <!-- Initial Tutor Welcome Message -->
+        <div class="flex items-start gap-3 animate-fade-in">
+          <div class="w-8 h-8 rounded-xl bg-gradient-to-tr from-indigo-500 to-purple-600 flex-shrink-0 flex items-center justify-center text-white shadow-md ring-1 ring-white/20">
+            <i data-lucide="bot" class="w-4 h-4"></i>
+          </div>
+          <div class="space-y-1.5 max-w-[85%]">
+            <div class="flex items-center gap-2">
+              <span class="font-bold text-white text-xs">Glass AI Tutor</span>
+              <span class="text-[10px] text-indigo-300">Pedagogical ELA Specialist</span>
+            </div>
+            <div class="glass-chat-bubble-ai rounded-2xl rounded-tl-none p-3.5 text-slate-100 space-y-2 leading-relaxed font-sans">
+              <p>👋 Hello! I am your <strong>Glass AI English Language Arts Tutor</strong>. How can I assist your teaching or learning today?</p>
+              <p class="text-xs text-indigo-200">You can ask me to explain grammar rules, generate vocabulary lists, clarify literary devices, compose reading comprehension questions, or give feedback on student writing.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Chat Input Area -->
+      <div class="p-3 sm:p-4 border-t border-white/10 bg-slate-950/60 relative z-10 backdrop-blur-xl">
+        <form onsubmit="event.preventDefault(); sendGlassTutorMessage();" class="space-y-2">
+          <div class="flex items-center gap-2">
+            <div class="relative flex-1">
+              <input type="text" id="glass-tutor-input" placeholder="Ask your English question or request an exercise..." class="w-full bg-slate-900/80 border border-white/20 rounded-2xl pl-4 pr-10 py-3 text-xs sm:text-sm text-white placeholder-slate-400 focus:outline-none focus:border-indigo-400 focus:ring-2 focus:ring-indigo-400/40 backdrop-blur-md shadow-inner">
+              <button type="button" onclick="clearGlassTutorInput()" class="absolute right-3 top-3 text-slate-400 hover:text-white" title="Clear input">
+                <i data-lucide="x-circle" class="w-4 h-4"></i>
+              </button>
+            </div>
+            <button type="submit" id="glass-tutor-send-btn" class="px-4 py-3 bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-600 hover:from-indigo-500 hover:to-pink-500 text-white rounded-2xl font-bold text-xs sm:text-sm flex items-center gap-2 shadow-xl shadow-indigo-600/30 transition-all active:scale-95 border border-white/20">
+              <i data-lucide="send" class="w-4 h-4"></i>
+              <span class="hidden sm:inline">Send</span>
+            </button>
+          </div>
+          <div class="flex items-center justify-between text-[10px] text-slate-400 px-1">
+            <span class="flex items-center gap-1">
+              <i data-lucide="lock" class="w-3 h-3 text-emerald-400"></i> ELA Subject Guardrails Active
+            </span>
+            <span class="text-indigo-300">Powered by Gemini AI Engine</span>
+          </div>
+        </form>
       </div>
     </div>
   </div>
