@@ -1,5 +1,6 @@
 package com.example
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.os.Bundle
 import android.print.PrintAttributes
@@ -13,91 +14,89 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.viewinterop.AndroidView
 import com.example.ui.theme.MyApplicationTheme
 
 class MainActivity : ComponentActivity() {
-  override fun onCreate(savedInstanceState: Bundle?) {
-    super.onCreate(savedInstanceState)
-    enableEdgeToEdge()
-    setContent {
-      MyApplicationTheme {
-        Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-          WorksheetWebViewScreen(
-            modifier = Modifier
-              .fillMaxSize()
-              .padding(innerPadding),
-            onPrintRequested = { webView ->
-              createWebPrintJob(webView)
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        enableEdgeToEdge()
+        setContent {
+            MyApplicationTheme {
+                Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
+                    WorksheetWebViewScreen(
+                        modifier = Modifier.fillMaxSize(),
+                        onPrintRequested = { webView ->
+                            printWorksheet(webView)
+                        }
+                    )
+                }
             }
-          )
         }
-      }
     }
-  }
 
-  private fun createWebPrintJob(webView: WebView) {
-    val printManager = getSystemService(Context.PRINT_SERVICE) as? PrintManager ?: return
-    val printAdapter = webView.createPrintDocumentAdapter("Worksheet_Document")
-    val jobName = getString(R.string.app_name) + " Document"
-    printManager.print(jobName, printAdapter, PrintAttributes.Builder().build())
-  }
+    private fun printWorksheet(webView: WebView) {
+        val printManager = getSystemService(Context.PRINT_SERVICE) as? PrintManager
+        val printAdapter = webView.createPrintDocumentAdapter("English_Worksheet_Export")
+        val jobName = "English Worksheet Document"
+        val attributes = PrintAttributes.Builder()
+            .setMediaSize(PrintAttributes.MediaSize.ISO_A4)
+            .setColorMode(PrintAttributes.COLOR_MODE_COLOR)
+            .setMinMargins(PrintAttributes.Margins.NO_MARGINS)
+            .build()
+        printManager?.print(jobName, printAdapter, attributes)
+    }
 }
 
 class WebAppInterface(private val onPrint: () -> Unit) {
-  @JavascriptInterface
-  fun triggerPrint() {
-    onPrint()
-  }
+    @JavascriptInterface
+    fun triggerPrint() {
+        onPrint()
+    }
 
-  @JavascriptInterface
-  fun getGeminiApiKey(): String {
-    return BuildConfig.GEMINI_API_KEY
-  }
+    @JavascriptInterface
+    fun getGeminiApiKey(): String {
+        return BuildConfig.GEMINI_API_KEY
+    }
 }
 
+@SuppressLint("SetJavaScriptEnabled")
 @Composable
 fun WorksheetWebViewScreen(
-  modifier: Modifier = Modifier,
-  onPrintRequested: (WebView) -> Unit
+    modifier: Modifier = Modifier,
+    onPrintRequested: (WebView) -> Unit
 ) {
-  AndroidView(
-    modifier = modifier,
-    factory = { context ->
-      WebView(context).apply {
-        setLayerType(WebView.LAYER_TYPE_SOFTWARE, null)
-        settings.apply {
-          javaScriptEnabled = true
-          domStorageEnabled = true
-          allowFileAccess = true
-          allowContentAccess = true
-          useWideViewPort = true
-          loadWithOverviewMode = true
-          builtInZoomControls = true
-          displayZoomControls = false
-          mediaPlaybackRequiresUserGesture = false
-          mixedContentMode = WebSettings.MIXED_CONTENT_COMPATIBILITY_MODE
+    AndroidView(
+        modifier = modifier,
+        factory = { context ->
+            WebView(context).apply {
+                setLayerType(WebView.LAYER_TYPE_HARDWARE, null)
+                settings.apply {
+                    javaScriptEnabled = true
+                    domStorageEnabled = true
+                    allowFileAccess = true
+                    allowContentAccess = true
+                    useWideViewPort = true
+                    loadWithOverviewMode = true
+                    builtInZoomControls = true
+                    displayZoomControls = false
+                    mediaPlaybackRequiresUserGesture = false
+                    mixedContentMode = WebSettings.MIXED_CONTENT_ALWAYS_ALLOW
+                }
+                var webViewRef: WebView? = this
+                addJavascriptInterface(WebAppInterface {
+                    webViewRef?.post {
+                        onPrintRequested(webViewRef ?: this)
+                    }
+                }, "AndroidPrintBridge")
+                webChromeClient = WebChromeClient()
+                webViewClient = WebViewClient()
+                loadUrl("file:///android_asset/index.html")
+            }
         }
-
-        var currentWebView: WebView? = null
-        currentWebView = this
-
-        addJavascriptInterface(WebAppInterface {
-          currentWebView?.post {
-            currentWebView?.let { onPrintRequested(it) }
-          }
-        }, "AndroidPrintBridge")
-
-        webChromeClient = object : WebChromeClient() {}
-        webViewClient = object : WebViewClient() {}
-
-        loadUrl("file:///android_asset/index.html")
-      }
-    }
-  )
+    )
 }
-
