@@ -147,6 +147,30 @@
       color: #3b2314 !important;
       border-color: #f1dfb3 !important;
     }
+    .slide-theme-royal-ela {
+      background: linear-gradient(135deg, #0e56b2, #1e3a8a) !important;
+      color: #ffffff !important;
+      border-color: #38bdf8 !important;
+    }
+    .slide-theme-royal-ela h1, .slide-theme-royal-ela h2, .slide-theme-royal-ela h3 {
+      color: #ffffff !important;
+    }
+    .slide-theme-royal-ela p, .slide-theme-royal-ela span, .slide-theme-royal-ela li {
+      color: #e0f2fe !important;
+    }
+    .slide-theme-cyberpunk {
+      background: linear-gradient(135deg, #090d16, #1a0b2e) !important;
+      color: #22d3ee !important;
+      border-color: #ec4899 !important;
+    }
+    .slide-theme-cyberpunk h1, .slide-theme-cyberpunk h2 {
+      color: #f472b6 !important;
+    }
+    .slide-theme-emerald {
+      background: linear-gradient(135deg, #064e3b, #022c22) !important;
+      color: #ecfdf5 !important;
+      border-color: #10b981 !important;
+    }
     
     #presentation-container {
       transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
@@ -155,6 +179,59 @@
       max-width: 100% !important;
       width: 100% !important;
       padding: 1.5rem !important;
+    }
+    #presentation-container:fullscreen, #presentation-container:-webkit-full-screen {
+      width: 100vw !important;
+      height: 100vh !important;
+      max-width: 100vw !important;
+      border-radius: 0 !important;
+      padding: 1.5rem 2.5rem !important;
+      background: #020617 !important;
+      overflow-y: auto !important;
+      display: flex !important;
+      flex-direction: column !important;
+      justify-content: space-between !important;
+    }
+
+    /* Aspect Ratio Utilities for Presentation */
+    .aspect-16-9 { aspect-ratio: 16 / 9; }
+    .aspect-16-10 { aspect-ratio: 16 / 10; }
+    .aspect-21-9 { aspect-ratio: 21 / 9; }
+
+    /* Slide Filmstrip Thumbnail Dock */
+    .slide-filmstrip-track {
+      display: flex;
+      gap: 0.75rem;
+      overflow-x: auto;
+      scroll-behavior: smooth;
+      padding: 0.5rem 0.25rem;
+    }
+    .slide-thumb-card {
+      flex-shrink: 0;
+      width: 120px;
+      height: 68px;
+      border-radius: 0.75rem;
+      background: #1e293b;
+      border: 2px solid rgba(99, 102, 241, 0.2);
+      transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+      cursor: pointer;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      padding: 0.375rem 0.5rem;
+      position: relative;
+      overflow: hidden;
+    }
+    .slide-thumb-card:hover {
+      border-color: #818cf8;
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
+    }
+    .slide-thumb-card.active-thumb {
+      border-color: #6366f1;
+      background: #312e81;
+      box-shadow: 0 0 0 2px #818cf8, 0 4px 15px rgba(99, 102, 241, 0.4);
+      transform: scale(1.04);
     }
 
     /* 3D Slider Physics & Smooth Card Animations */
@@ -1092,6 +1169,42 @@
             </div>
           </div>
         </div>
+
+        <!-- NEW: AI Presentation & Slide Studio Card -->
+        <div class="glass-card-premium rounded-2xl p-4 space-y-3 relative overflow-hidden shadow-xl border border-sky-400/30">
+          <div class="glass-glow-orb bg-sky-500/20 w-32 h-32 -top-10 -right-10"></div>
+          <div class="flex items-center justify-between relative z-10">
+            <div class="flex items-center gap-2">
+              <div class="w-7 h-7 rounded-lg bg-gradient-to-tr from-sky-500 to-indigo-600 flex items-center justify-center text-white shadow-md">
+                <i data-lucide="presentation" class="w-4 h-4"></i>
+              </div>
+              <div>
+                <div class="flex items-center gap-1.5">
+                  <span class="font-black text-xs text-white">AI Slide Deck Studio</span>
+                  <span class="px-1.5 py-0.2 bg-sky-500/30 text-sky-200 border border-sky-400/40 text-[9px] font-bold rounded-full">New</span>
+                </div>
+                <span class="text-[10px] text-sky-200">PowerPoint & Classroom Slides</span>
+              </div>
+            </div>
+            <button onclick="openAIPresentationModal()" class="px-2.5 py-1 text-[10px] font-bold bg-sky-500/20 hover:bg-sky-500/40 text-sky-200 hover:text-white border border-sky-400/30 rounded-full backdrop-blur-md flex items-center gap-1 transition-all" title="Open AI Slide Studio">
+              <i data-lucide="sparkles" class="w-3 h-3 text-sky-300"></i>
+              <span>Studio</span>
+            </button>
+          </div>
+          
+          <div class="space-y-1.5 relative z-10">
+            <input type="text" id="ai-slide-quick-topic" placeholder="e.g. Past Perfect vs Past Simple, Figurative Devices..." class="w-full bg-slate-950/70 border border-white/20 rounded-xl px-2.5 py-1.5 text-xs text-white placeholder-slate-400 focus:outline-none focus:border-sky-400 backdrop-blur-md">
+            <div class="flex items-center gap-1.5">
+              <button onclick="generateAIPresentationQuick()" class="flex-1 py-1.5 bg-gradient-to-r from-sky-600 to-indigo-600 hover:from-sky-500 hover:to-indigo-500 text-white rounded-xl text-xs font-semibold flex items-center justify-center gap-1.5 shadow-md shadow-sky-600/30 transition-all active:scale-95 border border-white/20">
+                <i data-lucide="sparkles" class="w-3.5 h-3.5"></i>
+                <span>Generate Slideshow</span>
+              </button>
+              <button onclick="openAIPresentationModal()" class="px-3 py-1.5 bg-white/10 hover:bg-white/20 text-sky-200 hover:text-white rounded-xl text-xs font-semibold flex items-center justify-center gap-1 border border-white/20" title="Configure Deck Options">
+                <i data-lucide="sliders" class="w-3.5 h-3.5"></i>
+              </button>
+            </div>
+          </div>
+        </div>
         
         <!-- English Worksheet Generators for Teachers -->
         <div class="space-y-2.5">
@@ -1601,57 +1714,78 @@
       </div>
     </div>
 
-    <!-- POWERPOINT PRESENTATION CANVAS (Widescreen 16:9 format) -->
-    <div id="presentation-container" class="hidden w-full max-w-6xl bg-slate-900 border-2 border-indigo-500/30 rounded-2xl shadow-2xl p-4 md:p-6 flex flex-col gap-5 no-print-sections transition-all duration-300">
+    <!-- POWERPOINT PRESENTATION CANVAS (Widescreen 16:9 format with Expansions) -->
+    <div id="presentation-container" class="hidden w-full max-w-7xl bg-slate-900 border-2 border-indigo-500/30 rounded-2xl shadow-2xl p-4 md:p-6 flex flex-col gap-4 no-print-sections transition-all duration-300">
       
-      <!-- Top Presentation Toolbar (Theater, New Slide, Video Present) -->
-      <div class="flex flex-wrap items-center justify-between gap-3 bg-slate-950/90 border border-indigo-500/20 p-3 rounded-xl">
+      <!-- Top Presentation Toolbar (AI Slide Generator, Fullscreen, Video, Aspect) -->
+      <div class="flex flex-wrap items-center justify-between gap-3 bg-slate-950/90 border border-indigo-500/20 p-3 rounded-xl shadow-lg">
         <div class="flex items-center gap-3">
           <div class="flex items-center gap-2">
-            <div class="w-7 h-7 rounded-lg bg-indigo-600/20 border border-indigo-500/40 text-indigo-400 flex items-center justify-center">
-              <i data-lucide="projector" class="w-4 h-4"></i>
+            <div class="w-8 h-8 rounded-xl bg-gradient-to-tr from-indigo-600 via-sky-600 to-purple-600 border border-white/20 text-white flex items-center justify-center shadow-md">
+              <i data-lucide="presentation" class="w-4 h-4"></i>
             </div>
             <div>
-              <h3 class="text-xs font-bold text-white tracking-wide">Interactive Classroom Slideshow</h3>
-              <p class="text-[10px] text-slate-400">Smartboard Presentation & Lecture View</p>
+              <div class="flex items-center gap-2">
+                <h3 class="text-xs sm:text-sm font-black text-white tracking-wide">Interactive Classroom Slideshow</h3>
+                <span class="px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 text-[9px] font-bold">PowerPoint Mode</span>
+              </div>
+              <p class="text-[10px] text-slate-400">Smartboard Presentation • 3D Gestures • AI Slide Synthesis</p>
             </div>
           </div>
-          <span class="hidden sm:inline-block h-4 w-px bg-slate-800"></span>
-          <span id="slide-count-badge" class="px-2 py-0.5 rounded-full bg-indigo-950 border border-indigo-500/30 text-indigo-300 text-[10px] font-bold">Slide 1 of 5</span>
+          <span class="hidden sm:inline-block h-5 w-px bg-slate-800"></span>
+          <span id="slide-count-badge" class="px-2.5 py-1 rounded-full bg-indigo-950 border border-indigo-500/30 text-indigo-300 text-[11px] font-bold">Slide 1 of 5</span>
         </div>
 
-        <div class="flex items-center gap-2">
+        <div class="flex items-center gap-2 flex-wrap">
+          <!-- AI Slide Studio Button (Glowing highlight) -->
+          <button onclick="openAIPresentationModal()" class="py-1.5 px-3 bg-gradient-to-r from-sky-600 via-indigo-600 to-purple-600 hover:from-sky-500 hover:to-purple-500 text-white font-bold rounded-lg text-xs flex items-center gap-1.5 shadow-lg shadow-indigo-600/30 transition-all border border-white/20 active:scale-95" title="Generate AI Slide Deck">
+            <i data-lucide="sparkles" class="w-3.5 h-3.5 text-sky-200 animate-pulse"></i>
+            <span>✨ AI Slide Generator</span>
+          </button>
+
           <!-- Add Custom Slide Button -->
-          <button onclick="openCustomSlideModal()" class="py-1.5 px-3 bg-indigo-600 hover:bg-indigo-500 text-white font-bold rounded-lg text-xs flex items-center gap-1.5 shadow transition-all" title="Create Custom Slide">
+          <button onclick="openCustomSlideModal()" class="py-1.5 px-2.5 bg-indigo-600 hover:bg-indigo-500 text-white font-bold rounded-lg text-xs flex items-center gap-1.5 shadow transition-all active:scale-95" title="Create Custom Slide">
             <i data-lucide="plus-circle" class="w-3.5 h-3.5"></i>
-            <span>Add Slide</span>
+            <span class="hidden sm:inline">Add Slide</span>
           </button>
 
           <!-- Present with Video Button -->
-          <button onclick="openVideoModal()" class="py-1.5 px-3 bg-rose-600 hover:bg-rose-500 text-white font-bold rounded-lg text-xs flex items-center gap-1.5 shadow transition-all" title="Present Educational Lesson Videos">
+          <button onclick="openVideoModal()" class="py-1.5 px-2.5 bg-rose-600 hover:bg-rose-500 text-white font-bold rounded-lg text-xs flex items-center gap-1.5 shadow transition-all active:scale-95" title="Present Educational Lesson Videos">
             <i data-lucide="video" class="w-3.5 h-3.5"></i>
-            <span>Present with Video</span>
+            <span class="hidden sm:inline">Video</span>
           </button>
 
-          <!-- Theater / Full Width Mode Toggle -->
-          <button onclick="toggleTheaterMode()" id="btn-theater-mode" class="py-1.5 px-2.5 bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white font-bold rounded-lg text-xs flex items-center gap-1.5 transition-all" title="Toggle Widescreen Theater Mode">
-            <i id="theater-mode-icon" data-lucide="maximize" class="w-3.5 h-3.5"></i>
-            <span id="theater-mode-label" class="hidden sm:inline">Wide Mode</span>
+          <!-- Presentation Sizing / Aspect Ratio Selector -->
+          <select id="slide-aspect-select" onchange="setPresentationAspect(this.value)" class="bg-slate-900 border border-slate-700 text-slate-300 rounded-lg px-2 py-1.5 text-xs focus:outline-none focus:border-indigo-500 font-semibold" title="Choose Presentation Aspect Ratio">
+            <option value="aspect-16-9" selected>📐 16:9 Standard</option>
+            <option value="aspect-16-10">🖥️ 16:10 Cinema</option>
+            <option value="aspect-21-9">🎬 21:9 Ultra-Wide</option>
+          </select>
+
+          <!-- True Fullscreen Projector Mode Toggle -->
+          <button onclick="togglePresentationFullscreen()" id="btn-fullscreen-projector" class="py-1.5 px-2.5 bg-slate-800 hover:bg-slate-700 text-slate-200 hover:text-white font-bold rounded-lg text-xs flex items-center gap-1.5 transition-all border border-slate-700 active:scale-95" title="Toggle True Fullscreen Projector (F11)">
+            <i id="fullscreen-icon" data-lucide="expand" class="w-3.5 h-3.5 text-sky-400"></i>
+            <span class="hidden md:inline">Projector</span>
+          </button>
+
+          <!-- Theater / Widescreen Mode Toggle -->
+          <button onclick="toggleTheaterMode()" id="btn-theater-mode" class="py-1.5 px-2 bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white font-bold rounded-lg text-xs flex items-center gap-1 transition-all" title="Toggle Widescreen Container">
+            <i id="theater-mode-icon" data-lucide="maximize-2" class="w-3.5 h-3.5"></i>
           </button>
         </div>
       </div>
       
       <!-- 3D Perspective Viewport Container with Swipe Physics -->
-      <div id="slide-3d-viewport" class="relative w-full aspect-[16/9] select-none cursor-grab active:cursor-grabbing" style="perspective: 1400px; transform-style: preserve-3d;">
+      <div id="slide-3d-viewport" class="relative w-full aspect-[16/9] select-none cursor-grab active:cursor-grabbing transition-all duration-300" style="perspective: 1400px; transform-style: preserve-3d;">
         
         <!-- Background Stack Card 2 (Deepest) -->
-        <div id="slide-stack-deep" class="absolute inset-0 rounded-xl bg-indigo-950/20 border border-slate-800/40 pointer-events-none transition-all duration-500 origin-center" style="transform: translate3d(0, 16px, -120px) scale(0.95); z-index: 1;"></div>
+        <div id="slide-stack-deep" class="absolute inset-0 rounded-2xl bg-indigo-950/20 border border-slate-800/40 pointer-events-none transition-all duration-500 origin-center" style="transform: translate3d(0, 16px, -120px) scale(0.95); z-index: 1;"></div>
         
         <!-- Background Stack Card 1 (Mid depth) -->
-        <div id="slide-stack-mid" class="absolute inset-0 rounded-xl bg-slate-950/40 border border-slate-800/60 shadow-xl pointer-events-none transition-all duration-300 origin-center" style="transform: translate3d(0, 8px, -60px) scale(0.98); z-index: 2;"></div>
+        <div id="slide-stack-mid" class="absolute inset-0 rounded-2xl bg-slate-950/40 border border-slate-800/60 shadow-xl pointer-events-none transition-all duration-300 origin-center" style="transform: translate3d(0, 8px, -60px) scale(0.98); z-index: 2;"></div>
 
         <!-- Presentation Slide Box -->
-        <div id="presentation-slide-box" class="slide-idle-floating absolute inset-0 bg-white rounded-xl shadow-2xl border border-slate-250 overflow-hidden flex flex-col justify-between p-8 text-slate-900 transition-all duration-300 origin-center" style="z-index: 10; transform: translate3d(0,0,0) rotateY(0deg) rotateZ(0deg);">
+        <div id="presentation-slide-box" class="slide-idle-floating absolute inset-0 bg-white rounded-2xl shadow-2xl border border-slate-200 overflow-hidden flex flex-col justify-between p-6 sm:p-10 text-slate-900 transition-all duration-300 origin-center" style="z-index: 10; transform: translate3d(0,0,0) rotateY(0deg) rotateZ(0deg);">
           
           <!-- Dynamic Holographic Glare Sheen -->
           <div id="slide-glare-overlay" class="slide-glare-overlay"></div>
@@ -1706,7 +1840,7 @@
           <!-- Slide Watermark/Background Accent -->
           <div class="absolute -right-24 -bottom-24 w-72 h-72 rounded-full bg-slate-50 border border-slate-100 pointer-events-none"></div>
 
-          <!-- Slide Content Area (Populated dynamically) -->
+          <!-- Slide Content Area (Populated dynamically and inline editable) -->
           <div id="slide-content-wrapper" class="flex-1 flex flex-col justify-between z-10">
             <!-- Populated by JS -->
           </div>
@@ -1716,6 +1850,29 @@
             <span>📺 Mr.Zaafouri Abdelmalek • ELA Presentation Slide</span>
             <span id="slide-number-display" class="font-bold">Slide 1 of 5</span>
           </div>
+        </div>
+      </div>
+
+      <!-- NEW: SLIDE FILMSTRIP THUMBNAIL DOCK -->
+      <div id="slide-filmstrip-container" class="bg-slate-950/80 border border-indigo-500/20 rounded-xl p-2.5 shadow-inner space-y-1.5">
+        <div class="flex items-center justify-between px-1 text-[11px] text-slate-400">
+          <div class="flex items-center gap-1.5 font-semibold text-slate-300">
+            <i data-lucide="layout-grid" class="w-3.5 h-3.5 text-indigo-400"></i>
+            <span>Slide Deck Filmstrip (<span id="filmstrip-total-count">5</span> Slides)</span>
+          </div>
+          <div class="flex items-center gap-2">
+            <button onclick="duplicateCurrentSlide()" class="hover:text-white text-[10px] font-semibold flex items-center gap-1 transition-colors" title="Duplicate Current Slide">
+              <i data-lucide="copy" class="w-3 h-3 text-sky-400"></i>
+              <span>Duplicate</span>
+            </button>
+            <button onclick="deleteCurrentSlide()" class="hover:text-rose-300 text-[10px] font-semibold flex items-center gap-1 transition-colors" title="Delete Current Slide">
+              <i data-lucide="trash-2" class="w-3 h-3 text-rose-400"></i>
+              <span>Delete</span>
+            </button>
+          </div>
+        </div>
+        <div id="slide-filmstrip-track" class="slide-filmstrip-track">
+          <!-- Slide thumbnails injected dynamically by JS -->
         </div>
       </div>
 
@@ -1744,20 +1901,20 @@
         </div>
       </div>
 
-      <!-- Slideshow Navigation controls -->
-      <div class="flex items-center justify-between bg-slate-950 p-3 rounded-xl border border-indigo-500/15">
+      <!-- Slideshow Navigation controls & Utility Bar -->
+      <div class="flex items-center justify-between bg-slate-950 p-3 rounded-xl border border-indigo-500/15 flex-wrap gap-2">
         <div class="flex items-center gap-2">
-          <button onclick="prevSlide()" class="py-2 px-4 bg-slate-800 hover:bg-slate-700 text-slate-200 font-bold rounded-lg text-xs flex items-center gap-1.5 transition-all">
+          <button onclick="prevSlide()" class="py-2 px-4 bg-slate-800 hover:bg-slate-700 text-slate-200 font-bold rounded-lg text-xs flex items-center gap-1.5 transition-all active:scale-95">
             <i data-lucide="chevron-left" class="w-4 h-4"></i>
             <span>Previous</span>
           </button>
-          <button onclick="nextSlide()" class="py-2 px-4 bg-indigo-600 hover:bg-indigo-500 text-white font-bold rounded-lg text-xs flex items-center gap-1.5 transition-all">
+          <button onclick="nextSlide()" class="py-2 px-4 bg-indigo-600 hover:bg-indigo-500 text-white font-bold rounded-lg text-xs flex items-center gap-1.5 transition-all active:scale-95 shadow-md shadow-indigo-600/30">
             <span>Next</span>
             <i data-lucide="chevron-right" class="w-4 h-4"></i>
           </button>
           <span class="hidden md:inline-flex items-center gap-1.5 text-[10px] text-indigo-300 font-semibold pl-2 bg-indigo-950/50 border border-indigo-500/20 px-2.5 py-1 rounded-full">
             <i data-lucide="move-horizontal" class="w-3.5 h-3.5 text-indigo-400 animate-swipe-pulse"></i>
-            <span>3D Swipe & Physics Active</span>
+            <span>3D Swipe & Arrow Keys</span>
           </span>
         </div>
 
@@ -1781,6 +1938,9 @@
             <option value="slide-theme-chalkboard">🍏 Blackboard Classic</option>
             <option value="slide-theme-midnight">🌌 Cosmic Midnight</option>
             <option value="slide-theme-warm">📜 Parchment Warm</option>
+            <option value="slide-theme-royal-ela">👑 Royal ELA Book</option>
+            <option value="slide-theme-cyberpunk">💎 Cyberpunk Glow</option>
+            <option value="slide-theme-emerald">🌿 Emerald Scholar</option>
           </select>
 
           <!-- Toggle Answer Reveal -->
@@ -1789,16 +1949,16 @@
             <span id="label-slide-answers">Reveal Answers</span>
           </button>
 
-          <!-- Interactive Videos Button -->
-          <button onclick="openVideoModal()" id="btn-slide-videos" class="py-1.5 px-3 bg-rose-600/20 hover:bg-rose-600 text-rose-300 hover:text-white font-bold rounded-lg text-xs flex items-center gap-1.5 transition-all" title="Play Educational Videos for PowerPoint Slides">
-            <i data-lucide="youtube" class="w-3.5 h-3.5 text-rose-400"></i>
-            <span>Interactive Videos</span>
+          <!-- Export PowerPoint Deck Button -->
+          <button onclick="exportPowerPointDeck()" class="py-1.5 px-3 bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white font-bold rounded-lg text-xs flex items-center gap-1.5 transition-all shadow-md shadow-emerald-600/20" title="Export Presentation Deck (.html / .pptx format)">
+            <i data-lucide="download" class="w-3.5 h-3.5"></i>
+            <span>Export PPT</span>
           </button>
 
           <!-- Presentation Print Handout -->
           <button onclick="printSlides()" class="py-1.5 px-3 bg-indigo-950 border border-indigo-500/30 text-indigo-300 hover:text-white font-bold rounded-lg text-xs flex items-center gap-1.5 transition-all" title="Print PowerPoint Slides Handout">
             <i data-lucide="printer" class="w-3.5 h-3.5"></i>
-            <span>Print Slides</span>
+            <span>Print</span>
           </button>
         </div>
       </div>
@@ -3545,22 +3705,27 @@
       // Update dynamic presenter notes
       const notesContent = document.getElementById('presenter-notes-content');
       if (notesContent) {
-        let noteText = '';
-        if (slide.layout === 'title') {
-          noteText = "Welcome students to today's English lesson. Keep this slide visible as students enter the room. Explain that today's focus is on reading, grammar, and building context comprehension.";
-        } else if (slide.layout === 'bullets') {
-          noteText = `Lead a group recitation focusing on "${slide.title}". Read the first point aloud and prompt a student to guess how this connects to the general objective. Each list point builds vocabulary sequentially.`;
-        } else if (slide.layout === 'split') {
-          noteText = "Ask student volunteers to read the left-hand text in a clean reading circle. Use the right-hand vector diagram to visually anchor the vocabulary definitions before writing sentences.";
-        } else if (slide.layout === 'activity') {
-          noteText = "Interactive smartboard challenge! Direct student volunteers to tap, write, or fill in their answers on the projector. Click 'Reveal Answers' below once the discussion has finished.";
-        } else if (slide.layout === 'custom') {
-          noteText = `Teacher custom slide for discussion: "${slide.title}". Lead classroom interaction and invite students to respond.`;
-        } else {
-          noteText = `Review this slide block together. Emphasize: "${slide.title}". Instruct students to take notes of key terms and rules in their exercise books.`;
+        let noteText = slide.notes || '';
+        if (!noteText) {
+          if (slide.layout === 'title') {
+            noteText = "Welcome students to today's English lesson. Keep this slide visible as students enter the room. Explain that today's focus is on reading, grammar, and building context comprehension.";
+          } else if (slide.layout === 'bullets') {
+            noteText = `Lead a group recitation focusing on "${slide.title}". Read the first point aloud and prompt a student to guess how this connects to the general objective. Each list point builds vocabulary sequentially.`;
+          } else if (slide.layout === 'split') {
+            noteText = "Ask student volunteers to read the left-hand text in a clean reading circle. Use the right-hand vector diagram to visually anchor the vocabulary definitions before writing sentences.";
+          } else if (slide.layout === 'activity') {
+            noteText = "Interactive smartboard challenge! Direct student volunteers to tap, write, or fill in their answers on the projector. Click 'Reveal Answers' below once the discussion has finished.";
+          } else if (slide.layout === 'custom') {
+            noteText = `Teacher custom slide for discussion: "${slide.title}". Lead classroom interaction and invite students to respond.`;
+          } else {
+            noteText = `Review this slide block together. Emphasize: "${slide.title}". Instruct students to take notes of key terms and rules in their exercise books.`;
+          }
         }
         notesContent.innerText = noteText;
       }
+      
+      // Update the Slide Filmstrip Dock
+      renderSlideFilmstrip();
       
       lucide.createIcons();
     }
@@ -3900,8 +4065,617 @@
       }
     }
 
-    // Custom Slide Modal Controls
-    function openCustomSlideModal() {
+    // Presentation Sizing & Aspect Ratio Mode
+    function setPresentationAspect(aspect) {
+      const viewport = document.getElementById('slide-3d-viewport');
+      if (!viewport) return;
+
+      viewport.classList.remove('aspect-[16/9]', 'aspect-[16/10]', 'aspect-[21/9]');
+      if (aspect === 'aspect-16-10') {
+        viewport.classList.add('aspect-[16/10]');
+        showToast('Aspect Ratio', 'Switched to 16:10 Cinema Widescreen.', 'monitor');
+      } else if (aspect === 'aspect-21-9') {
+        viewport.classList.add('aspect-[21/9]');
+        showToast('Aspect Ratio', 'Switched to 21:9 Ultra-Wide Format.', 'tv');
+      } else {
+        viewport.classList.add('aspect-[16/9]');
+        showToast('Aspect Ratio', 'Restored to Standard 16:9 Presentation Format.', 'presentation');
+      }
+    }
+
+    // True Fullscreen Projector Mode Toggle
+    function togglePresentationFullscreen() {
+      const container = document.getElementById('presentation-container');
+      const icon = document.getElementById('fullscreen-icon');
+      if (!container) return;
+
+      if (!document.fullscreenElement) {
+        if (container.requestFullscreen) {
+          container.requestFullscreen();
+        } else if (container.webkitRequestFullscreen) {
+          container.webkitRequestFullscreen();
+        } else if (container.msRequestFullscreen) {
+          container.msRequestFullscreen();
+        }
+        container.classList.add('fullscreen-active');
+        if (icon) icon.setAttribute('data-lucide', 'minimize');
+        showToast('Projector Mode', 'Entered full screen classroom projector view.', 'expand');
+      } else {
+        if (document.exitFullscreen) {
+          document.exitFullscreen();
+        } else if (document.webkitExitFullscreen) {
+          document.webkitExitFullscreen();
+        }
+        container.classList.remove('fullscreen-active');
+        if (icon) icon.setAttribute('data-lucide', 'expand');
+        showToast('Windowed View', 'Exited fullscreen projector.', 'shrink');
+      }
+      lucide.createIcons();
+    }
+
+    // Slide Deck Filmstrip Rendering & Navigation
+    function renderSlideFilmstrip() {
+      const track = document.getElementById('slide-filmstrip-track');
+      const totalCount = document.getElementById('filmstrip-total-count');
+      if (!track) return;
+
+      if (totalCount) {
+        totalCount.innerText = presentationSlides.length;
+      }
+
+      let html = presentationSlides.map((s, idx) => {
+        const isActive = idx === currentSlideIndex;
+        let snippet = s.title || `Slide ${idx + 1}`;
+        if (snippet.length > 28) snippet = snippet.substring(0, 26) + '...';
+
+        let badgeType = s.layout || 'standard';
+        return `
+          <div onclick="jumpToSlide(${idx})" class="slide-filmstrip-item ${isActive ? 'active' : ''} group" title="Jump to Slide ${idx + 1}: ${escapeHtml(s.title || '')}">
+            <div class="flex items-center justify-between text-[9px] font-bold text-slate-400 mb-0.5">
+              <span class="px-1.5 py-0.2 rounded bg-indigo-950/80 text-indigo-300 border border-indigo-500/30">#${idx + 1}</span>
+              <span class="uppercase tracking-tighter text-[8px] ${isActive ? 'text-indigo-300 font-extrabold' : 'text-slate-500'}">${badgeType}</span>
+            </div>
+            <div class="text-[10px] font-semibold text-slate-200 line-clamp-1 leading-tight group-hover:text-white transition-colors">
+              ${escapeHtml(snippet)}
+            </div>
+            <div class="text-[8px] text-slate-500 line-clamp-1 mt-0.5">
+              ${escapeHtml(s.subtitle || 'Lesson Content')}
+            </div>
+          </div>
+        `;
+      }).join('');
+
+      // Add Slide Button Card at end of filmstrip
+      html += `
+        <div onclick="openCustomSlideModal()" class="slide-filmstrip-item flex flex-col items-center justify-center text-center cursor-pointer border-dashed border-indigo-400/40 hover:border-indigo-400 hover:bg-indigo-600/20 text-indigo-300 transition-all p-2 min-w-[90px]" title="Add New Slide">
+          <i data-lucide="plus-circle" class="w-4 h-4 mb-0.5"></i>
+          <span class="text-[9px] font-bold">Add Slide</span>
+        </div>
+      `;
+
+      track.innerHTML = html;
+      lucide.createIcons();
+
+      // Scroll active thumbnail into view smoothly
+      const activeThumb = track.querySelector('.slide-filmstrip-item.active');
+      if (activeThumb) {
+        activeThumb.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
+      }
+    }
+
+    function jumpToSlide(index) {
+      if (index >= 0 && index < presentationSlides.length) {
+        currentSlideIndex = index;
+        const slideBox = document.getElementById('presentation-slide-box');
+        if (slideBox) {
+          slideBox.classList.remove('slide-idle-floating');
+          slideBox.style.transition = 'all 0.35s cubic-bezier(0.19, 1, 0.22, 1)';
+          slideBox.style.transform = 'translate3d(0, 0, 0) scale(0.96)';
+          setTimeout(() => {
+            renderCurrentSlide();
+            slideBox.style.transform = 'translate3d(0, 0, 0) scale(1)';
+            setTimeout(() => slideBox.classList.add('slide-idle-floating'), 400);
+          }, 150);
+        } else {
+          renderCurrentSlide();
+        }
+      }
+    }
+
+    function duplicateCurrentSlide() {
+      if (presentationSlides.length === 0) return;
+      const current = presentationSlides[currentSlideIndex];
+      const clone = JSON.parse(JSON.stringify(current));
+      clone.title = (clone.title || 'Slide') + ' (Copy)';
+      clone.customId = Date.now();
+      
+      presentationSlides.splice(currentSlideIndex + 1, 0, clone);
+      currentSlideIndex++;
+      renderCurrentSlide();
+      showToast('Slide Duplicated', 'Cloned slide added right next to current slide.', 'copy');
+    }
+
+    function deleteCurrentSlide() {
+      if (presentationSlides.length <= 1) {
+        showToast('Cannot Delete', 'Deck must have at least one presentation slide.', 'alert-circle');
+        return;
+      }
+      presentationSlides.splice(currentSlideIndex, 1);
+      if (currentSlideIndex >= presentationSlides.length) {
+        currentSlideIndex = presentationSlides.length - 1;
+      }
+      renderCurrentSlide();
+      showToast('Slide Deleted', 'Removed slide from deck.', 'trash-2');
+    }
+
+    // Export Self-Contained PowerPoint / Smartboard Presentation Deck (.html)
+    function exportPowerPointDeck() {
+      const slidesJson = JSON.stringify(presentationSlides, null, 2);
+      const titleEl = document.getElementById('ws-title');
+      const deckTitle = titleEl ? titleEl.innerText : 'English Presentation Slideshow';
+
+      const exportHTML = `<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>${escapeHtml(deckTitle)} • PowerPoint Presentation</title>
+  <script src="https://cdn.tailwindcss.com"><\/script>
+  <script src="https://unpkg.com/lucide@latest"><\/script>
+  <style>
+    body { background: #090d16; color: #f8fafc; font-family: system-ui, -apple-system, sans-serif; }
+    .slide-card { aspect-ratio: 16/9; max-width: 1100px; width: 100%; margin: 0 auto; box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.7); }
+    @media print {
+      body { background: white; color: black; }
+      .no-print { display: none !important; }
+      .slide-card { page-break-after: always; box-shadow: none; border: 1px solid #ccc; width: 100%; aspect-ratio: auto; min-height: 90vh; }
+    }
+  </style>
+</head>
+<body class="min-h-screen flex flex-col justify-between p-4 sm:p-8">
+  <header class="no-print max-w-6xl w-full mx-auto flex items-center justify-between pb-4 border-b border-slate-800">
+    <div>
+      <h1 class="text-lg font-black text-white">${escapeHtml(deckTitle)}</h1>
+      <p class="text-xs text-indigo-300">Mr.Zaafouri Abdelmalek • ELA Studio Classroom Deck</p>
+    </div>
+    <div class="flex items-center gap-2">
+      <button onclick="window.print()" class="px-3 py-1.5 bg-indigo-600 hover:bg-indigo-500 text-white rounded-lg text-xs font-bold flex items-center gap-1.5">
+        <span>Print Handouts</span>
+      </button>
+      <button onclick="toggleFullscreen()" class="px-3 py-1.5 bg-slate-800 hover:bg-slate-700 text-white rounded-lg text-xs font-bold">
+        Fullscreen (F)
+      </button>
+    </div>
+  </header>
+
+  <main class="flex-1 flex items-center justify-center my-6">
+    <div id="slide-viewer" class="slide-card bg-white text-slate-900 rounded-2xl p-8 sm:p-12 flex flex-col justify-between border border-slate-200">
+      <!-- Injected by script -->
+    </div>
+  </main>
+
+  <footer class="no-print max-w-6xl w-full mx-auto flex items-center justify-between pt-4 border-t border-slate-800 text-xs text-slate-400">
+    <div class="flex items-center gap-2">
+      <button onclick="prev()" class="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-white rounded-xl font-bold">◀ Previous</button>
+      <button onclick="next()" class="px-4 py-2 bg-indigo-600 hover:bg-indigo-500 text-white rounded-xl font-bold">Next ▶</button>
+    </div>
+    <span id="counter" class="font-bold text-slate-200">Slide 1 of 1</span>
+    <span class="text-[11px] text-slate-500">Use Left/Right Arrow Keys or Space</span>
+  </footer>
+
+  <script>
+    const slides = ${slidesJson};
+    let current = 0;
+
+    function render() {
+      const s = slides[current];
+      const viewer = document.getElementById('slide-viewer');
+      const counter = document.getElementById('counter');
+      counter.innerText = \`Slide \${current + 1} of \${slides.length}\`;
+
+      let content = '';
+      if (s.layout === 'title') {
+        content = \`
+          <div class="flex-1 flex flex-col items-center justify-center text-center">
+            <span class="px-3 py-1 bg-indigo-100 text-indigo-700 text-xs font-black uppercase rounded-full tracking-wider mb-4">ELA Lesson Deck</span>
+            <h1 class="text-4xl font-black text-slate-950 mb-3">\${s.title}</h1>
+            <p class="text-base text-slate-600 font-medium max-w-xl">\${s.subtitle || ''}</p>
+          </div>
+        \`;
+      } else if (s.layout === 'bullets') {
+        const bulletsHtml = (s.bullets || []).map(b => \`<li class="text-lg font-medium text-slate-800 flex items-start gap-3"><span class="text-indigo-600 font-bold">•</span><div>\${b}</div></li>\`).join('');
+        content = \`
+          <div class="flex-1 flex flex-col justify-between">
+            <div class="border-b border-slate-100 pb-3 mb-6">
+              <span class="text-xs uppercase font-bold text-indigo-600">\${s.subtitle || 'Classroom Focus'}</span>
+              <h2 class="text-2xl font-black text-slate-900">\${s.title}</h2>
+            </div>
+            <ul class="space-y-4 flex-1">\${bulletsHtml}</ul>
+          </div>
+        \`;
+      } else {
+        content = \`
+          <div class="flex-1 flex flex-col justify-between">
+            <div class="border-b border-slate-100 pb-3 mb-4">
+              <span class="text-xs uppercase font-bold text-indigo-600">\${s.subtitle || 'Classroom Practice'}</span>
+              <h2 class="text-2xl font-black text-slate-900">\${s.title}</h2>
+            </div>
+            <div class="flex-1 text-slate-800 text-base leading-relaxed bg-slate-50 p-6 rounded-xl border border-slate-200">
+              \${s.content || s.activityHtml || 'Interactive ELA discussion points.'}
+            </div>
+          </div>
+        \`;
+      }
+
+      viewer.innerHTML = \`
+        \${content}
+        <div class="border-t border-slate-100 pt-3 flex justify-between items-center text-xs text-slate-400">
+          <span>📺 Mr.Zaafouri Abdelmalek • ELA Smartboard Presentation</span>
+          <span class="font-bold">Slide \${current + 1} of \${slides.length}</span>
+        </div>
+      \`;
+    }
+
+    function prev() { if (current > 0) { current--; render(); } }
+    function next() { if (current < slides.length - 1) { current++; render(); } }
+    function toggleFullscreen() {
+      if (!document.fullscreenElement) document.documentElement.requestFullscreen();
+      else document.exitFullscreen();
+    }
+
+    window.addEventListener('keydown', (e) => {
+      if (e.key === 'ArrowRight' || e.key === ' ') { next(); e.preventDefault(); }
+      else if (e.key === 'ArrowLeft') { prev(); e.preventDefault(); }
+      else if (e.key === 'f' || e.key === 'F') { toggleFullscreen(); }
+    });
+
+    render();
+  <\/script>
+</body>
+</html>`;
+
+      const blob = new Blob([exportHTML], { type: 'text/html' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `${deckTitle.replace(/[^a-zA-Z0-9]/g, '_').toLowerCase()}_presentation.html`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+
+      showToast('Deck Exported!', 'PowerPoint presentation HTML file downloaded successfully.', 'download');
+    }
+
+    // AI PRESENTATION & SLIDE DECK STUDIO CONTROLS
+    let generatedAIDeckSlides = [];
+
+    function openAIPresentationModal() {
+      const modal = document.getElementById('ai-presentation-generator-modal');
+      if (modal) {
+        modal.classList.remove('hidden');
+        modal.classList.add('flex');
+        const topicInput = document.getElementById('ai-slide-modal-topic');
+        const sidebarTopic = document.getElementById('ai-slide-quick-topic');
+        if (topicInput) {
+          if (sidebarTopic && sidebarTopic.value.trim()) {
+            topicInput.value = sidebarTopic.value.trim();
+          }
+          topicInput.focus();
+        }
+        lucide.createIcons();
+      }
+    }
+
+    function closeAIPresentationModal() {
+      const modal = document.getElementById('ai-presentation-generator-modal');
+      if (modal) {
+        modal.classList.add('hidden');
+        modal.classList.remove('flex');
+      }
+    }
+
+    function useQuickSlideTopic(topic) {
+      const input = document.getElementById('ai-slide-modal-topic');
+      if (input) {
+        input.value = topic;
+        generateAIPresentationDeck();
+      }
+    }
+
+    function generateAIPresentationQuick() {
+      const sidebarTopic = document.getElementById('ai-slide-quick-topic');
+      const topic = sidebarTopic ? sidebarTopic.value.trim() : '';
+      if (!topic) {
+        openAIPresentationModal();
+        return;
+      }
+      openAIPresentationModal();
+      const modalInput = document.getElementById('ai-slide-modal-topic');
+      if (modalInput) modalInput.value = topic;
+      generateAIPresentationDeck();
+    }
+
+    async function generateAIPresentationDeck() {
+      const topicInput = document.getElementById('ai-slide-modal-topic');
+      const topic = topicInput ? topicInput.value.trim() : '';
+      if (!topic) {
+        showToast('Topic Required', 'Please enter an English lesson topic or concept.', 'alert-triangle');
+        return;
+      }
+
+      const countSelect = document.getElementById('ai-slide-count-select');
+      const slideCount = countSelect ? parseInt(countSelect.value, 10) : 5;
+
+      const levelSelect = document.getElementById('ai-slide-level-select');
+      const targetLevel = levelSelect ? levelSelect.value : 'middle-school';
+
+      const styleSelect = document.getElementById('ai-slide-style-select');
+      const deckStyle = styleSelect ? styleSelect.value : 'classroom-interactive';
+
+      const themeSelect = document.getElementById('ai-slide-theme-select');
+      const slideTheme = themeSelect ? themeSelect.value : 'slide-theme-clean';
+
+      const btn = document.getElementById('ai-slide-gen-btn');
+      const previewArea = document.getElementById('ai-slide-preview-area');
+      const previewList = document.getElementById('ai-slide-preview-list');
+      const emptyState = document.getElementById('ai-slide-preview-empty');
+
+      if (btn) {
+        btn.disabled = true;
+        btn.innerHTML = `<i data-lucide="loader-2" class="w-4 h-4 animate-spin"></i><span>Synthesizing Slides...</span>`;
+        lucide.createIcons();
+      }
+
+      try {
+        const apiKey = userApiKey || localStorage.getItem('gemini_api_key') || '';
+        let slides = [];
+
+        if (apiKey) {
+          try {
+            const prompt = `You are a world-class English Language Arts (ELA) and ESL curriculum designer.
+Create a complete, pedagogical, interactive ${slideCount}-slide classroom presentation deck for English teachers on the topic: "${topic}".
+Target Level: ${targetLevel}.
+Deck Style: ${deckStyle}.
+
+Return ONLY a valid JSON array of objects with no surrounding markdown formatting or backticks.
+Schema for each slide object:
+[
+  {
+    "layout": "title" | "bullets" | "split" | "activity",
+    "title": "Clear Slide Title",
+    "subtitle": "Category or Subtitle",
+    "bullets": ["Bullet 1", "Bullet 2", "Bullet 3"] (if layout is bullets),
+    "leftContent": "HTML string for left pane" (if layout is split),
+    "rightContent": "HTML string for right pane" (if layout is split),
+    "activityHtml": "HTML string for classroom quiz or practice" (if layout is activity),
+    "answersRevealedHtml": "HTML string for answer key" (if layout is activity),
+    "notes": "Teacher speaking points and lecture guidance"
+  }
+]`;
+
+            const endpoint = `https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash:generateContent?key=${apiKey}`;
+            const response = await fetch(endpoint, {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({
+                contents: [{ parts: [{ text: prompt }] }],
+                generationConfig: {
+                  responseMimeType: "application/json"
+                }
+              })
+            });
+
+            if (response.ok) {
+              const data = await response.json();
+              const textResult = data.candidates?.[0]?.content?.parts?.[0]?.text;
+              if (textResult) {
+                const parsed = JSON.parse(textResult);
+                if (Array.isArray(parsed) && parsed.length > 0) {
+                  slides = parsed;
+                }
+              }
+            }
+          } catch (e) {
+            console.warn('Gemini presentation generation error, falling back to smart ELA engine:', e);
+          }
+        }
+
+        // If no API key or API call failed, use our comprehensive ELA synthesis engine
+        if (!slides || slides.length === 0) {
+          slides = synthesizeELASlideDeck(topic, slideCount, targetLevel, deckStyle, slideTheme);
+        }
+
+        generatedAIDeckSlides = slides;
+
+        // Render Slide Deck Preview in Modal
+        if (emptyState) emptyState.classList.add('hidden');
+        if (previewArea) previewArea.classList.remove('hidden');
+
+        if (previewList) {
+          previewList.innerHTML = slides.map((s, idx) => `
+            <div class="p-3.5 rounded-xl bg-slate-950/80 border border-indigo-500/25 space-y-2 hover:border-indigo-400 transition-all">
+              <div class="flex items-center justify-between">
+                <div class="flex items-center gap-2">
+                  <span class="w-6 h-6 rounded-lg bg-indigo-600/30 border border-indigo-500/40 text-indigo-300 font-bold flex items-center justify-center text-xs">
+                    ${idx + 1}
+                  </span>
+                  <span class="text-xs font-bold text-white">${escapeHtml(s.title || 'Slide ' + (idx + 1))}</span>
+                </div>
+                <span class="px-2 py-0.5 rounded text-[9px] font-bold uppercase bg-slate-800 text-slate-300 border border-slate-700">
+                  ${s.layout || 'bullets'}
+                </span>
+              </div>
+              <p class="text-[11px] text-indigo-200">${escapeHtml(s.subtitle || '')}</p>
+              ${s.bullets ? `
+                <ul class="space-y-1 text-[11px] text-slate-300 pl-2">
+                  ${s.bullets.slice(0, 3).map(b => `<li class="flex items-start gap-1.5"><span class="text-indigo-400">•</span><span>${escapeHtml(b)}</span></li>`).join('')}
+                </ul>
+              ` : ''}
+              ${s.notes ? `
+                <div class="p-2 rounded bg-indigo-950/40 border border-indigo-500/20 text-[10px] text-slate-300 italic flex items-start gap-1.5">
+                  <i data-lucide="message-square-quote" class="w-3 h-3 text-indigo-400 mt-0.5 flex-shrink-0"></i>
+                  <span>Teacher Notes: ${escapeHtml(s.notes)}</span>
+                </div>
+              ` : ''}
+            </div>
+          `).join('');
+          lucide.createIcons();
+        }
+
+        showToast('Deck Synthesized!', `Generated ${slides.length} custom presentation slides.`, 'sparkles');
+
+      } catch (err) {
+        showToast('Generation Error', 'Could not synthesize slide deck.', 'alert-circle');
+      } finally {
+        if (btn) {
+          btn.disabled = false;
+          btn.innerHTML = `<i data-lucide="sparkles" class="w-4 h-4 text-sky-200"></i><span>Synthesize Slide Deck</span>`;
+          lucide.createIcons();
+        }
+      }
+    }
+
+    function synthesizeELASlideDeck(topic, slideCount, targetLevel, deckStyle, slideTheme) {
+      const lower = topic.toLowerCase();
+      const cleanTitle = topic.charAt(0).toUpperCase() + topic.slice(1);
+      const slides = [];
+
+      // 1. Title Slide
+      slides.push({
+        layout: 'title',
+        title: cleanTitle,
+        subtitle: `Mastering English Language Arts • Level: ${targetLevel.replace('-', ' ').toUpperCase()}`,
+        notes: `Introduce today's lesson on "${cleanTitle}". State learning targets clearly and set an encouraging, interactive tone for student participation.`
+      });
+
+      // 2. Learning Objectives & Key Concepts
+      slides.push({
+        layout: 'bullets',
+        title: `🎯 Learning Objectives: ${cleanTitle}`,
+        subtitle: 'Curriculum Standards & Goals',
+        bullets: [
+          `Define and analyze the core rules and structural conventions of ${cleanTitle}.`,
+          `Identify context clues and apply accurate vocabulary in classroom sentence practice.`,
+          `Synthesize textual evidence and evaluate literary and grammatical choices in writing.`
+        ],
+        notes: `Have student volunteers read each objective aloud. Ask: 'Why is mastering this concept essential for effective English communication?'`
+      });
+
+      // 3. Concept Deep Dive / Grammar & Literary Mechanics
+      if (lower.includes('past') || lower.includes('perfect') || lower.includes('tense') || lower.includes('verb')) {
+        slides.push({
+          layout: 'bullets',
+          title: "Timeline & Structural Formula",
+          subtitle: "Past Perfect: [had + Past Participle]",
+          bullets: [
+            "Action 1 (Earlier in the past): 'The train had departed...'",
+            "Action 2 (Later in the past): '...before we arrived at the station.'",
+            "Key Signal Markers: before, by the time, already, after, until then.",
+            "Common Mistake: Do NOT use two past perfect verbs in the same clause."
+          ],
+          notes: "Draw a simple timeline on the whiteboard. Place Action 1 to the far left and Action 2 to the right to illustrate sequential past events."
+        });
+      } else if (lower.includes('metaphor') || lower.includes('simile') || lower.includes('figurative')) {
+        slides.push({
+          layout: 'bullets',
+          title: "Figurative Language Breakdown",
+          subtitle: "Simile vs. Metaphor vs. Personification",
+          bullets: [
+            "Simile: Direct comparison using 'like' or 'as' ('Her heart is like an open book').",
+            "Metaphor: States that one concept IS another ('Her heart is an open book').",
+            "Personification: Giving human traits to non-human entities ('The wind whispered secrets').",
+            "Impact: Evokes visceral imagery and elevates sensory descriptions in narrative prose."
+          ],
+          notes: "Ask students to transform a plain sentence (e.g. 'The rain fell') into a powerful figurative statement."
+        });
+      } else {
+        slides.push({
+          layout: 'bullets',
+          title: `Core Principles: ${cleanTitle}`,
+          subtitle: "Essential Vocabulary & Rules",
+          bullets: [
+            `Principle 1: Understand the foundational terminology underpinning ${cleanTitle}.`,
+            `Principle 2: Observe how context alters meaning and emotional tone.`,
+            `Principle 3: Practice constructive peer feedback when analyzing student examples.`
+          ],
+          notes: `Walk through these core principles step by step. Highlight key terms in bold.`
+        });
+      }
+
+      // 4. Interactive Classroom Quiz / Activity Slide
+      slides.push({
+        layout: 'activity',
+        title: `Interactive Challenge: ${cleanTitle}`,
+        subtitle: "Classroom Whiteboard Engagement",
+        activityHtml: `
+          <div class="space-y-3 font-sans text-xs">
+            <div class="bg-indigo-50/70 p-3 rounded-xl border border-indigo-100">
+              <span class="font-bold text-indigo-950">Q1. Which sentence correctly demonstrates the target rule for ${cleanTitle}?</span>
+              <div class="grid grid-cols-2 gap-2 mt-2">
+                <span class="p-2 bg-white rounded-lg border border-slate-200 font-medium">A) Example sentence exhibiting correct syntax</span>
+                <span class="p-2 bg-white rounded-lg border border-slate-200 font-medium">B) Example containing common grammatical error</span>
+              </div>
+            </div>
+            <div class="bg-indigo-50/70 p-3 rounded-xl border border-indigo-100">
+              <span class="font-bold text-indigo-950">Q2. Complete with context clues: "The author utilized this structure to emphasize ________."</span>
+            </div>
+          </div>
+        `,
+        answersRevealedHtml: `
+          <div class="mt-4 p-3 bg-emerald-50 border border-emerald-200 rounded-lg space-y-1 text-xs text-emerald-850 font-medium animate-fade-in">
+            <h5 class="font-extrabold uppercase text-[10px] text-emerald-800">★ Solutions Guide ★</h5>
+            <p>✔ Q1: Choice A represents the correct standard ELA convention.</p>
+            <p>✔ Q2: The author utilizes structure to emphasize thematic contrast and narrative depth.</p>
+          </div>
+        `,
+        notes: "Invite two students to the board to circle the correct answers. Discuss why Choice B was a distractor."
+      });
+
+      // 5. Wrap Up & Student Reflection Slide
+      slides.push({
+        layout: 'bullets',
+        title: "Lesson Summary & Exit Ticket",
+        subtitle: "Consolidating Classroom Mastery",
+        bullets: [
+          `Key Takeaway: Remember the central rules and strategies we practiced today.`,
+          `Exit Ticket Challenge: Write one original sentence applying ${cleanTitle} in your notebook.`,
+          `Homework Extension: Complete the corresponding digital worksheet exercises.`
+        ],
+        notes: "Give students 3 minutes of silent reflection to write their exit ticket responses before dismissal."
+      });
+
+      return slides.slice(0, Math.max(3, slideCount));
+    }
+
+    function applyAISlidesToPresentation(mode = 'replace') {
+      if (generatedAIDeckSlides.length === 0) {
+        showToast('No Slides Generated', 'Please click "Synthesize Slide Deck" first.', 'alert-circle');
+        return;
+      }
+
+      const themeSelect = document.getElementById('ai-slide-theme-select');
+      const selectedTheme = themeSelect ? themeSelect.value : 'slide-theme-clean';
+
+      if (mode === 'replace') {
+        presentationSlides = [...generatedAIDeckSlides];
+        customUserSlides = [];
+      } else {
+        presentationSlides = presentationSlides.concat(generatedAIDeckSlides);
+      }
+
+      currentSlideIndex = 0;
+      applySlideTheme(selectedTheme);
+      
+      const themeSelector = document.getElementById('slide-theme-select');
+      if (themeSelector) themeSelector.value = selectedTheme;
+
+      closeAIPresentationModal();
+      setViewMode('presentation');
+      renderCurrentSlide();
+
+      showToast('Slides Applied!', `Loaded ${generatedAIDeckSlides.length} AI slides into classroom presentation.`, 'presentation');
+    }
       const modal = document.getElementById('custom-slide-modal');
       if (modal) {
         modal.classList.remove('hidden');
@@ -5572,6 +6346,158 @@
           </div>
         </form>
       </div>
+    </div>
+  </div>
+
+  <!-- AI Slide Deck Studio Modal -->
+  <div id="ai-presentation-generator-modal" class="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-md hidden items-center justify-center p-3 sm:p-6 overflow-y-auto">
+    <div class="glass-ai-tutor-container animated-border-glass rounded-3xl w-full max-w-4xl overflow-hidden shadow-2xl flex flex-col max-h-[92vh] animate-fade-in relative border border-white/20 bg-slate-900/90 text-white">
+      
+      <!-- Modal Header -->
+      <div class="p-4 sm:p-5 border-b border-white/10 bg-slate-950/50 flex items-center justify-between relative z-10">
+        <div class="flex items-center gap-3">
+          <div class="w-10 h-10 rounded-2xl bg-gradient-to-tr from-sky-500 via-indigo-600 to-purple-600 flex items-center justify-center text-white shadow-lg shadow-indigo-600/30 ring-2 ring-white/20">
+            <i data-lucide="presentation" class="w-5 h-5"></i>
+          </div>
+          <div>
+            <div class="flex items-center gap-2">
+              <h3 class="text-base sm:text-lg font-black text-white tracking-wide">AI Presentation Studio</h3>
+              <span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-gradient-to-r from-sky-500 to-indigo-600 text-white shadow-sm">Gemini Powered</span>
+            </div>
+            <p class="text-xs text-indigo-200">Synthesize interactive smartboard slide decks & PowerPoint lessons</p>
+          </div>
+        </div>
+        <button onclick="closeAIPresentationModal()" class="p-2 rounded-xl bg-white/10 hover:bg-white/20 text-slate-300 hover:text-white transition-all">
+          <i data-lucide="x" class="w-5 h-5"></i>
+        </button>
+      </div>
+
+      <!-- Modal Body -->
+      <div class="p-4 sm:p-6 overflow-y-auto space-y-5 custom-scrollbar flex-1 relative z-10 text-xs sm:text-sm">
+        
+        <!-- Topic Input Box -->
+        <div class="p-4 rounded-2xl bg-white/5 border border-white/10 space-y-3">
+          <label class="block text-xs font-bold text-indigo-200 uppercase tracking-wider">Lesson Topic or Grammar Focus</label>
+          <div class="flex items-center gap-2">
+            <div class="relative flex-1">
+              <i data-lucide="book-open" class="w-4 h-4 text-indigo-400 absolute left-3.5 top-3.5"></i>
+              <input type="text" id="ai-slide-modal-topic" placeholder="e.g., Past Perfect Tense vs. Simple Past, Metaphors & Similes, Greek Root Words..." class="w-full bg-slate-950/80 border border-white/20 rounded-xl pl-10 pr-4 py-2.5 text-xs sm:text-sm text-white placeholder-slate-400 focus:outline-none focus:border-indigo-400 focus:ring-2 focus:ring-indigo-400/40">
+            </div>
+            <button onclick="generateAIPresentationDeck()" id="ai-slide-gen-btn" class="px-4 py-2.5 bg-gradient-to-r from-sky-500 via-indigo-600 to-purple-600 hover:from-sky-400 hover:to-purple-500 text-white rounded-xl font-bold text-xs sm:text-sm flex items-center gap-2 shadow-lg shadow-indigo-600/30 transition-all active:scale-95 border border-white/20 flex-shrink-0">
+              <i data-lucide="sparkles" class="w-4 h-4 text-sky-200"></i>
+              <span>Synthesize Deck</span>
+            </button>
+          </div>
+
+          <!-- Quick Topic Chips -->
+          <div class="flex items-center gap-1.5 overflow-x-auto custom-scrollbar pt-1">
+            <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider flex-shrink-0 mr-1">Quick Ideas:</span>
+            <button onclick="useQuickSlideTopic('Past Perfect vs. Simple Past Tense')" class="px-2.5 py-1 rounded-full text-[10px] font-medium bg-white/10 hover:bg-indigo-600/60 text-indigo-100 hover:text-white border border-white/15 transition-all whitespace-nowrap">
+              ⏳ Past Perfect Tense
+            </button>
+            <button onclick="useQuickSlideTopic('Figurative Language: Simile, Metaphor & Personification')" class="px-2.5 py-1 rounded-full text-[10px] font-medium bg-white/10 hover:bg-purple-600/60 text-indigo-100 hover:text-white border border-white/15 transition-all whitespace-nowrap">
+              ✨ Figurative Language
+            </button>
+            <button onclick="useQuickSlideTopic('Mastering Greek and Latin Root Words')" class="px-2.5 py-1 rounded-full text-[10px] font-medium bg-white/10 hover:bg-pink-600/60 text-indigo-100 hover:text-white border border-white/15 transition-all whitespace-nowrap">
+              🌱 Root Words & Affixes
+            </button>
+            <button onclick="useQuickSlideTopic('Reading Comprehension & Critical Analysis Strategies')" class="px-2.5 py-1 rounded-full text-[10px] font-medium bg-white/10 hover:bg-emerald-600/60 text-indigo-100 hover:text-white border border-white/15 transition-all whitespace-nowrap">
+              📖 Reading Strategies
+            </button>
+            <button onclick="useQuickSlideTopic('Persuasive Writing & Rhetorical Devices')" class="px-2.5 py-1 rounded-full text-[10px] font-medium bg-white/10 hover:bg-amber-600/60 text-indigo-100 hover:text-white border border-white/15 transition-all whitespace-nowrap">
+              ✍️ Persuasive Writing
+            </button>
+          </div>
+        </div>
+
+        <!-- Customization Grid -->
+        <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
+          <div class="space-y-1 bg-white/5 p-3 rounded-xl border border-white/10">
+            <label class="text-[10px] font-bold text-slate-300 uppercase">Slide Count</label>
+            <select id="ai-slide-count-select" class="w-full bg-slate-950 border border-white/15 rounded-lg px-2.5 py-1.5 text-xs text-white focus:outline-none focus:border-indigo-400">
+              <option value="3">3 Slides (Quick Concept)</option>
+              <option value="5" selected>5 Slides (Full Lesson)</option>
+              <option value="8">8 Slides (Deep Dive)</option>
+              <option value="10">10 Slides (Comprehensive)</option>
+            </select>
+          </div>
+
+          <div class="space-y-1 bg-white/5 p-3 rounded-xl border border-white/10">
+            <label class="text-[10px] font-bold text-slate-300 uppercase">Grade Level</label>
+            <select id="ai-slide-level-select" class="w-full bg-slate-950 border border-white/15 rounded-lg px-2.5 py-1.5 text-xs text-white focus:outline-none focus:border-indigo-400">
+              <option value="elementary">Elementary (Grades 3-5)</option>
+              <option value="middle-school" selected>Middle School (Grades 6-8)</option>
+              <option value="high-school">High School (Grades 9-12)</option>
+              <option value="esl-intermediate">ESL / EFL Intermediate</option>
+            </select>
+          </div>
+
+          <div class="space-y-1 bg-white/5 p-3 rounded-xl border border-white/10">
+            <label class="text-[10px] font-bold text-slate-300 uppercase">Deck Style</label>
+            <select id="ai-slide-style-select" class="w-full bg-slate-950 border border-white/15 rounded-lg px-2.5 py-1.5 text-xs text-white focus:outline-none focus:border-indigo-400">
+              <option value="classroom-interactive" selected>Interactive Smartboard</option>
+              <option value="lecture-visual">Lecture & Diagrammatic</option>
+              <option value="drill-challenge">Challenge & Practice Drills</option>
+            </select>
+          </div>
+
+          <div class="space-y-1 bg-white/5 p-3 rounded-xl border border-white/10">
+            <label class="text-[10px] font-bold text-slate-300 uppercase">Slide Theme</label>
+            <select id="ai-slide-theme-select" class="w-full bg-slate-950 border border-white/15 rounded-lg px-2.5 py-1.5 text-xs text-white focus:outline-none focus:border-indigo-400">
+              <option value="slide-theme-clean" selected>Classic Clean</option>
+              <option value="slide-theme-midnight">Midnight Dark</option>
+              <option value="slide-theme-warm">Warm Academic</option>
+              <option value="slide-theme-cyber">Cyber Neon</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Synthesized Slide Deck Preview Area -->
+        <div id="ai-slide-preview-area" class="space-y-3 hidden">
+          <div class="flex items-center justify-between border-b border-white/10 pb-2">
+            <div class="flex items-center gap-2">
+              <i data-lucide="layers" class="w-4 h-4 text-indigo-400"></i>
+              <h4 class="font-bold text-white text-xs uppercase tracking-wider">Synthesized Slide Deck</h4>
+            </div>
+            <span class="text-[10px] text-emerald-300 font-medium bg-emerald-950/60 px-2 py-0.5 rounded-full border border-emerald-500/30">Ready to Deploy</span>
+          </div>
+
+          <div id="ai-slide-preview-list" class="grid grid-cols-1 md:grid-cols-2 gap-3 max-h-[300px] overflow-y-auto custom-scrollbar pr-1">
+            <!-- Injected by JavaScript -->
+          </div>
+        </div>
+
+        <!-- Empty State Guide -->
+        <div id="ai-slide-preview-empty" class="p-8 text-center border-2 border-dashed border-white/10 rounded-2xl bg-white/5 space-y-2">
+          <div class="w-12 h-12 rounded-2xl bg-indigo-950 border border-indigo-500/30 flex items-center justify-center mx-auto text-indigo-400">
+            <i data-lucide="presentation" class="w-6 h-6"></i>
+          </div>
+          <h4 class="text-sm font-bold text-white">No Slides Synthesized Yet</h4>
+          <p class="text-xs text-slate-400 max-w-sm mx-auto">Type any English Language Arts topic above or click one of the quick suggestions, then press "Synthesize Deck" to generate interactive slides with teacher notes.</p>
+        </div>
+
+      </div>
+
+      <!-- Modal Footer -->
+      <div class="p-4 sm:p-5 border-t border-white/10 bg-slate-950/80 flex flex-wrap items-center justify-between gap-3 relative z-10">
+        <div class="flex items-center gap-2">
+          <button onclick="exportPowerPointDeck()" class="px-3.5 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 hover:text-white text-xs font-semibold flex items-center gap-1.5 transition-all border border-slate-700">
+            <i data-lucide="file-down" class="w-3.5 h-3.5"></i>
+            <span>Export PowerPoint (.html)</span>
+          </button>
+        </div>
+
+        <div class="flex items-center gap-2">
+          <button onclick="closeAIPresentationModal()" class="px-4 py-2 rounded-xl bg-white/10 hover:bg-white/20 text-slate-300 hover:text-white text-xs font-semibold transition-all">
+            Cancel
+          </button>
+          <button onclick="applyAISlidesToPresentation('replace')" class="px-4 py-2 bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white rounded-xl font-bold text-xs flex items-center gap-1.5 shadow-lg shadow-emerald-600/30 transition-all active:scale-95">
+            <i data-lucide="play" class="w-3.5 h-3.5"></i>
+            <span>Apply to Presentation</span>
+          </button>
+        </div>
+      </div>
+
     </div>
   </div>
 </body>
