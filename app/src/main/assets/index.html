@@ -2054,7 +2054,8 @@
 
     // Teacher Header Input
     function updateTeacherHeader(val) {
-      document.getElementById('ws-teacher-display').innerText = val || 'Mrs. Davis • English Dept.';
+      const el = document.getElementById('ws-teacher-display');
+      if (el) el.innerText = val || 'Mrs. Davis • English Dept.';
     }
 
     // App Theme Control
@@ -2457,7 +2458,6 @@
               <div id="ws-subtitle" contenteditable="true" class="border-2 border-[#0e56b2] outline-none text-[#0e56b2] text-[9px] sm:text-[10px] font-black px-4 py-1 rounded-full mt-2 bg-white/90 shadow-sm uppercase tracking-wide">
                 English Language Arts
               </div>
-              <div id="ws-standard-text" class="hidden"></div>
             </div>
 
             <!-- Cartoon Girl Waving -->
