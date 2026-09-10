@@ -569,6 +569,138 @@
       }
     }
   </style>
+  <!-- App Level Themes -->
+  <style id="app-level-themes">
+    /* Base App Themes override */
+    body[data-app-theme="midnight-neon"] {
+      --bg-dark: #09090b !important;       
+      --bg-panel: #18181b !important;      
+      --bg-input: #27272a !important;      
+      --text-main: #f4f4f5 !important;
+      --text-muted: #a1a1aa !important;
+      --accent: #22d3ee !important;        
+      --border-color: #27272a !important;
+    }
+
+    body[data-app-theme="executive-navy"] {
+      --bg-dark: #0f172a !important;       
+      --bg-panel: #1e293b !important;      
+      --bg-input: #334155 !important;
+      --text-main: #f8fafc !important;
+      --text-muted: #cbd5e1 !important;
+      --accent: #38bdf8 !important;        
+      --border-color: #334155 !important;
+    }
+
+    body[data-app-theme="digital-sanctuary"] {
+      --bg-dark: #f8fafc !important;       
+      --bg-panel: #ffffff !important;      
+      --bg-input: #f1f5f9 !important;
+      --text-main: #0f172a !important;
+      --text-muted: #475569 !important;
+      --accent: #10b981 !important;        
+      --border-color: #e2e8f0 !important;
+    }
+
+    body[data-app-theme="earth-gold"] {
+      --bg-dark: #2c241b !important;       
+      --bg-panel: #3d3326 !important;      
+      --bg-input: #4f4231 !important;
+      --text-main: #fdf8f5 !important;
+      --text-muted: #d4c4b7 !important;
+      --accent: #fbbf24 !important;        
+      --border-color: #5c4d3c !important;
+    }
+
+    body[data-app-theme="minimalist-pearl"] {
+      --bg-dark: #fafafa !important;       
+      --bg-panel: #ffffff !important;      
+      --bg-input: #f4f4f5 !important;
+      --text-main: #18181b !important;
+      --text-muted: #52525b !important;
+      --accent: #3f3f46 !important;        
+      --border-color: #e4e4e7 !important;
+    }
+
+    body[data-app-theme="frosted-glass"] {
+      --bg-dark: linear-gradient(135deg, #1e1b4b, #312e81, #1e1b4b) !important;
+      --bg-panel: rgba(255, 255, 255, 0.05) !important;      
+      --bg-input: rgba(255, 255, 255, 0.1) !important;
+      --text-main: #ffffff !important;
+      --text-muted: #c7d2fe !important;
+      --accent: #c084fc !important;        
+      --border-color: rgba(255, 255, 255, 0.1) !important;
+    }
+
+    /* Base overrides */
+    body[data-app-theme] {
+      background: var(--bg-dark) !important;
+      color: var(--text-main) !important;
+    }
+    body[data-app-theme] #dashboard-sidebar,
+    body[data-app-theme] #main-content {
+      background: var(--bg-dark) !important;
+    }
+    
+    body[data-app-theme] #app-header,
+    body[data-app-theme] #dashboard-sidebar .bg-slate-950\/80,
+    body[data-app-theme] #dashboard-sidebar .bg-slate-950\/40,
+    body[data-app-theme] #dashboard-sidebar > div.p-4.border-b {
+      background: var(--bg-panel) !important;
+      border-color: var(--border-color) !important;
+    }
+
+    /* Glassmorphism specific */
+    body[data-app-theme="frosted-glass"] #dashboard-sidebar,
+    body[data-app-theme="frosted-glass"] #app-header {
+      backdrop-filter: blur(16px) !important;
+      -webkit-backdrop-filter: blur(16px) !important;
+    }
+
+    body[data-app-theme] .bg-slate-800\/50,
+    body[data-app-theme] .bg-slate-800,
+    body[data-app-theme] .bg-indigo-950\/60,
+    body[data-app-theme] .bg-slate-900,
+    body[data-app-theme] select,
+    body[data-app-theme] input {
+      background: var(--bg-input) !important;
+      border-color: var(--border-color) !important;
+      color: var(--text-main) !important;
+    }
+
+    body[data-app-theme] .text-slate-100,
+    body[data-app-theme] .text-white {
+      color: var(--text-main) !important;
+    }
+
+    body[data-app-theme] .text-slate-200,
+    body[data-app-theme] .text-slate-300,
+    body[data-app-theme] .text-slate-400 {
+      color: var(--text-muted) !important;
+    }
+
+    body[data-app-theme] .bg-indigo-600,
+    body[data-app-theme] .bg-indigo-500,
+    body[data-app-theme] .bg-indigo-950,
+    body[data-app-theme] .from-indigo-600 {
+      background: var(--accent) !important;
+      color: var(--bg-dark) !important;
+      border-color: var(--accent) !important;
+    }
+
+    body[data-app-theme] .text-indigo-400,
+    body[data-app-theme] .text-indigo-300,
+    body[data-app-theme] .text-indigo-200 {
+      color: var(--accent) !important;
+    }
+    
+    body[data-app-theme] .border-indigo-500\/30,
+    body[data-app-theme] .border-indigo-500\/20,
+    body[data-app-theme] .border-indigo-500\/10,
+    body[data-app-theme] .border-indigo-500\/15 {
+      border-color: var(--border-color) !important;
+    }
+  </style>
 </head>
 <body class="bg-slate-900 text-slate-100 font-sans antialiased min-h-screen flex flex-col md:flex-row overflow-x-hidden selection:bg-indigo-500 selection:text-white relative">
 
@@ -588,7 +720,7 @@
           <i data-lucide="graduation-cap" class="w-5 h-5"></i>
         </div>
         <div>
-          <span class="font-bold text-sm text-white block leading-none tracking-wide">English Teacher Studio</span>
+          <span class="font-bold text-sm text-white block leading-none tracking-wide">English Teachers & Learners Studio</span>
           <span class="text-[10px] text-indigo-400 font-medium">ELA Dashboard & AI Generator</span>
         </div>
       </div>
@@ -626,7 +758,7 @@
           <i data-lucide="graduation-cap" class="w-5 h-5"></i>
         </div>
         <div>
-          <h1 class="font-bold text-base text-white tracking-wide">English Teacher Studio</h1>
+          <h1 class="font-bold text-base text-white tracking-wide">English Teachers & Learners Studio</h1>
           <p class="text-[11px] text-indigo-400 font-medium">ELA & Grammar Dashboard</p>
         </div>
       </div>
@@ -789,6 +921,26 @@
         </div>
 
         <!-- Page Style & Borders Controls -->
+        <!-- Studio App Theme Controls (Light/Dark & UI Themes) -->
+        <div class="bg-slate-800/50 rounded-xl p-3.5 border border-slate-700/50 space-y-3">
+          <div class="flex items-center justify-between pb-2 border-b border-slate-700/60">
+            <span class="text-xs font-semibold text-slate-200 flex items-center gap-2">
+              <i data-lucide="moon" class="w-4 h-4 text-purple-400"></i> App Theme & UI
+            </span>
+          </div>
+
+          <div>
+            <label class="text-[11px] text-slate-300 mb-1 block">Studio Interface Theme</label>
+            <select id="app-theme-select" onchange="changeAppTheme(this.value)" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-xs text-slate-200 focus:outline-none focus:border-purple-500 font-medium">
+              <option value="midnight-neon" selected>🌙 Sophisticated Midnight & Neon (Dark)</option>
+              <option value="executive-navy">👔 Modern Executive Navy (Dark)</option>
+              <option value="digital-sanctuary">🌿 Calm Digital Sanctuary (Light)</option>
+              <option value="earth-gold">🍂 Rich Earth & Gold (Dark)</option>
+              <option value="minimalist-pearl">⚪ Minimalist Pearl (Light)</option>
+              <option value="frosted-glass">❄️ Frosted Glass Layer (Glassmorphism)</option>
+            </select>
+          </div>
+        </div>
         <div class="space-y-3">
           <label class="text-xs font-semibold uppercase tracking-wider text-slate-400 block flex items-center gap-1.5">
             <i data-lucide="palette" class="w-3.5 h-3.5 text-indigo-400"></i> Page Formatting
@@ -1565,6 +1717,7 @@
     }
 
     function renderAIResultOnPaper(promptText, resultText) {
+      resetStandardHeader();
       document.getElementById('ws-title').innerText = 'AI Generated: ' + (promptText.length > 28 ? promptText.substring(0, 28) + '...' : promptText);
       document.getElementById('ws-subtitle').innerText = 'Generated by Gemini AI Tutor for English Language Arts practice.';
       document.getElementById('ws-standard-text').innerText = 'CCSS.ELA-LITERACY • AI Customized Curriculum Exercise';
@@ -1611,6 +1764,7 @@
     }
 
     function renderAISynthesizedFallback(promptText) {
+      resetStandardHeader();
       document.getElementById('ws-title').innerText = 'AI Tutor: ' + (promptText.length > 28 ? promptText.substring(0, 28) + '...' : promptText);
       document.getElementById('ws-subtitle').innerText = 'AI-assisted English worksheet practice exercises generated for your prompt.';
       document.getElementById('ws-standard-text').innerText = 'CCSS.ELA-LITERACY • AI Assistant English Language Arts Practice';
@@ -1905,6 +2059,30 @@
 
     // Theme Control
     function applyTheme(themeName) {
+    function changeAppTheme(themeName) {
+      document.body.setAttribute('data-app-theme', themeName);
+      
+      let themeTitle = "App Theme Applied";
+      if (themeName === 'midnight-neon') themeTitle = "Moonlight & Neon";
+      if (themeName === 'executive-navy') themeTitle = "Executive Navy";
+      if (themeName === 'digital-sanctuary') themeTitle = "Light Sanctuary";
+      if (themeName === 'earth-gold') themeTitle = "Earth & Gold";
+      if (themeName === 'minimalist-pearl') themeTitle = "Minimalist Pearl";
+      if (themeName === 'frosted-glass') themeTitle = "Frosted Glass";
+      
+      showToast(themeTitle, 'Interface theme updated successfully.', 'moon');
+      
+      // Save user preference
+      localStorage.setItem('ela_app_theme', themeName);
+    }
+    
+    // Load app theme on startup
+    document.addEventListener('DOMContentLoaded', () => {
+      const savedAppTheme = localStorage.getItem('ela_app_theme') || 'midnight-neon';
+      document.body.setAttribute('data-app-theme', savedAppTheme);
+      const appThemeSelect = document.getElementById('app-theme-select');
+      if (appThemeSelect) appThemeSelect.value = savedAppTheme;
+    });
       const paper = document.getElementById('worksheet-paper');
       const allThemes = [
         'theme-classic-corporate',
@@ -2221,50 +2399,87 @@
     function resetStandardHeader() {
       const headerBox = document.getElementById('worksheet-header');
       if (!headerBox) return;
-      
-      // If it's already reset and has standard student info, do nothing
-      if (headerBox.querySelector('#ws-student-info')) {
-        const standardIllustration = document.getElementById('ws-illustration-container');
-        if (standardIllustration) standardIllustration.classList.remove('hidden');
-        return;
+
+      // Force the premium ELA Book Theme automatically for all worksheets!
+      const paper = document.getElementById('worksheet-paper');
+      if (paper) {
+        const allThemes = [
+          'theme-classic-corporate', 'theme-midnight-tech', 'theme-nordic-pastel', 
+          'theme-vibrant-gamifier', 'theme-emerald-scholar', 'theme-sunset-minimalist', 
+          'theme-cyberpunk-edgy', 'theme-oceanic-trust', 'theme-ela-book'
+        ];
+        allThemes.forEach(t => paper.classList.remove(t));
+        paper.classList.add('theme-ela-book');
+        const themeSelect = document.getElementById('theme-select');
+        if (themeSelect) themeSelect.value = 'ela-book';
       }
-      
-      headerBox.className = "border-b-2 border-slate-800 pb-4 mb-5 flex flex-wrap justify-between items-center gap-4";
+
+      headerBox.className = "border-b-4 border-[#0e56b2] pb-6 mb-6 flex flex-col items-center justify-center relative select-none pt-2";
       headerBox.innerHTML = `
-        <div class="flex-1 min-w-[200px] flex items-center gap-4">
-          <!-- Dynamic Educational Illustration -->
-          <div id="ws-illustration-container" class="w-16 h-16 sm:w-20 sm:h-20 flex-shrink-0 bg-slate-50 border border-slate-200 rounded-xl p-1.5 shadow-sm flex items-center justify-center transition-all duration-300">
-            <!-- SVG dynamically injected -->
-          </div>
-          <div>
-            <div class="flex items-center gap-2 mb-1 text-[11px] font-semibold text-indigo-700 uppercase tracking-wider no-print-corners">
-              <span id="ws-teacher-display" contenteditable="true">Mrs. Davis • English Dept.</span>
-            </div>
-            <h1 id="ws-title" contenteditable="true" class="text-2xl font-bold tracking-tight text-slate-900 outline-none">English Vocabulary & Context</h1>
-            <p id="ws-subtitle" contenteditable="true" class="text-xs text-slate-600 mt-1 outline-none">Review the word bank, then match each target vocabulary word to its correct context or definition.</p>
-          </div>
-        </div>
-        
-        <div class="flex items-center gap-3">
-          <!-- Printable Header QR Code Badge (Toggleable) -->
-          <div id="ws-header-qr" class="hidden flex flex-col items-center justify-center p-1.5 bg-white border border-slate-300 rounded-lg shadow-sm text-center">
-            <img id="ws-header-qr-img" src="" alt="Student QR Code" class="w-12 h-12 object-contain">
-            <span class="text-[8px] font-bold text-slate-700 mt-0.5 tracking-tighter uppercase leading-none">Scan Digital</span>
+          <!-- Page info top corners -->
+          <div class="absolute top-0 left-0 text-[10px] font-bold text-[#0e56b2] bg-blue-50 px-2 py-0.5 rounded uppercase tracking-wider">Unit: English</div>
+          <div class="absolute top-0 right-0 text-[10px] font-bold text-slate-500 bg-slate-100 px-2 py-0.5 rounded uppercase tracking-wider flex items-center gap-1">
+            <span>Name:</span>
+            <span contenteditable="true" class="min-w-[100px] border-b border-slate-400 inline-block px-1 outline-none font-handwriting text-indigo-700"></span>
           </div>
 
-          <div id="ws-student-info" class="flex flex-col gap-1.5 text-xs font-medium text-slate-700 border-l-2 border-slate-200 pl-4">
-            <div class="flex items-center gap-1">
-              <span>Student Name:</span>
-              <span contenteditable="true" class="min-w-[120px] border-b border-slate-400 inline-block px-1 outline-none"></span>
+          <div class="w-full flex items-center justify-between gap-4 max-w-xl mt-3">
+            <!-- Cartoon Boy Waving (Highly polished vector art) -->
+            <div class="w-16 h-16 sm:w-20 sm:h-20 flex-shrink-0 animate-bounce" style="animation-duration: 3s;">
+              <svg viewBox="0 0 100 100" class="w-full h-full">
+                <path d="M25 40 C25 20, 75 20, 75 40 C75 35, 60 25, 50 25 C40 25, 25 35, 25 40" fill="#2d1500" />
+                <path d="M20 40 C20 25, 45 15, 50 15 C55 15, 80 25, 80 40" fill="#1a0b00" />
+                <circle cx="28" cy="48" r="6" fill="#fbcfe8" />
+                <circle cx="28" cy="48" r="3" fill="#f472b6" />
+                <circle cx="72" cy="48" r="6" fill="#fbcfe8" />
+                <circle cx="72" cy="48" r="3" fill="#f472b6" />
+                <circle cx="50" cy="50" r="22" fill="#fed7aa" />
+                <circle cx="38" cy="56" r="3" fill="#f43f5e" opacity="0.4" />
+                <circle cx="62" cy="56" r="3" fill="#f43f5e" opacity="0.4" />
+                <circle cx="42" cy="48" r="3" fill="#1e293b" />
+                <circle cx="42" cy="48" r="1" fill="#ffffff" transform="translate(-1, -1)" />
+                <circle cx="58" cy="48" r="3" fill="#1e293b" />
+                <circle cx="58" cy="48" r="1" fill="#ffffff" transform="translate(-1, -1)" />
+                <path d="M44 58 Q50 64 56 58" stroke="#be123c" stroke-width="2.5" fill="none" stroke-linecap="round" />
+                <path d="M35 70 C35 70, 50 72, 65 70 L70 85 H30 Z" fill="#0284c7" />
+                <path d="M20 70 Q10 50 15 45 Q20 40 24 50" fill="#fed7aa" stroke="#0284c7" stroke-width="2" />
+                <circle cx="15" cy="43" r="5" fill="#fed7aa" />
+              </svg>
             </div>
-            <div class="flex items-center gap-1">
-              <span>Date:</span>
-              <span contenteditable="true" class="min-w-[120px] border-b border-slate-400 inline-block px-1 outline-none"></span>
+
+            <!-- Central Title Banner -->
+            <div class="flex-1 flex flex-col items-center text-center">
+              <div id="ws-title" contenteditable="true" class="bg-[#0e56b2] outline-none text-white text-base sm:text-xl font-black px-4 sm:px-8 py-2 sm:py-3.5 rounded-2xl shadow-md tracking-wider uppercase leading-tight min-w-[250px]">
+                Worksheet
+              </div>
+              <div id="ws-subtitle" contenteditable="true" class="border-2 border-[#0e56b2] outline-none text-[#0e56b2] text-[9px] sm:text-[10px] font-black px-4 py-1 rounded-full mt-2 bg-white/90 shadow-sm uppercase tracking-wide">
+                English Language Arts
+              </div>
+              <div id="ws-standard-text" class="hidden"></div>
+            </div>
+
+            <!-- Cartoon Girl Waving -->
+            <div class="w-16 h-16 sm:w-20 sm:h-20 flex-shrink-0 animate-bounce" style="animation-duration: 3s; animation-delay: 0.5s;">
+              <svg viewBox="0 0 100 100" class="w-full h-full">
+                <circle cx="24" cy="35" r="10" fill="#b45309" />
+                <circle cx="76" cy="35" r="10" fill="#b45309" />
+                <path d="M25 40 C25 20, 75 20, 75 40" fill="#d97706" />
+                <circle cx="50" cy="48" r="22" fill="#fed7aa" />
+                <circle cx="38" cy="54" r="3.5" fill="#f43f5e" opacity="0.4" />
+                <circle cx="62" cy="54" r="3.5" fill="#f43f5e" opacity="0.4" />
+                <circle cx="42" cy="46" r="3" fill="#1e293b" />
+                <circle cx="58" cy="46" r="3" fill="#1e293b" />
+                <path d="M44 56 Q50 62 56 56" stroke="#be123c" stroke-width="2.5" fill="none" stroke-linecap="round" />
+                <path d="M30 35 L35 32" stroke="#f43f5e" stroke-width="3" stroke-linecap="round" />
+                <path d="M70 35 L65 32" stroke="#f43f5e" stroke-width="3" stroke-linecap="round" />
+                <path d="M35 68 C35 68, 50 70, 65 68 L70 85 H30 Z" fill="#ec4899" />
+                <path d="M80 68 Q90 48 85 43 Q80 38 76 48" fill="#fed7aa" stroke="#ec4899" stroke-width="2" />
+                <circle cx="85" cy="41" r="5" fill="#fed7aa" />
+              </svg>
             </div>
           </div>
-        </div>
       `;
-      
+    }  
       const teacherName = document.getElementById('teacher-name-input').value;
       updateTeacherHeader(teacherName);
     }

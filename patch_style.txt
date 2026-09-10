@@ -1,0 +1,132 @@
+  <!-- App Level Themes -->
+  <style id="app-level-themes">
+    /* Base App Themes override */
+    body[data-app-theme="midnight-neon"] {
+      --bg-dark: #09090b !important;       
+      --bg-panel: #18181b !important;      
+      --bg-input: #27272a !important;      
+      --text-main: #f4f4f5 !important;
+      --text-muted: #a1a1aa !important;
+      --accent: #22d3ee !important;        
+      --border-color: #27272a !important;
+    }
+
+    body[data-app-theme="executive-navy"] {
+      --bg-dark: #0f172a !important;       
+      --bg-panel: #1e293b !important;      
+      --bg-input: #334155 !important;
+      --text-main: #f8fafc !important;
+      --text-muted: #cbd5e1 !important;
+      --accent: #38bdf8 !important;        
+      --border-color: #334155 !important;
+    }
+
+    body[data-app-theme="digital-sanctuary"] {
+      --bg-dark: #f8fafc !important;       
+      --bg-panel: #ffffff !important;      
+      --bg-input: #f1f5f9 !important;
+      --text-main: #0f172a !important;
+      --text-muted: #475569 !important;
+      --accent: #10b981 !important;        
+      --border-color: #e2e8f0 !important;
+    }
+
+    body[data-app-theme="earth-gold"] {
+      --bg-dark: #2c241b !important;       
+      --bg-panel: #3d3326 !important;      
+      --bg-input: #4f4231 !important;
+      --text-main: #fdf8f5 !important;
+      --text-muted: #d4c4b7 !important;
+      --accent: #fbbf24 !important;        
+      --border-color: #5c4d3c !important;
+    }
+
+    body[data-app-theme="minimalist-pearl"] {
+      --bg-dark: #fafafa !important;       
+      --bg-panel: #ffffff !important;      
+      --bg-input: #f4f4f5 !important;
+      --text-main: #18181b !important;
+      --text-muted: #52525b !important;
+      --accent: #3f3f46 !important;        
+      --border-color: #e4e4e7 !important;
+    }
+
+    body[data-app-theme="frosted-glass"] {
+      --bg-dark: linear-gradient(135deg, #1e1b4b, #312e81, #1e1b4b) !important;
+      --bg-panel: rgba(255, 255, 255, 0.05) !important;      
+      --bg-input: rgba(255, 255, 255, 0.1) !important;
+      --text-main: #ffffff !important;
+      --text-muted: #c7d2fe !important;
+      --accent: #c084fc !important;        
+      --border-color: rgba(255, 255, 255, 0.1) !important;
+    }
+
+    /* Base overrides */
+    body[data-app-theme] {
+      background: var(--bg-dark) !important;
+      color: var(--text-main) !important;
+    }
+    body[data-app-theme] #dashboard-sidebar,
+    body[data-app-theme] #main-content {
+      background: var(--bg-dark) !important;
+    }
+    
+    body[data-app-theme] #app-header,
+    body[data-app-theme] #dashboard-sidebar .bg-slate-950\/80,
+    body[data-app-theme] #dashboard-sidebar .bg-slate-950\/40,
+    body[data-app-theme] #dashboard-sidebar > div.p-4.border-b {
+      background: var(--bg-panel) !important;
+      border-color: var(--border-color) !important;
+    }
+
+    /* Glassmorphism specific */
+    body[data-app-theme="frosted-glass"] #dashboard-sidebar,
+    body[data-app-theme="frosted-glass"] #app-header {
+      backdrop-filter: blur(16px) !important;
+      -webkit-backdrop-filter: blur(16px) !important;
+    }
+
+    body[data-app-theme] .bg-slate-800\/50,
+    body[data-app-theme] .bg-slate-800,
+    body[data-app-theme] .bg-indigo-950\/60,
+    body[data-app-theme] .bg-slate-900,
+    body[data-app-theme] select,
+    body[data-app-theme] input {
+      background: var(--bg-input) !important;
+      border-color: var(--border-color) !important;
+      color: var(--text-main) !important;
+    }
+
+    body[data-app-theme] .text-slate-100,
+    body[data-app-theme] .text-white {
+      color: var(--text-main) !important;
+    }
+
+    body[data-app-theme] .text-slate-200,
+    body[data-app-theme] .text-slate-300,
+    body[data-app-theme] .text-slate-400 {
+      color: var(--text-muted) !important;
+    }
+
+    body[data-app-theme] .bg-indigo-600,
+    body[data-app-theme] .bg-indigo-500,
+    body[data-app-theme] .bg-indigo-950,
+    body[data-app-theme] .from-indigo-600 {
+      background: var(--accent) !important;
+      color: var(--bg-dark) !important;
+      border-color: var(--accent) !important;
+    }
+
+    body[data-app-theme] .text-indigo-400,
+    body[data-app-theme] .text-indigo-300,
+    body[data-app-theme] .text-indigo-200 {
+      color: var(--accent) !important;
+    }
+    
+    body[data-app-theme] .border-indigo-500\/30,
+    body[data-app-theme] .border-indigo-500\/20,
+    body[data-app-theme] .border-indigo-500\/10,
+    body[data-app-theme] .border-indigo-500\/15 {
+      border-color: var(--border-color) !important;
+    }
+  </style>
