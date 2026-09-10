@@ -946,6 +946,76 @@
         background: transparent !important;
       }
     }
+  
+    /* ========================================================== */
+    /* ENHANCED SLIDE & DASHBOARD ANIMATIONS                       */
+    /* ========================================================== */
+    @keyframes slideInSmoothRight {
+      from { opacity: 0; transform: translateX(36px) scale(0.97); filter: blur(4px); }
+      to { opacity: 1; transform: translateX(0) scale(1); filter: blur(0); }
+    }
+    @keyframes slideInSmoothLeft {
+      from { opacity: 0; transform: translateX(-36px) scale(0.97); filter: blur(4px); }
+      to { opacity: 1; transform: translateX(0) scale(1); filter: blur(0); }
+    }
+    @keyframes slideZoomIn {
+      from { opacity: 0; transform: scale(0.92); filter: blur(6px); }
+      to { opacity: 1; transform: scale(1); filter: blur(0); }
+    }
+    @keyframes slideFlipIn {
+      from { opacity: 0; transform: perspective(1000px) rotateY(15deg) scale(0.95); }
+      to { opacity: 1; transform: perspective(1000px) rotateY(0deg) scale(1); }
+    }
+    @keyframes slideFadeUp {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes staggerItemIn {
+      from { opacity: 0; transform: translateY(16px) scale(0.96); }
+      to { opacity: 1; transform: translateY(0) scale(1); }
+    }
+    @keyframes popBadge {
+      0% { transform: scale(0.8); opacity: 0; }
+      60% { transform: scale(1.1); opacity: 1; }
+      100% { transform: scale(1); opacity: 1; }
+    }
+    @keyframes quizOptionPop {
+      from { opacity: 0; transform: translateX(-12px); }
+      to { opacity: 1; transform: translateX(0); }
+    }
+    @keyframes answerRipple {
+      0% { transform: scale(0.98); box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.4); }
+      70% { transform: scale(1.02); box-shadow: 0 0 0 12px rgba(16, 185, 129, 0); }
+      100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(16, 185, 129, 0); }
+    }
+    @keyframes flashcardFlip3D {
+      0% { transform: rotateY(0deg); }
+      100% { transform: rotateY(180deg); }
+    }
+
+    .anim-slide-right { animation: slideInSmoothRight 0.42s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
+    .anim-slide-left { animation: slideInSmoothLeft 0.42s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
+    .anim-slide-zoom { animation: slideZoomIn 0.38s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
+    .anim-slide-flip { animation: slideFlipIn 0.45s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
+    .anim-slide-fade { animation: slideFadeUp 0.38s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
+
+    .anim-stagger-1 { animation: staggerItemIn 0.4s 0.08s cubic-bezier(0.16, 1, 0.3, 1) both; }
+    .anim-stagger-2 { animation: staggerItemIn 0.4s 0.15s cubic-bezier(0.16, 1, 0.3, 1) both; }
+    .anim-stagger-3 { animation: staggerItemIn 0.4s 0.22s cubic-bezier(0.16, 1, 0.3, 1) both; }
+    .anim-stagger-4 { animation: staggerItemIn 0.4s 0.29s cubic-bezier(0.16, 1, 0.3, 1) both; }
+    .anim-stagger-5 { animation: staggerItemIn 0.4s 0.36s cubic-bezier(0.16, 1, 0.3, 1) both; }
+    .anim-stagger-6 { animation: staggerItemIn 0.4s 0.43s cubic-bezier(0.16, 1, 0.3, 1) both; }
+
+    .anim-badge-pop { animation: popBadge 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) forwards; }
+    .anim-answer-success { animation: answerRipple 0.5s ease-out forwards; }
+    
+    .slide-active-card {
+      transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .slide-active-card:hover {
+      transform: translateY(-2px);
+    }
+
   </style>
   <!-- App Level Themes -->
   <style id="app-level-themes">
@@ -1147,525 +1217,179 @@
   <div id="sidebar-overlay" onclick="toggleDashboard()" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-30 hidden no-print transition-opacity duration-300 lg:hidden"></div>
 
   <!-- LEFT DASHBOARD SIDEBAR DRAWER -->
-  <aside id="dashboard-sidebar" class="fixed inset-y-0 left-0 z-40 w-80 lg:w-80 xl:w-96 bg-slate-900/95 backdrop-blur-xl border-r border-indigo-500/30 flex flex-col h-full transform -translate-x-full lg:translate-x-0 transition-transform duration-300 ease-in-out shadow-2xl no-print overflow-y-auto ring-1 ring-white/10">
+  <aside id="dashboard-sidebar" class="fixed inset-y-0 left-0 z-40 w-80 lg:w-80 xl:w-96 bg-slate-900/98 backdrop-blur-2xl border-r border-indigo-500/25 flex flex-col h-full transform -translate-x-full lg:translate-x-0 transition-transform duration-300 ease-in-out shadow-2xl no-print overflow-hidden ring-1 ring-white/10">
     
-    <!-- Dashboard Header / Brand inside Drawer -->
+    <!-- Dashboard Header -->
     <div class="p-4 border-b border-indigo-500/20 flex items-center justify-between bg-slate-950/80">
       <div class="flex items-center gap-3">
-        <div class="w-9 h-9 rounded-xl bg-gradient-to-tr from-indigo-600 to-violet-500 flex items-center justify-center text-white shadow-lg shadow-indigo-500/20">
+        <div class="w-9 h-9 rounded-xl bg-gradient-to-tr from-indigo-600 via-purple-600 to-violet-500 flex items-center justify-center text-white shadow-lg shadow-indigo-500/25 ring-1 ring-white/20">
           <i data-lucide="graduation-cap" class="w-5 h-5"></i>
         </div>
         <div>
-          <h1 class="font-bold text-base text-white tracking-wide">English Teachers & Learners Studio</h1>
-          <p class="text-[11px] text-indigo-400 font-medium">ELA & Grammar Dashboard</p>
+          <h1 class="font-bold text-sm text-white tracking-wide">ELA Worksheet Studio</h1>
+          <p class="text-[10px] text-indigo-400 font-medium">Classroom & AI Presentation</p>
         </div>
       </div>
-      <button onclick="toggleDashboard()" class="p-2 rounded-xl bg-slate-800 text-slate-400 hover:text-white hover:bg-slate-700 transition-all">
+      <button onclick="toggleDashboard()" class="lg:hidden p-2 rounded-xl bg-slate-800 text-slate-400 hover:text-white hover:bg-slate-700 transition-all">
         <i data-lucide="x" class="w-4 h-4"></i>
       </button>
     </div>
 
-    <!-- Segmented Tab Bar to Reduce Complexity -->
-    <div class="p-3 bg-slate-950/40 border-b border-indigo-500/10 no-print">
-      <div class="bg-slate-950 p-1 rounded-xl border border-indigo-500/15 flex gap-1">
-        <button onclick="switchDashboardTab('generators')" id="btn-tab-generators" class="flex-1 py-1.5 rounded-lg text-[11px] font-bold flex items-center justify-center gap-1.5 transition-all bg-indigo-600 text-white shadow-md shadow-indigo-600/20" title="ELA Content Generators">
-          <i data-lucide="sparkles" class="w-3.5 h-3.5"></i>
-          <span>Create</span>
+    <!-- Quick Mode Segmented Switcher (Worksheet vs Slides) -->
+    <div class="p-3 bg-slate-950/50 border-b border-slate-800">
+      <div class="bg-slate-900 p-1 rounded-xl border border-indigo-500/20 flex gap-1 shadow-inner">
+        <button onclick="setViewMode('worksheet')" id="dash-btn-view-ws" class="flex-1 py-1.5 rounded-lg text-xs font-bold flex items-center justify-center gap-1.5 transition-all bg-indigo-600 text-white shadow-md shadow-indigo-600/30">
+          <i data-lucide="file-text" class="w-3.5 h-3.5"></i>
+          <span>Worksheet</span>
         </button>
-        <button onclick="switchDashboardTab('design')" id="btn-tab-design" class="flex-1 py-1.5 rounded-lg text-[11px] font-bold flex items-center justify-center gap-1.5 transition-all text-slate-400 hover:text-slate-200" title="Formatting & Style Options">
-          <i data-lucide="palette" class="w-3.5 h-3.5"></i>
-          <span>Style</span>
-        </button>
-        <button onclick="switchDashboardTab('tools')" id="btn-tab-tools" class="flex-1 py-1.5 rounded-lg text-[11px] font-bold flex items-center justify-center gap-1.5 transition-all text-slate-400 hover:text-slate-200" title="Teacher Tools & Utilities">
-          <i data-lucide="wrench" class="w-3.5 h-3.5"></i>
-          <span>Tools</span>
+        <button onclick="setViewMode('presentation')" id="dash-btn-view-pres" class="flex-1 py-1.5 rounded-lg text-xs font-bold flex items-center justify-center gap-1.5 transition-all text-slate-400 hover:text-slate-200">
+          <i data-lucide="presentation" class="w-3.5 h-3.5"></i>
+          <span>Slideshow</span>
         </button>
       </div>
     </div>
 
-    <!-- Scrollable Controls Section -->
-    <div class="flex-1 p-4 custom-scrollbar overflow-y-auto">
-
-      <!-- TAB 1: GENERATORS (ELA Content Builders) -->
-      <div id="tab-generators-content" class="space-y-5">
-        <!-- FROSTED GLASS AI TUTOR & GEMINI API SECTION -->
-        <div class="glass-card-premium rounded-2xl p-4 space-y-3.5 relative overflow-hidden ring-1 ring-white/20 shadow-2xl">
-          <!-- Glass Ambient Glow Orbs -->
-          <div class="glass-glow-orb -top-8 -right-8 w-28 h-28 bg-indigo-500/30"></div>
-          <div class="glass-glow-orb -bottom-8 -left-8 w-24 h-24 bg-purple-500/25"></div>
-
-          <div class="flex items-center justify-between pb-2.5 border-b border-white/10 relative z-10">
-            <div class="flex items-center gap-2.5">
-              <div class="w-8 h-8 rounded-xl bg-gradient-to-tr from-indigo-500 via-purple-500 to-pink-500 flex items-center justify-center text-white shadow-lg shadow-indigo-500/30 ring-1 ring-white/30">
-                <i data-lucide="bot" class="w-4.5 h-4.5"></i>
-              </div>
-              <div>
-                <span class="text-xs font-bold text-white block leading-none flex items-center gap-1.5">
-                  Glass AI Tutor
-                  <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-ping"></span>
-                </span>
-                <span class="text-[10px] text-indigo-200">Gemini ELA Intelligence</span>
-              </div>
+    <!-- Scrollable Streamlined Dashboard Content -->
+    <div class="flex-1 p-4 custom-scrollbar overflow-y-auto space-y-4">
+      
+      <!-- 1. AI SMART GENERATOR (Simplified, high-impact) -->
+      <div class="glass-card-premium rounded-2xl p-3.5 space-y-3 relative overflow-hidden ring-1 ring-white/15 shadow-xl">
+        <div class="flex items-center justify-between pb-2 border-b border-white/10">
+          <div class="flex items-center gap-2">
+            <div class="w-7 h-7 rounded-lg bg-gradient-to-tr from-indigo-500 to-pink-500 flex items-center justify-center text-white shadow-sm">
+              <i data-lucide="sparkles" class="w-3.5 h-3.5"></i>
             </div>
-            <button onclick="openGlassTutorModal()" class="px-2.5 py-1 text-[10px] font-bold bg-white/10 hover:bg-white/20 text-white border border-white/25 rounded-full backdrop-blur-md flex items-center gap-1 transition-all shadow-sm hover:scale-105 active:scale-95" title="Open Interactive Live AI Tutor Chat">
-              <i data-lucide="messages-square" class="w-3 h-3 text-indigo-300"></i>
-              <span>Live Chat</span>
-            </button>
-          </div>
-
-          <!-- API Key Config Input -->
-          <div class="space-y-1 relative z-10">
-            <label class="text-[10px] uppercase font-semibold tracking-wider text-indigo-200 flex items-center justify-between">
-              <span>Gemini API Key</span>
-              <span id="key-saved-label" class="text-[9px] text-slate-300">Stored in Session</span>
-            </label>
-            <div class="flex items-center gap-1.5">
-              <div class="relative flex-1">
-                <input type="password" id="gemini-api-key-input" placeholder="Paste Gemini API Key (e.g. AIzaSy...)" onchange="saveApiKey(this.value)" class="w-full bg-slate-950/70 border border-white/20 rounded-xl pl-7 pr-2 py-1.5 text-xs text-white placeholder-slate-400 focus:outline-none focus:border-indigo-400 focus:ring-1 focus:ring-indigo-400 backdrop-blur-md">
-                <i data-lucide="key" class="w-3.5 h-3.5 text-indigo-300 absolute left-2 top-2.5"></i>
-              </div>
-              <button onclick="pasteApiKey()" class="p-1.5 bg-white/10 hover:bg-white/20 border border-white/20 text-indigo-200 hover:text-white rounded-xl text-xs font-medium transition-all backdrop-blur-md" title="Paste API Key from Clipboard">
-                <i data-lucide="clipboard" class="w-3.5 h-3.5"></i>
-              </button>
-            </div>
-          </div>
-
-          <!-- AI Assistant Prompt Generator -->
-          <div class="space-y-1.5 pt-0.5 relative z-10">
-            <div class="flex items-center justify-between">
-              <label class="text-[10px] uppercase font-semibold tracking-wider text-indigo-200">Ask AI Tutor To Generate</label>
-              <button onclick="openGlassTutorModal()" class="text-[9px] text-indigo-300 hover:text-white underline flex items-center gap-0.5">
-                <span>Open full tutor dialog</span>
-                <i data-lucide="external-link" class="w-2.5 h-2.5"></i>
-              </button>
-            </div>
-            <div class="relative">
-              <textarea id="ai-prompt-input" rows="2" placeholder="e.g. Vocabulary words about ancient Egypt, reading comprehension, modal verbs..." class="w-full bg-slate-950/70 border border-white/20 rounded-xl p-2 text-xs text-white placeholder-slate-400 focus:outline-none focus:border-indigo-400 focus:ring-1 focus:ring-indigo-400 resize-none backdrop-blur-md"></textarea>
-            </div>
-            <div class="grid grid-cols-2 gap-1.5">
-              <button onclick="generateAIWorksheet()" id="ai-gen-btn" class="py-2 bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-600 hover:from-indigo-500 hover:to-pink-500 text-white rounded-xl text-xs font-semibold flex items-center justify-center gap-1.5 shadow-lg shadow-indigo-600/30 transition-all active:scale-95 border border-white/20">
-                <i data-lucide="sparkles" class="w-3.5 h-3.5"></i>
-                <span>Generate Sheet</span>
-              </button>
-              <button onclick="openGlassTutorModal()" class="py-2 bg-white/10 hover:bg-white/20 text-white rounded-xl text-xs font-semibold flex items-center justify-center gap-1.5 backdrop-blur-md transition-all active:scale-95 border border-white/20">
-                <i data-lucide="message-circle-question" class="w-3.5 h-3.5 text-purple-300"></i>
-                <span>Ask AI Question</span>
-              </button>
-            </div>
-          </div>
-        </div>
-
-        <!-- NEW: AI Presentation & Slide Studio Card -->
-        <div class="glass-card-premium rounded-2xl p-4 space-y-3 relative overflow-hidden shadow-xl border border-sky-400/30">
-          <div class="glass-glow-orb bg-sky-500/20 w-32 h-32 -top-10 -right-10"></div>
-          <div class="flex items-center justify-between relative z-10">
-            <div class="flex items-center gap-2">
-              <div class="w-7 h-7 rounded-lg bg-gradient-to-tr from-sky-500 to-indigo-600 flex items-center justify-center text-white shadow-md">
-                <i data-lucide="presentation" class="w-4 h-4"></i>
-              </div>
-              <div>
-                <div class="flex items-center gap-1.5">
-                  <span class="font-black text-xs text-white">AI Slide Deck Studio</span>
-                  <span class="px-1.5 py-0.2 bg-sky-500/30 text-sky-200 border border-sky-400/40 text-[9px] font-bold rounded-full">New</span>
-                </div>
-                <span class="text-[10px] text-sky-200">PowerPoint & Classroom Slides</span>
-              </div>
-            </div>
-            <button onclick="openAIPresentationModal()" class="px-2.5 py-1 text-[10px] font-bold bg-sky-500/20 hover:bg-sky-500/40 text-sky-200 hover:text-white border border-sky-400/30 rounded-full backdrop-blur-md flex items-center gap-1 transition-all" title="Open AI Slide Studio">
-              <i data-lucide="sparkles" class="w-3 h-3 text-sky-300"></i>
-              <span>Studio</span>
-            </button>
-          </div>
-          
-          <div class="space-y-1.5 relative z-10">
-            <input type="text" id="ai-slide-quick-topic" placeholder="e.g. Past Perfect vs Past Simple, Figurative Devices..." class="w-full bg-slate-950/70 border border-white/20 rounded-xl px-2.5 py-1.5 text-xs text-white placeholder-slate-400 focus:outline-none focus:border-sky-400 backdrop-blur-md">
-            <div class="flex items-center gap-1.5">
-              <button onclick="generateAIPresentationQuick()" class="flex-1 py-1.5 bg-gradient-to-r from-sky-600 to-indigo-600 hover:from-sky-500 hover:to-indigo-500 text-white rounded-xl text-xs font-semibold flex items-center justify-center gap-1.5 shadow-md shadow-sky-600/30 transition-all active:scale-95 border border-white/20">
-                <i data-lucide="sparkles" class="w-3.5 h-3.5"></i>
-                <span>Generate Slideshow</span>
-              </button>
-              <button onclick="openAIPresentationModal()" class="px-3 py-1.5 bg-white/10 hover:bg-white/20 text-sky-200 hover:text-white rounded-xl text-xs font-semibold flex items-center justify-center gap-1 border border-white/20" title="Configure Deck Options">
-                <i data-lucide="sliders" class="w-3.5 h-3.5"></i>
-              </button>
-            </div>
-          </div>
-        </div>
-        
-        <!-- English Worksheet Generators for Teachers -->
-        <div class="space-y-2.5">
-          <label class="text-xs font-semibold uppercase tracking-wider text-slate-400 block flex items-center gap-1.5">
-            <i data-lucide="sparkles" class="w-3.5 h-3.5 text-indigo-400"></i> ELA Subject Generators
-          </label>
-          <div class="grid grid-cols-2 gap-2">
-            <button onclick="generateVocabularyWorksheet()" class="flex flex-col items-center justify-center p-3 rounded-xl bg-indigo-600/10 border border-indigo-500/30 hover:bg-indigo-600 hover:border-indigo-600 text-indigo-300 hover:text-white transition-all duration-200 active:scale-95 group shadow-sm text-center">
-              <i data-lucide="spell-check" class="w-5 h-5 mb-1.5 group-hover:scale-110 transition-transform"></i>
-              <span class="text-xs font-medium">Vocabulary & Match</span>
-            </button>
-
-            <button onclick="generateGrammarWorksheet()" class="flex flex-col items-center justify-center p-3 rounded-xl bg-violet-600/10 border border-violet-500/30 hover:bg-violet-600 hover:border-violet-600 text-violet-300 hover:text-white transition-all duration-200 active:scale-95 group shadow-sm text-center">
-              <i data-lucide="check-check" class="w-5 h-5 mb-1.5 group-hover:scale-110 transition-transform"></i>
-              <span class="text-xs font-medium">Grammar & Syntax</span>
-            </button>
-
-            <button onclick="generateProofreadingWorksheet()" class="flex flex-col items-center justify-center p-3 rounded-xl bg-pink-600/10 border border-pink-500/30 hover:bg-pink-600 hover:border-pink-600 text-pink-300 hover:text-white transition-all duration-200 active:scale-95 group shadow-sm text-center">
-              <i data-lucide="file-edit" class="w-5 h-5 mb-1.5 group-hover:scale-110 transition-transform"></i>
-              <span class="text-xs font-medium">Punctuation Drills</span>
-            </button>
-
-            <button onclick="generateReadingWorksheet()" class="flex flex-col items-center justify-center p-3 rounded-xl bg-emerald-600/10 border border-emerald-500/30 hover:bg-emerald-600 hover:border-emerald-600 text-emerald-300 hover:text-white transition-all duration-200 active:scale-95 group shadow-sm text-center">
-              <i data-lucide="book-open-text" class="w-5 h-5 mb-1.5 group-hover:scale-110 transition-transform"></i>
-              <span class="text-xs font-medium">Reading Passage</span>
-            </button>
-
-            <button onclick="generateFigurativeLanguageWorksheet()" class="flex flex-col items-center justify-center p-3 rounded-xl bg-cyan-600/10 border border-cyan-500/30 hover:bg-cyan-600 hover:border-cyan-600 text-cyan-300 hover:text-white transition-all duration-200 active:scale-95 group shadow-sm text-center">
-              <i data-lucide="sparkle" class="w-5 h-5 mb-1.5 group-hover:scale-110 transition-transform"></i>
-              <span class="text-xs font-medium">Figurative Devices</span>
-            </button>
-
-            <button onclick="generateWritingWorksheet()" class="flex flex-col items-center justify-center p-3 rounded-xl bg-amber-600/10 border border-amber-500/30 hover:bg-amber-600 hover:border-amber-600 text-amber-300 hover:text-white transition-all duration-200 active:scale-95 group shadow-sm text-center">
-              <i data-lucide="pen-tool" class="w-5 h-5 mb-1.5 group-hover:scale-110 transition-transform"></i>
-              <span class="text-xs font-medium">Essay & Writing</span>
-            </button>
-
-            <!-- High-Fidelity Textbook Showcase Module with Lesson Switchers -->
-            <div class="col-span-2 rounded-xl bg-gradient-to-r from-sky-950/50 via-blue-950/50 to-indigo-950/50 border border-sky-400/40 p-3 space-y-2.5 shadow-md shadow-sky-950/40">
-              <div class="flex items-center justify-between">
-                <div class="flex items-center gap-2">
-                  <i data-lucide="book-open" class="w-4 h-4 text-sky-400"></i>
-                  <span class="text-xs font-black tracking-wide text-white">✨ PREMIUM TEXTBOOK LESSONS</span>
-                </div>
-                <span id="textbook-active-pill" class="text-[9px] font-bold px-2 py-0.5 rounded bg-sky-500/20 text-sky-300 border border-sky-500/30">Lesson 1</span>
-              </div>
-              <p class="text-[10px] text-sky-200/80 leading-snug">Textbook layout with royal blue banners, mascot headers, reading passages & tiered exercises.</p>
-              <div class="grid grid-cols-3 gap-1.5 pt-0.5">
-                <button onclick="generateTextbookShowcase(0)" id="tb-btn-0" class="py-1.5 px-2 rounded-lg bg-sky-600 text-white font-bold text-[10px] flex flex-col items-center justify-center transition-all shadow-sm active:scale-95 text-center leading-tight">
-                  <span>📖 Lesson 1</span>
-                  <span class="text-[8px] opacity-80 font-normal">Magic of Reading</span>
-                </button>
-                <button onclick="generateTextbookShowcase(1)" id="tb-btn-1" class="py-1.5 px-2 rounded-lg bg-slate-800/80 hover:bg-sky-700/80 text-sky-200 hover:text-white font-bold text-[10px] flex flex-col items-center justify-center transition-all border border-sky-500/30 active:scale-95 text-center leading-tight">
-                  <span>🌿 Lesson 2</span>
-                  <span class="text-[8px] opacity-80 font-normal">Our Rainforest</span>
-                </button>
-                <button onclick="generateTextbookShowcase(2)" id="tb-btn-2" class="py-1.5 px-2 rounded-lg bg-slate-800/80 hover:bg-sky-700/80 text-sky-200 hover:text-white font-bold text-[10px] flex flex-col items-center justify-center transition-all border border-sky-500/30 active:scale-95 text-center leading-tight">
-                  <span>💡 Lesson 3</span>
-                  <span class="text-[8px] opacity-80 font-normal">Young Inventor</span>
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- TAB 2: STYLE & DESIGN -->
-      <div id="tab-design-content" class="space-y-5 hidden">
-        <!-- Generator Settings Accordion -->
-        <div class="bg-slate-800/50 rounded-xl p-3.5 border border-slate-700/50 space-y-3">
-          <div class="flex items-center justify-between pb-2 border-b border-slate-700/60">
-            <span class="text-xs font-semibold text-slate-200 flex items-center gap-2">
-              <i data-lucide="sliders" class="w-4 h-4 text-indigo-400"></i> Teacher Controls
-            </span>
-            <span id="active-mode-badge" class="text-[11px] font-medium text-indigo-400 bg-indigo-950 px-2 py-0.5 rounded-md border border-indigo-800">Vocabulary</span>
-          </div>
-
-          <div>
-            <label class="text-[11px] text-slate-300 mb-1 block">Grade Level</label>
-            <select id="grade-level-select" onchange="regenerateCurrentMode()" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-xs text-slate-200 focus:outline-none focus:border-indigo-500">
-              <option value="elementary">Elementary (Grades 1 - 3)</option>
-              <option value="intermediate" selected>Middle School (Grades 4 - 6)</option>
-              <option value="advanced">High School / ELA (Grades 7 - 12)</option>
-            </select>
-          </div>
-
-          <div>
-            <label class="text-[11px] text-slate-300 mb-1 block">Question / Item Count</label>
-            <select id="item-count-select" onchange="regenerateCurrentMode()" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-xs text-slate-200 focus:outline-none focus:border-indigo-500">
-              <option value="5">5 Questions</option>
-              <option value="8" selected>8 Questions</option>
-              <option value="12">12 Questions</option>
-            </select>
-          </div>
-
-          <div>
-            <label class="text-[11px] text-slate-300 mb-1 block">Teacher / School Name</label>
-            <input type="text" id="teacher-name-input" value="Mrs. Davis • English Dept." oninput="updateTeacherHeader(this.value)" placeholder="e.g. Mr. Smith's Class" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-1.5 text-xs text-slate-200 focus:outline-none focus:border-indigo-500">
-          </div>
-        </div>
-
-        <!-- Page Style & Borders Controls -->
-        <!-- Studio App Theme Controls (Light/Dark & UI Themes) -->
-        <div class="bg-slate-800/50 rounded-xl p-3.5 border border-slate-700/50 space-y-3">
-          <div class="flex items-center justify-between pb-2 border-b border-slate-700/60">
-            <span class="text-xs font-semibold text-slate-200 flex items-center gap-2">
-              <i data-lucide="moon" class="w-4 h-4 text-purple-400"></i> App Theme & UI
-            </span>
-          </div>
-
-          <div>
-            <label class="text-[11px] text-slate-300 mb-1 block">Studio Interface Theme</label>
-            <select id="app-theme-select" onchange="changeAppTheme(this.value)" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-xs text-slate-200 focus:outline-none focus:border-purple-500 font-medium">
-              <option value="midnight-neon" selected>🌙 Sophisticated Midnight & Neon (Dark)</option>
-              <option value="executive-navy">👔 Modern Executive Navy (Dark)</option>
-              <option value="digital-sanctuary">🌿 Calm Digital Sanctuary (Light)</option>
-              <option value="earth-gold">🍂 Rich Earth & Gold (Dark)</option>
-              <option value="minimalist-pearl">⚪ Minimalist Pearl (Light)</option>
-              <option value="frosted-glass">❄️ Frosted Glass Layer (Glassmorphism)</option>
-            </select>
-          </div>
-        </div>
-        <div class="space-y-3">
-          <label class="text-xs font-semibold uppercase tracking-wider text-slate-400 block flex items-center gap-1.5">
-            <i data-lucide="palette" class="w-3.5 h-3.5 text-indigo-400"></i> Page Formatting
-          </label>
-
-          <!-- Premium Border Selector -->
-          <div class="space-y-2">
-            <div class="flex items-center justify-between">
-              <label class="text-[11px] text-slate-300 block font-semibold">Border Frame Style</label>
-              <span class="text-[9px] text-indigo-400 font-bold uppercase tracking-wider">✨ Animated & Static</span>
-            </div>
-            
-            <div class="grid grid-cols-2 gap-1.5">
-              <!-- Animated Borders -->
-              <button onclick="setBorder('glow')" class="border-btn border-opt-glow flex items-center gap-1.5 p-1.5 rounded-lg bg-indigo-950/40 border border-indigo-500/50 text-[11px] text-indigo-200 hover:border-indigo-400 hover:text-white transition-all shadow-[0_0_8px_rgba(99,102,241,0.25)]">
-                <span class="w-3.5 h-3.5 rounded-full bg-indigo-500 animate-ping"></span>
-                <span class="truncate">✨ Glow Pulse</span>
-              </button>
-              <button onclick="setBorder('cyber')" class="border-btn border-opt-cyber flex items-center gap-1.5 p-1.5 rounded-lg bg-cyan-950/40 border border-cyan-500/50 text-[11px] text-cyan-200 hover:border-cyan-400 hover:text-white transition-all shadow-[0_0_8px_rgba(6,182,212,0.25)]">
-                <span class="w-3.5 h-3.5 rounded bg-gradient-to-tr from-cyan-400 to-indigo-500"></span>
-                <span class="truncate">⚡ Cyber Flow</span>
-              </button>
-              <button onclick="setBorder('aurora')" class="border-btn border-opt-aurora flex items-center gap-1.5 p-1.5 rounded-lg bg-emerald-950/40 border border-emerald-500/50 text-[11px] text-emerald-200 hover:border-emerald-400 hover:text-white transition-all shadow-[0_0_8px_rgba(16,185,129,0.25)]">
-                <span class="w-3.5 h-3.5 rounded bg-gradient-to-r from-emerald-400 via-teal-300 to-purple-400"></span>
-                <span class="truncate">🌌 Aurora Sweep</span>
-              </button>
-              <button onclick="setBorder('shimmer')" class="border-btn border-opt-shimmer flex items-center gap-1.5 p-1.5 rounded-lg bg-amber-950/40 border border-amber-500/50 text-[11px] text-amber-200 hover:border-amber-400 hover:text-white transition-all shadow-[0_0_8px_rgba(245,158,11,0.25)]">
-                <span class="w-3.5 h-3.5 rounded bg-gradient-to-r from-amber-500 via-yellow-200 to-amber-600"></span>
-                <span class="truncate">🌟 Gold Shimmer</span>
-              </button>
-              <button onclick="setBorder('neon')" class="border-btn border-opt-neon flex items-center gap-1.5 p-1.5 rounded-lg bg-pink-950/40 border border-pink-500/50 text-[11px] text-pink-200 hover:border-pink-400 hover:text-white transition-all shadow-[0_0_8px_rgba(236,72,153,0.25)]">
-                <span class="w-3.5 h-3.5 rounded-sm border border-pink-400 bg-pink-500/30"></span>
-                <span class="truncate">🌈 Neon Glow</span>
-              </button>
-              <button onclick="setBorder('rainbow')" class="border-btn border-opt-rainbow flex items-center gap-1.5 p-1.5 rounded-lg bg-purple-950/40 border border-purple-500/50 text-[11px] text-purple-200 hover:border-purple-400 hover:text-white transition-all shadow-[0_0_8px_rgba(168,85,247,0.25)]">
-                <span class="w-3.5 h-3.5 rounded-full bg-gradient-to-r from-red-400 via-green-400 to-blue-400"></span>
-                <span class="truncate">🎡 Rainbow Spin</span>
-              </button>
-              <button onclick="setBorder('laser')" class="border-btn border-opt-laser flex items-center gap-1.5 p-1.5 rounded-lg bg-sky-950/40 border border-sky-500/50 text-[11px] text-sky-200 hover:border-sky-400 hover:text-white transition-all shadow-[0_0_8px_rgba(56,189,248,0.25)]">
-                <span class="w-3.5 h-3.5 rounded border border-dashed border-sky-400"></span>
-                <span class="truncate">⚡ Laser Wave</span>
-              </button>
-              <button onclick="setBorder('glass')" class="border-btn border-opt-glass flex items-center gap-1.5 p-1.5 rounded-lg bg-white/10 border border-white/30 text-[11px] text-white hover:border-white hover:bg-white/20 transition-all backdrop-blur-sm shadow-[0_0_8px_rgba(255,255,255,0.2)]">
-                <span class="w-3.5 h-3.5 rounded border border-white/60 bg-white/20"></span>
-                <span class="truncate">❄️ Frosted Glass</span>
-              </button>
-
-              <!-- Classic Static Borders -->
-              <button onclick="setBorder('minimalist')" class="border-btn border-opt-minimalist flex items-center gap-1.5 p-1.5 rounded-lg bg-slate-800 border border-slate-700 text-[11px] text-slate-300 hover:border-indigo-500 transition-all">
-                <span class="w-3.5 h-3.5 rounded border border-slate-400 flex items-center justify-center text-[7px] font-mono leading-none">||</span>
-                <span class="truncate">Minimalist</span>
-              </button>
-              <button onclick="setBorder('geometric')" class="border-btn border-opt-geometric flex items-center gap-1.5 p-1.5 rounded-lg bg-slate-800 border border-slate-700 text-[11px] text-slate-300 hover:border-indigo-500 transition-all">
-                <span class="w-3.5 h-3.5 rounded border border-dashed border-slate-400"></span>
-                <span class="truncate">Geometric</span>
-              </button>
-              <button onclick="setBorder('artdeco')" class="border-btn border-opt-artdeco flex items-center gap-1.5 p-1.5 rounded-lg bg-slate-800 border border-slate-700 text-[11px] text-slate-300 hover:border-indigo-500 transition-all">
-                <span class="w-3.5 h-3.5 rounded border border-slate-400 relative"><span class="absolute top-0.5 left-0.5 w-1 h-1 bg-slate-400 rounded-full"></span></span>
-                <span class="truncate">Art Deco</span>
-              </button>
-              <button onclick="setBorder('playful')" class="border-btn border-opt-playful flex items-center gap-1.5 p-1.5 rounded-lg bg-slate-800 border border-slate-700 text-[11px] text-slate-300 hover:border-indigo-500 transition-all">
-                <span class="w-3.5 h-3.5 rounded border border-dashed border-indigo-400"></span>
-                <span class="truncate">Playful</span>
-              </button>
-              <button onclick="setBorder('none')" class="border-btn border-opt-none flex items-center gap-1.5 p-1.5 rounded-lg bg-slate-800 border border-slate-700 text-[11px] text-slate-300 hover:border-indigo-500 transition-all col-span-2">
-                <span class="w-3.5 h-3.5 rounded border border-slate-600"></span>
-                <span class="truncate">Clean Minimal (No Special Border)</span>
-              </button>
-            </div>
-          </div>
-
-          <!-- Theme Palette Selector -->
-          <div>
-            <label class="text-[11px] text-slate-300 mb-1 block flex items-center justify-between">
-              <span>Worksheet Visual Theme</span>
-              <span class="text-[9px] text-indigo-400 font-medium">8 Custom Styles</span>
-            </label>
-            <select id="theme-select" onchange="applyTheme(this.value)" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-2.5 py-2 text-xs text-indigo-300 font-semibold focus:outline-none focus:border-indigo-500">
-              <option value="classic-corporate">👔 Classic Corporate</option>
-              <option value="midnight-tech">🌙 Midnight Tech</option>
-              <option value="nordic-pastel">🍃 Nordic Pastel</option>
-              <option value="vibrant-gamifier">🎮 Vibrant Gamifier</option>
-              <option value="emerald-scholar">🎓 Emerald Scholar</option>
-              <option value="sunset-minimalist">🌅 Sunset Minimalist</option>
-              <option value="cyberpunk-edgy">⚡ Cyberpunk Edgy</option>
-              <option value="oceanic-trust">🌊 Oceanic Trust</option>
-              <option value="ela-book">📖 ELA Textbook (Full Color Split)</option>
-            </select>
-          </div>
-
-          <!-- Paper Low-Light Dark Mode Toggle -->
-          <div class="p-2.5 rounded-xl bg-slate-900/90 border border-slate-800 flex items-center justify-between">
-            <div class="flex items-center gap-2">
-              <div id="paper-dark-indicator" class="w-7 h-7 rounded-lg bg-slate-800 border border-slate-700 flex items-center justify-center text-slate-400">
-                <i data-lucide="moon" class="w-3.5 h-3.5"></i>
-              </div>
-              <div>
-                <span class="text-xs font-bold text-slate-200 block leading-tight">Paper Dark Mode</span>
-                <span class="text-[9px] text-slate-400 block">Low-light editing (Prints white)</span>
-              </div>
-            </div>
-            <button onclick="togglePaperDarkMode()" id="btn-paper-dark-toggle" class="px-2.5 py-1 text-[11px] font-bold rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white border border-slate-700 transition-all active:scale-95 flex items-center gap-1">
-              <span id="paper-dark-toggle-label">Enable</span>
-            </button>
-          </div>
-
-          <!-- Worksheet Illustration Controls -->
-          <div>
-            <label class="text-[11px] text-slate-300 mb-1.5 block flex items-center justify-between">
-              <span>Worksheet Illustration</span>
-              <span class="text-[9px] text-indigo-400 font-medium">Dynamic Vector Art</span>
-            </label>
-            <div class="grid grid-cols-2 gap-2">
-              <div>
-                <label class="text-[9px] text-slate-400 mb-1 block">Illustration Toggle</label>
-                <select id="illustration-toggle" onchange="toggleIllustration(this.value)" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-2 py-1.5 text-xs text-slate-200 focus:outline-none focus:border-indigo-500 font-semibold">
-                  <option value="show" selected>🎨 Show Illustration</option>
-                  <option value="hide">❌ Hide (Ink Saver)</option>
-                </select>
-              </div>
-              <div>
-                <label class="text-[9px] text-slate-400 mb-1 block">Vector Art Style</label>
-                <select id="illustration-style" onchange="changeIllustrationStyle(this.value)" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-2 py-1.5 text-xs text-slate-200 focus:outline-none focus:border-indigo-500 font-semibold">
-                  <option value="academic-color" selected>🌈 Full Academic</option>
-                  <option value="duotone">🎭 Creative Duo-Tone</option>
-                  <option value="line-art">✏️ Sharp Line-Art</option>
-                </select>
-              </div>
-            </div>
-          </div>
-
-          <!-- Typography & Spacing -->
-          <div class="grid grid-cols-2 gap-2">
             <div>
-              <label class="text-[11px] text-slate-300 mb-1 block flex items-center justify-between">
-                <span>Font Family</span>
-                <span class="text-[9px] text-indigo-400 font-medium">8 Custom Fonts</span>
-              </label>
-              <select id="font-family-select" onchange="applyFontFamily(this.value)" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-2 py-1.5 text-xs text-slate-200 focus:outline-none focus:border-indigo-500 font-medium">
-                <option value="font-inter">✨ Inter (Modern Sans)</option>
-                <option value="font-sfpro"> SF Pro (System Clean)</option>
-                <option value="font-roboto">📱 Roboto (Modern Neutral)</option>
-                <option value="font-playfair">📰 Playfair Display (Editorial Serif)</option>
-                <option value="font-merriweather" selected>📚 Merriweather (Classic Book)</option>
-                <option value="font-lora">📖 Lora (Literary Serif)</option>
-                <option value="font-sourcesans">📄 Source Sans Pro (Legible)</option>
-                <option value="font-ptserif">🎓 PT Serif (Academic)</option>
-                <option value="font-playful">🎈 Fredoka (Kids Playful)</option>
-                <option value="font-handwriting">✍️ Caveat (Handwriting)</option>
-                <option value="font-mono">💻 JetBrains Mono (Code)</option>
-              </select>
-            </div>
-
-            <div>
-              <label class="text-[11px] text-slate-300 mb-1 block">Page Margins</label>
-              <select id="margin-select" onchange="applyMargins(this.value)" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-2 py-1.5 text-xs text-slate-200 focus:outline-none focus:border-indigo-500">
-                <option value="p-4">Narrow (16px)</option>
-                <option value="p-8" selected>Normal (32px)</option>
-                <option value="p-12">Wide (48px)</option>
-              </select>
+              <span class="text-xs font-bold text-white block leading-tight">AI ELA Generator</span>
+              <span class="text-[9px] text-indigo-200">Worksheets & Slide Decks</span>
             </div>
           </div>
-        </div>
-      </div>
-
-      <!-- TAB 3: UTILITIES & TOOLS -->
-      <div id="tab-tools-content" class="space-y-4 hidden">
-        <!-- Teacher Quick Mode Toggle: Student vs Answer Key -->
-        <div class="bg-indigo-950/60 rounded-xl p-3 border border-indigo-500/30 space-y-2">
-          <div class="flex items-center justify-between">
-            <span class="text-xs font-bold text-indigo-200 flex items-center gap-1.5">
-              <i data-lucide="key" class="w-4 h-4 text-amber-400"></i> Teacher Answer Key
-            </span>
-            <label class="relative inline-flex items-center cursor-pointer">
-              <input type="checkbox" id="answer-key-toggle" onchange="toggleAnswerKey(this.checked)" class="sr-only peer">
-              <div class="w-9 h-5 bg-slate-700 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-amber-500"></div>
-            </label>
-          </div>
-          <p class="text-[11px] text-slate-400 leading-tight">Switch to reveal red answer keys and solution guides for grading.</p>
-        </div>
-
-        <!-- Canvas Modifiers Box -->
-        <div class="bg-slate-800/50 rounded-xl p-3 border border-slate-700/50 space-y-2.5">
-          <span class="text-xs font-bold text-slate-200 flex items-center gap-1.5">
-            <i data-lucide="edit-3" class="w-4 h-4 text-indigo-400"></i> Canvas Modifiers
-          </span>
-          <div class="grid grid-cols-2 gap-2">
-            <button onclick="addCustomQuestion()" class="py-2 px-2 bg-slate-900 hover:bg-slate-800 text-indigo-300 hover:text-white font-medium rounded-xl border border-indigo-500/30 flex items-center justify-center gap-1.5 text-[11px] transition-all active:scale-95">
-              <i data-lucide="plus-circle" class="w-3.5 h-3.5 text-indigo-400"></i>
-              <span>Add Question</span>
-            </button>
-
-            <button onclick="document.getElementById('image-upload-input').click()" class="py-2 px-2 bg-slate-900 hover:bg-slate-800 text-emerald-300 hover:text-white font-medium rounded-xl border border-emerald-500/30 flex items-center justify-center gap-1.5 text-[11px] transition-all active:scale-95" title="Insert Custom Image">
-              <i data-lucide="image" class="w-3.5 h-3.5 text-emerald-400"></i>
-              <span>Image</span>
-            </button>
-
-            <button onclick="insertManualPageBreak()" class="py-2 px-2 bg-slate-900 hover:bg-slate-800 text-purple-300 hover:text-white font-medium rounded-xl border border-purple-500/30 flex items-center justify-center gap-1.5 text-[11px] transition-all active:scale-95" title="Insert A4 Page Break Boundary">
-              <i data-lucide="scissors" class="w-3.5 h-3.5 text-purple-400"></i>
-              <span>Page Break</span>
-            </button>
-            <input type="file" id="image-upload-input" accept="image/*" class="hidden" onchange="handleImageUpload(event)">
-          </div>
-        </div>
-
-        <!-- Saved Library Box -->
-        <div class="bg-slate-800/50 rounded-xl p-3 border border-slate-700/50 space-y-2.5">
-          <span class="text-xs font-bold text-slate-200 flex items-center gap-1.5">
-            <i data-lucide="folder" class="w-4 h-4 text-emerald-400"></i> Local File Library
-          </span>
-          <div class="grid grid-cols-2 gap-2">
-            <button onclick="saveCurrentWorksheet()" class="py-2.5 px-2 bg-emerald-950/80 hover:bg-emerald-900 text-emerald-300 hover:text-white font-semibold rounded-xl border border-emerald-500/40 flex items-center justify-center gap-1 text-xs transition-all active:scale-95 shadow-md shadow-emerald-950/50">
-              <i data-lucide="bookmark-plus" class="w-3.5 h-3.5 text-emerald-400"></i>
-              <span>Save Work</span>
-            </button>
-
-            <button onclick="openSavedLibraryModal()" class="py-2.5 px-2 bg-indigo-950/80 hover:bg-indigo-900 text-indigo-300 hover:text-white font-semibold rounded-xl border border-indigo-500/40 flex items-center justify-center gap-1 text-xs transition-all active:scale-95 shadow-md shadow-indigo-950/50">
-              <i data-lucide="folder-heart" class="w-3.5 h-3.5 text-indigo-400"></i>
-              <span>My Library</span>
-            </button>
-          </div>
-        </div>
-
-        <!-- Student Share Box -->
-        <div class="bg-slate-800/50 rounded-xl p-3 border border-slate-700/50 space-y-2">
-          <span class="text-xs font-bold text-slate-200 flex items-center gap-1.5">
-            <i data-lucide="share-2" class="w-4 h-4 text-cyan-400"></i> Share with Students
-          </span>
-          <button onclick="openQRCodeModal()" class="w-full py-2 px-3 bg-cyan-950/80 hover:bg-cyan-900 text-cyan-300 hover:text-white font-semibold rounded-xl border border-cyan-500/40 flex items-center justify-center gap-2 text-xs transition-all active:scale-95 shadow-md shadow-cyan-950/40">
-            <i data-lucide="qr-code" class="w-4 h-4 text-cyan-400"></i>
-            <span>Student QR Code Link</span>
+          <button onclick="openGlassTutorModal()" class="px-2 py-0.5 text-[9px] font-bold bg-white/10 hover:bg-white/20 text-white border border-white/20 rounded-full transition-all flex items-center gap-1" title="Live Tutor Chat">
+            <i data-lucide="bot" class="w-2.5 h-2.5 text-indigo-300"></i>
+            <span>AI Tutor</span>
           </button>
         </div>
 
-        <!-- Reset Canvas Box -->
-        <div class="bg-slate-800/50 rounded-xl p-3 border border-slate-700/50">
-          <button onclick="clearWorksheet()" class="w-full py-2 px-3 bg-red-950/30 hover:bg-red-950/50 text-red-400 hover:text-red-300 border border-red-500/20 font-medium rounded-lg flex items-center justify-center gap-1.5 text-xs transition-all">
-            <i data-lucide="trash-2" class="w-3.5 h-3.5 text-red-400"></i>
-            <span>Clear Worksheet Canvas</span>
+        <div class="space-y-2">
+          <div>
+            <label class="text-[10px] font-bold text-indigo-200 block mb-1">Topic / Grammar Focus</label>
+            <input type="text" id="ai-topic-input" placeholder="e.g. Metaphors & Similes, Irregular Verbs, Rainforest Ecosystem" class="w-full bg-slate-950/80 border border-white/20 rounded-xl px-3 py-2 text-xs text-white placeholder-slate-400 focus:outline-none focus:border-indigo-400 focus:ring-1 focus:ring-indigo-400">
+          </div>
+
+          <div class="grid grid-cols-2 gap-2">
+            <div>
+              <label class="text-[10px] font-bold text-indigo-200 block mb-1">Grade Level</label>
+              <select id="ai-grade-level" class="w-full bg-slate-950/80 border border-white/20 rounded-xl px-2.5 py-1.5 text-xs text-slate-200 focus:outline-none focus:border-indigo-400 font-medium">
+                <option value="Elementary (Grades 3-5)">Elementary (3-5)</option>
+                <option value="Middle School (Grades 6-8)" selected>Middle School (6-8)</option>
+                <option value="High School (Grades 9-12)">High School (9-12)</option>
+                <option value="ESL / Beginner">ESL / Beginner</option>
+                <option value="Advanced / AP ELA">Advanced / AP ELA</option>
+              </select>
+            </div>
+            <div>
+              <label class="text-[10px] font-bold text-indigo-200 block mb-1">Activity Focus</label>
+              <select id="ai-activity-type" class="w-full bg-slate-950/80 border border-white/20 rounded-xl px-2.5 py-1.5 text-xs text-slate-200 focus:outline-none focus:border-indigo-400 font-medium">
+                <option value="Complete ELA Unit" selected>Complete Unit</option>
+                <option value="Vocabulary & Context">Vocabulary Focus</option>
+                <option value="Reading Comprehension">Reading Comprehension</option>
+                <option value="Grammar & Editing">Grammar & Editing</option>
+                <option value="Creative Writing">Creative Writing</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- Primary One-Click Generate Button -->
+          <button onclick="generateAIWorksheet()" id="ai-gen-btn" class="w-full py-2.5 bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-600 hover:from-indigo-500 hover:to-pink-500 text-white rounded-xl text-xs font-black shadow-lg shadow-indigo-600/30 flex items-center justify-center gap-2 active:scale-95 transition-all mt-1 cursor-pointer">
+            <i data-lucide="sparkles" class="w-4 h-4"></i>
+            <span>Generate Worksheet & Deck</span>
           </button>
         </div>
+      </div>
+
+      <!-- 2. REDUCED THEME BUTTON (Consolidates all colors & styles to save massive dashboard space) -->
+      <div class="space-y-1.5">
+        <label class="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">Visual Styling & Palette</label>
+        <button onclick="openThemePaletteModal()" id="btn-theme-palette-main" class="w-full p-2.5 rounded-xl bg-gradient-to-r from-slate-900 to-indigo-950/90 border border-indigo-500/30 hover:border-indigo-400 text-left flex items-center justify-between group transition-all shadow-md active:scale-95 cursor-pointer">
+          <div class="flex items-center gap-2.5">
+            <div class="w-7 h-7 rounded-lg bg-indigo-600/30 border border-indigo-500/40 flex items-center justify-center text-indigo-300 group-hover:scale-105 transition-transform">
+              <i data-lucide="palette" class="w-3.5 h-3.5"></i>
+            </div>
+            <div>
+              <span id="theme-btn-current-label" class="text-xs font-bold text-white block leading-tight">Theme & Palette</span>
+              <span id="theme-btn-sub-label" class="text-[10px] text-indigo-300">📖 ELA Textbook Style</span>
+            </div>
+          </div>
+          <div class="flex items-center gap-1.5 text-indigo-400 group-hover:text-white transition-colors">
+            <span class="text-[10px] font-semibold">Change</span>
+            <i data-lucide="chevron-right" class="w-3.5 h-3.5"></i>
+          </div>
+        </button>
+      </div>
+
+      <!-- 3. QUICK TEMPLATES (Clean, compact 2-column grid) -->
+      <div class="space-y-1.5">
+        <label class="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">Quick Presets</label>
+        <div class="grid grid-cols-2 gap-2">
+          <button onclick="generateVocabularyWorksheet()" class="flex flex-col items-start p-2.5 rounded-xl bg-slate-900/90 hover:bg-slate-800 border border-slate-800 hover:border-indigo-500/50 text-left transition-all group shadow-sm active:scale-95">
+            <div class="w-6 h-6 rounded-lg bg-indigo-500/20 text-indigo-400 flex items-center justify-center mb-1.5 group-hover:scale-110 transition-transform">
+              <i data-lucide="book-open" class="w-3.5 h-3.5"></i>
+            </div>
+            <span class="text-xs font-bold text-white block">Vocabulary</span>
+            <span class="text-[9px] text-slate-400">Context clues & quiz</span>
+          </button>
+
+          <button onclick="generateGrammarWorksheet()" class="flex flex-col items-start p-2.5 rounded-xl bg-slate-900/90 hover:bg-slate-800 border border-slate-800 hover:border-violet-500/50 text-left transition-all group shadow-sm active:scale-95">
+            <div class="w-6 h-6 rounded-lg bg-violet-500/20 text-violet-400 flex items-center justify-center mb-1.5 group-hover:scale-110 transition-transform">
+              <i data-lucide="spell-check" class="w-3.5 h-3.5"></i>
+            </div>
+            <span class="text-xs font-bold text-white block">Grammar</span>
+            <span class="text-[9px] text-slate-400">Sentence structure</span>
+          </button>
+
+          <button onclick="generateReadingWorksheet()" class="flex flex-col items-start p-2.5 rounded-xl bg-slate-900/90 hover:bg-slate-800 border border-slate-800 hover:border-emerald-500/50 text-left transition-all group shadow-sm active:scale-95">
+            <div class="w-6 h-6 rounded-lg bg-emerald-500/20 text-emerald-400 flex items-center justify-center mb-1.5 group-hover:scale-110 transition-transform">
+              <i data-lucide="glasses" class="w-3.5 h-3.5"></i>
+            </div>
+            <span class="text-xs font-bold text-white block">Reading Passage</span>
+            <span class="text-[9px] text-slate-400">Story & analysis</span>
+          </button>
+
+          <button onclick="generateWritingWorksheet()" class="flex flex-col items-start p-2.5 rounded-xl bg-slate-900/90 hover:bg-slate-800 border border-slate-800 hover:border-amber-500/50 text-left transition-all group shadow-sm active:scale-95">
+            <div class="w-6 h-6 rounded-lg bg-amber-500/20 text-amber-400 flex items-center justify-center mb-1.5 group-hover:scale-110 transition-transform">
+              <i data-lucide="pen-tool" class="w-3.5 h-3.5"></i>
+            </div>
+            <span class="text-xs font-bold text-white block">Creative Story</span>
+            <span class="text-[9px] text-slate-400">Prompts & outline</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- 4. ACTION HUB (Print, Save, Slide Presentation) -->
+      <div class="space-y-2 pt-2 border-t border-slate-800">
+        <button onclick="triggerPrintFromApp()" class="w-full py-2.5 bg-indigo-600 hover:bg-indigo-500 text-white rounded-xl text-xs font-bold flex items-center justify-center gap-2 shadow-lg shadow-indigo-600/25 active:scale-95 transition-all">
+          <i data-lucide="printer" class="w-3.5 h-3.5"></i>
+          <span>Print / Save PDF (A4)</span>
+        </button>
+
+        <button onclick="openAIPresentationModal()" class="w-full py-2 bg-slate-800 hover:bg-slate-700 text-sky-300 hover:text-white border border-sky-500/30 rounded-xl text-xs font-bold flex items-center justify-center gap-2 active:scale-95 transition-all">
+          <i data-lucide="presentation" class="w-3.5 h-3.5"></i>
+          <span>AI PowerPoint Generator</span>
+        </button>
       </div>
 
     </div>
 
-    <!-- Action Buttons Footer -->
-    <div class="p-4 border-t border-slate-800 bg-slate-950/90 no-print space-y-2.5 text-center">
-      <button onclick="downloadPDF()" class="w-full py-3 px-4 bg-gradient-to-r from-indigo-600 to-violet-600 hover:from-indigo-500 hover:to-violet-500 text-white font-semibold rounded-xl shadow-lg shadow-indigo-600/30 flex items-center justify-center gap-2 text-sm transition-all duration-200 active:scale-95">
-        <i data-lucide="printer" class="w-4 h-4"></i>
-        <span>Print / Download PDF</span>
+    <!-- Dashboard Footer Status -->
+    <div class="p-3 bg-slate-950/90 border-t border-slate-800 flex items-center justify-between text-[11px] text-slate-400">
+      <div class="flex items-center gap-1.5">
+        <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+        <span class="font-medium">Studio Ready</span>
+      </div>
+      <button onclick="saveCurrentWorksheet()" class="text-indigo-400 hover:text-white font-bold flex items-center gap-1">
+        <i data-lucide="save" class="w-3 h-3"></i>
+        <span>Save</span>
       </button>
-      <div class="text-[9px] text-slate-500 font-medium tracking-wide">
-        © 2026 <span class="text-slate-400 font-bold">Mr.Zaafouri Abdelmalek</span> • All rights reserved
-      </div>
     </div>
   </aside>
 
@@ -1824,7 +1548,7 @@
     <!-- POWERPOINT PRESENTATION CANVAS (Widescreen 16:9 format with Expansions) -->
     <div id="presentation-container" class="hidden w-full max-w-7xl bg-slate-900 border-2 border-indigo-500/30 rounded-2xl shadow-2xl p-4 md:p-6 flex flex-col gap-4 no-print-sections transition-all duration-300">
       
-      <!-- Top Presentation Toolbar (AI Slide Generator, Fullscreen, Video, Aspect) -->
+      <!-- Top Presentation Toolbar (Animation Selector, Theme, AI Slide Generator, Fullscreen) -->
       <div class="flex flex-wrap items-center justify-between gap-3 bg-slate-950/90 border border-indigo-500/20 p-3 rounded-xl shadow-lg">
         <div class="flex items-center gap-3">
           <div class="flex items-center gap-2">
@@ -1834,11 +1558,57 @@
             <div>
               <div class="flex items-center gap-2">
                 <h3 class="text-xs sm:text-sm font-black text-white tracking-wide">Interactive Classroom Slideshow</h3>
-                <span class="px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 text-[9px] font-bold">PowerPoint Mode</span>
+                <span class="px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 text-[9px] font-bold">PowerPoint Animated</span>
               </div>
-              <p class="text-[10px] text-slate-400">Smartboard Presentation • 3D Gestures • AI Slide Synthesis</p>
+              <p class="text-[10px] text-slate-400 hidden sm:block">Smooth animated transitions, interactive quiz reveals & presenter notes</p>
             </div>
           </div>
+        </div>
+
+        <!-- Controls: Animations, Theme, AI Generator -->
+        <div class="flex flex-wrap items-center gap-2">
+          
+          <!-- Slide Animation Style Selector -->
+          <div class="flex items-center gap-1 bg-slate-900 border border-slate-700 px-2 py-1 rounded-lg">
+            <i data-lucide="sparkles" class="w-3.5 h-3.5 text-amber-400"></i>
+            <select onchange="setSlideAnimationMode(this.value)" class="bg-transparent text-xs text-slate-200 font-semibold focus:outline-none cursor-pointer">
+              <option value="smooth-slide">✨ Smooth Slide</option>
+              <option value="zoom-pop">🔍 Zoom & Depth</option>
+              <option value="fluid-fade">🌊 Fluid Fade</option>
+              <option value="card-flip">🎴 3D Card Flip</option>
+            </select>
+          </div>
+
+          <!-- Slide Visual Theme -->
+          <div class="flex items-center gap-1 bg-slate-900 border border-slate-700 px-2 py-1 rounded-lg">
+            <i data-lucide="palette" class="w-3.5 h-3.5 text-indigo-400"></i>
+            <select id="slide-theme-select" onchange="applySlideTheme(this.value)" class="bg-transparent text-xs text-slate-200 font-semibold focus:outline-none cursor-pointer">
+              <option value="indigo">Indigo Modern</option>
+              <option value="emerald">Emerald Scholastic</option>
+              <option value="sunset">Sunset Academic</option>
+              <option value="midnight">Midnight Pro</option>
+              <option value="pastel">Nordic Pastel</option>
+            </select>
+          </div>
+
+          <!-- Add Slide Button -->
+          <button onclick="openCustomSlideModal()" class="px-2.5 py-1.5 bg-slate-800 hover:bg-slate-700 text-slate-200 hover:text-white rounded-lg text-xs font-bold flex items-center gap-1 border border-slate-700 transition-all active:scale-95" title="Add Custom Teacher Slide">
+            <i data-lucide="plus" class="w-3.5 h-3.5"></i>
+            <span>Add Slide</span>
+          </button>
+
+          <!-- AI Slides Generator Modal Button -->
+          <button onclick="openAIPresentationModal()" class="px-3 py-1.5 bg-gradient-to-r from-sky-600 via-indigo-600 to-purple-600 hover:from-sky-500 hover:to-purple-500 text-white rounded-lg text-xs font-black shadow-md shadow-sky-600/30 flex items-center gap-1.5 active:scale-95 transition-all">
+            <i data-lucide="sparkles" class="w-3.5 h-3.5 text-sky-200"></i>
+            <span>AI Slide Deck</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Animated Progress Bar for Slides -->
+      <div class="w-full bg-slate-950/80 rounded-full h-1.5 overflow-hidden border border-white/10 shadow-inner">
+        <div id="slide-progress-fill" class="bg-gradient-to-r from-indigo-500 via-sky-400 to-purple-500 h-full rounded-full transition-all duration-500 ease-out" style="width: 15%;"></div>
+      </div>
           <span class="hidden sm:inline-block h-5 w-px bg-slate-800"></span>
           <span id="slide-count-badge" class="px-2.5 py-1 rounded-full bg-indigo-950 border border-indigo-500/30 text-indigo-300 text-[11px] font-bold">Slide 1 of 5</span>
         </div>
@@ -3791,6 +3561,89 @@
       }
     }
 
+    
+    // Theme & Palette Modal Handlers (Reduces Dashboard Complexity)
+    let activeTheme = 'ela-book';
+    let slideAnimationMode = 'smooth-slide'; // 'smooth-slide', 'zoom-pop', 'fluid-fade', 'card-flip'
+
+    function openThemePaletteModal() {
+      const modal = document.getElementById('theme-palette-modal');
+      if (modal) {
+        modal.classList.remove('hidden');
+        modal.classList.add('flex');
+        highlightActiveThemeCard(activeTheme);
+      }
+    }
+
+    function closeThemePaletteModal() {
+      const modal = document.getElementById('theme-palette-modal');
+      if (modal) {
+        modal.classList.add('hidden');
+        modal.classList.remove('flex');
+      }
+    }
+
+    function highlightActiveThemeCard(themeName) {
+      document.querySelectorAll('.theme-picker-card').forEach(card => {
+        card.classList.remove('border-indigo-400', 'ring-2', 'ring-indigo-400/50', 'bg-indigo-950/60');
+        card.classList.add('border-slate-700', 'bg-slate-800/60');
+      });
+      const activeCard = document.getElementById('theme-card-' + themeName);
+      if (activeCard) {
+        activeCard.classList.remove('border-slate-700', 'bg-slate-800/60');
+        activeCard.classList.add('border-indigo-400', 'ring-2', 'ring-indigo-400/50', 'bg-indigo-950/60');
+      }
+    }
+
+    function selectThemeFromModal(themeName) {
+      activeTheme = themeName;
+      applyTheme(themeName);
+      highlightActiveThemeCard(themeName);
+      
+      // Update the single dashboard theme button label
+      const themeLabels = {
+        'ela-book': '📖 ELA Textbook Style',
+        'classic-corporate': '👔 Classic Navy Style',
+        'midnight-tech': '🌙 Midnight Tech Style',
+        'nordic-pastel': '🍃 Nordic Sage Style',
+        'vibrant-gamifier': '🎮 Gamifier Pop Style',
+        'emerald-scholar': '🎓 Scholar Green Style',
+        'sunset-minimalist': '🌅 Sunset Warm Style',
+        'cyberpunk-edgy': '⚡ Cyber Neon Style',
+        'oceanic-trust': '🌊 Oceanic Blue Style'
+      };
+      
+      const subLabel = document.getElementById('theme-btn-sub-label');
+      if (subLabel) {
+        subLabel.innerText = themeLabels[themeName] || (themeName.charAt(0).toUpperCase() + themeName.slice(1));
+      }
+      
+      const themeSelector = document.getElementById('theme-select');
+      if (themeSelector) themeSelector.value = themeName;
+      
+      const presThemeSelect = document.getElementById('slide-theme-select');
+      if (presThemeSelect) {
+        // Map to presentation theme if applicable
+        if (themeName === 'midnight-tech' || themeName === 'cyberpunk-edgy') presThemeSelect.value = 'midnight';
+        else if (themeName === 'emerald-scholar') presThemeSelect.value = 'emerald';
+        else if (themeName === 'sunset-minimalist') presThemeSelect.value = 'sunset';
+        else presThemeSelect.value = 'indigo';
+        applySlideTheme(presThemeSelect.value);
+      }
+    }
+
+    function setSlideAnimationMode(mode) {
+      slideAnimationMode = mode;
+      renderCurrentSlide();
+      const modeNames = {
+        'smooth-slide': 'Smooth Slide Animation',
+        'zoom-pop': 'Zoom & Depth Animation',
+        'fluid-fade': 'Fluid Fade Animation',
+        'card-flip': '3D Card Flip Animation'
+      };
+      showToast('Slide Animation', 'Set to ' + (modeNames[mode] || mode), 'sparkles');
+    }
+
     function renderCurrentSlide() {
       const wrapper = document.getElementById('slide-content-wrapper');
       if (!wrapper || presentationSlides.length === 0) return;
@@ -3800,96 +3653,121 @@
       if (counter) {
         counter.innerText = `Slide ${currentSlideIndex + 1} of ${presentationSlides.length}`;
       }
-
       const countBadge = document.getElementById('slide-count-badge');
       if (countBadge) {
         countBadge.innerText = `Slide ${currentSlideIndex + 1} of ${presentationSlides.length}`;
       }
       
+      // Update progress bar
+      const progressBar = document.getElementById('slide-progress-fill');
+      if (progressBar) {
+        const pct = ((currentSlideIndex + 1) / presentationSlides.length) * 100;
+        progressBar.style.width = pct + '%';
+      }
+
+      // Determine Animation Class
+      let animClass = 'anim-slide-right';
+      if (slideAnimationMode === 'zoom-pop') animClass = 'anim-slide-zoom';
+      else if (slideAnimationMode === 'fluid-fade') animClass = 'anim-slide-fade';
+      else if (slideAnimationMode === 'card-flip') animClass = 'anim-slide-flip';
+
       let html = '';
-      
+
       if (slide.layout === 'title') {
         html = `
-          <div class="flex-1 flex flex-col justify-center items-center text-center py-8">
-            <span class="px-3 py-1 bg-indigo-100 text-indigo-700 text-[10px] font-extrabold uppercase rounded-full tracking-wider mb-4 animate-slide-up">Presentation Mode</span>
-            <h1 class="text-3xl font-black text-slate-950 font-sans tracking-tight mb-3 leading-tight animate-slide-up delay-150">${slide.title}</h1>
-            <p class="text-xs text-slate-500 font-medium max-w-md animate-slide-up delay-300">${slide.subtitle}</p>
+          <div class="flex-1 flex flex-col justify-center items-center text-center py-8 ${animClass}">
+            <span class="px-3.5 py-1.5 bg-indigo-500/10 text-indigo-600 border border-indigo-500/20 text-xs font-black uppercase rounded-full tracking-wider mb-4 anim-badge-pop shadow-sm">
+              ✨ Presentation Mode
+            </span>
+            <h1 class="text-3xl sm:text-4xl font-black text-slate-900 font-sans tracking-tight mb-4 leading-tight anim-stagger-1 max-w-2xl bg-gradient-to-r from-slate-950 via-indigo-950 to-slate-900 bg-clip-text text-transparent">
+              ${slide.title}
+            </h1>
+            <p class="text-sm sm:text-base text-slate-600 font-medium max-w-lg anim-stagger-2 leading-relaxed">
+              ${slide.subtitle}
+            </p>
+            <div class="mt-6 flex items-center gap-2 anim-stagger-3">
+              <span class="w-2 h-2 rounded-full bg-emerald-500 animate-ping"></span>
+              <span class="text-xs font-bold text-slate-400 uppercase tracking-wider">Interactive Lesson Deck</span>
+            </div>
           </div>
         `;
       } else if (slide.layout === 'bullets') {
         const bulletList = slide.bullets.map((b, idx) => {
-          const delays = ['delay-150', 'delay-225', 'delay-300', 'delay-375', 'delay-450'];
-          const delayClass = delays[idx] || 'delay-525';
-          return `<li class="text-sm font-medium leading-relaxed text-slate-800 flex items-start gap-2.5 animate-bullet-in ${delayClass}">
-            <span class="text-indigo-600 font-extrabold mt-0.5">•</span>
-            <div>${b}</div>
+          const staggerClass = `anim-stagger-${Math.min(idx + 1, 6)}`;
+          return `<li class="text-sm sm:text-base font-semibold leading-relaxed text-slate-800 flex items-start gap-3 ${staggerClass} p-3 rounded-xl bg-slate-50/80 border border-slate-100/80 shadow-sm slide-active-card hover:bg-indigo-50/40 transition-all">
+            <span class="w-6 h-6 rounded-lg bg-indigo-600 text-white flex items-center justify-center text-xs font-black flex-shrink-0 shadow-sm shadow-indigo-600/30">${idx + 1}</span>
+            <div class="pt-0.5">${b}</div>
           </li>`;
         }).join('');
         
         html = `
-          <div class="flex-1 flex flex-col justify-between py-2">
+          <div class="flex-1 flex flex-col justify-between py-2 ${animClass}">
             <div>
-              <span class="text-[9px] uppercase font-bold text-indigo-600 tracking-wider animate-slide-up">${slide.subtitle || 'Classroom Discussion'}</span>
-              <h2 class="text-xl font-bold text-slate-900 mt-1 mb-5 font-sans border-b pb-2 border-slate-100 animate-slide-up delay-75">${slide.title}</h2>
+              <span class="text-[10px] uppercase font-black text-indigo-600 tracking-wider anim-badge-pop block mb-1">${slide.subtitle || 'Classroom Focus'}</span>
+              <h2 class="text-2xl font-black text-slate-900 mb-4 font-sans border-b pb-2.5 border-slate-200/80 anim-stagger-1 tracking-tight flex items-center justify-between">
+                <span>${slide.title}</span>
+                <span class="text-xs font-bold text-slate-400 bg-slate-100 px-2 py-0.5 rounded-full">${slide.bullets.length} Key Points</span>
+              </h2>
             </div>
-            <ul class="space-y-4 flex-1">
+            <ul class="space-y-3 flex-1 flex flex-col justify-center">
               ${bulletList}
             </ul>
           </div>
         `;
       } else if (slide.layout === 'split') {
         html = `
-          <div class="flex-1 flex flex-col justify-between py-2">
+          <div class="flex-1 flex flex-col justify-between py-2 ${animClass}">
             <div>
-              <span class="text-[9px] uppercase font-bold text-indigo-600 tracking-wider animate-slide-up">${slide.subtitle}</span>
-              <h2 class="text-xl font-bold text-slate-900 mt-1 mb-4 font-sans border-b pb-2 border-slate-100 animate-slide-up delay-75">${slide.title}</h2>
+              <span class="text-[10px] uppercase font-black text-indigo-600 tracking-wider anim-badge-pop block mb-1">${slide.subtitle}</span>
+              <h2 class="text-2xl font-black text-slate-900 mb-4 font-sans border-b pb-2.5 border-slate-200/80 anim-stagger-1 tracking-tight">${slide.title}</h2>
             </div>
-            <div class="grid grid-cols-2 gap-6 flex-1 items-stretch">
-              <div class="flex flex-col justify-center animate-slide-up delay-150">${slide.leftContent}</div>
-              <div class="flex flex-col justify-center animate-slide-up delay-300">${slide.rightContent}</div>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-5 flex-1 items-stretch">
+              <div class="flex flex-col justify-center anim-stagger-2 bg-slate-50/90 p-5 rounded-2xl border border-slate-200/80 shadow-sm slide-active-card">${slide.leftContent}</div>
+              <div class="flex flex-col justify-center anim-stagger-3 bg-indigo-50/40 p-5 rounded-2xl border border-indigo-100 shadow-sm slide-active-card">${slide.rightContent}</div>
             </div>
           </div>
         `;
       } else if (slide.layout === 'activity') {
         html = `
-          <div class="flex-1 flex flex-col justify-between py-2">
+          <div class="flex-1 flex flex-col justify-between py-2 ${animClass}">
             <div>
-              <span class="text-[9px] uppercase font-bold text-indigo-600 tracking-wider animate-slide-up">${slide.subtitle}</span>
-              <h2 class="text-xl font-bold text-slate-900 mt-1 mb-4 font-sans border-b pb-2 border-slate-100 animate-slide-up delay-75">${slide.title}</h2>
+              <span class="text-[10px] uppercase font-black text-indigo-600 tracking-wider anim-badge-pop block mb-1">${slide.subtitle}</span>
+              <h2 class="text-2xl font-black text-slate-900 mb-4 font-sans border-b pb-2.5 border-slate-200/80 anim-stagger-1 tracking-tight">${slide.title}</h2>
             </div>
-            <div class="flex-1 animate-slide-up delay-150">
+            <div class="flex-1 anim-stagger-2">
               ${slide.activityHtml}
-              ${revealSlideAnswers && slide.answersRevealedHtml ? slide.answersRevealedHtml : ''}
+              ${revealSlideAnswers && slide.answersRevealedHtml ? `<div class="anim-stagger-3 mt-4">${slide.answersRevealedHtml}</div>` : ''}
             </div>
           </div>
         `;
       } else if (slide.layout === 'custom') {
         html = `
-          <div class="flex-1 flex flex-col justify-between py-2">
+          <div class="flex-1 flex flex-col justify-between py-2 ${animClass}">
             <div>
               <div class="flex items-center justify-between">
-                <span class="text-[9px] uppercase font-bold text-indigo-600 tracking-wider animate-slide-up">${slide.subtitle || 'Teacher Custom Slide'}</span>
-                <button onclick="removeCustomSlide(${slide.customId || 0})" class="text-[10px] text-rose-500 hover:text-rose-700 font-bold px-2 py-0.5 rounded bg-rose-50 border border-rose-200 transition-all flex items-center gap-1" title="Delete this slide">
+                <span class="text-[10px] uppercase font-black text-indigo-600 tracking-wider anim-badge-pop">${slide.subtitle || 'Teacher Custom Slide'}</span>
+                <button onclick="removeCustomSlide(${slide.customId || 0})" class="text-[10px] text-rose-500 hover:text-rose-700 font-bold px-2.5 py-1 rounded-lg bg-rose-50 border border-rose-200 transition-all flex items-center gap-1 active:scale-95">
                   <i data-lucide="trash-2" class="w-3 h-3"></i>
                   <span>Delete</span>
                 </button>
               </div>
-              <h2 class="text-2xl font-bold text-slate-900 mt-1 mb-4 font-sans border-b pb-2 border-slate-100 animate-slide-up delay-75">${slide.title}</h2>
+              <h2 class="text-2xl font-black text-slate-900 mt-1 mb-4 font-sans border-b pb-2.5 border-slate-200/80 anim-stagger-1 tracking-tight">${slide.title}</h2>
             </div>
-            <div class="flex-1 flex flex-col justify-center animate-slide-up delay-150 text-slate-800 text-sm leading-relaxed whitespace-pre-line bg-slate-50/70 p-6 rounded-xl border border-slate-200">
+            <div class="flex-1 flex flex-col justify-center anim-stagger-2 text-slate-800 text-sm sm:text-base leading-relaxed whitespace-pre-line bg-slate-50/80 p-6 rounded-2xl border border-slate-200 shadow-sm slide-active-card">
               ${slide.content}
             </div>
           </div>
         `;
       }
-      
+
       wrapper.innerHTML = html;
-      
+
+      // Update Answer button UI
       const btnAnswers = document.getElementById('btn-slide-answers');
       const labelAnswers = document.getElementById('label-slide-answers');
       if (btnAnswers && labelAnswers) {
         if (revealSlideAnswers) {
-          btnAnswers.className = "py-1.5 px-3 bg-emerald-600 hover:bg-emerald-500 text-white font-bold rounded-lg text-xs flex items-center gap-1.5 transition-all";
+          btnAnswers.className = "py-1.5 px-3 bg-emerald-600 hover:bg-emerald-500 text-white font-bold rounded-lg text-xs flex items-center gap-1.5 transition-all shadow-md shadow-emerald-600/20";
           labelAnswers.innerText = "Hide Answers";
         } else {
           btnAnswers.className = "py-1.5 px-3 bg-amber-600/20 hover:bg-amber-600 text-amber-300 hover:text-white font-bold rounded-lg text-xs flex items-center gap-1.5 transition-all";
@@ -3903,33 +3781,27 @@
         let noteText = slide.notes || '';
         if (!noteText) {
           if (slide.layout === 'title') {
-            noteText = "Welcome students to today's English lesson. Keep this slide visible as students enter the room. Explain that today's focus is on reading, grammar, and building context comprehension.";
+            noteText = "Welcome students to today's English lesson. Explain the learning objectives and ask a warm-up question.";
           } else if (slide.layout === 'bullets') {
-            noteText = `Lead a group recitation focusing on "${slide.title}". Read the first point aloud and prompt a student to guess how this connects to the general objective. Each list point builds vocabulary sequentially.`;
+            noteText = `Discuss: "${slide.title}". Read points sequentially and invite student examples.`;
           } else if (slide.layout === 'split') {
-            noteText = "Ask student volunteers to read the left-hand text in a clean reading circle. Use the right-hand vector diagram to visually anchor the vocabulary definitions before writing sentences.";
+            noteText = "Compare the concepts side-by-side. Ask students to identify key distinctions.";
           } else if (slide.layout === 'activity') {
-            noteText = "Interactive smartboard challenge! Direct student volunteers to tap, write, or fill in their answers on the projector. Click 'Reveal Answers' below once the discussion has finished.";
+            noteText = "Interactive challenge! Ask students to answer, then tap 'Reveal Answers' to check.";
           } else if (slide.layout === 'custom') {
-            noteText = `Teacher custom slide for discussion: "${slide.title}". Lead classroom interaction and invite students to respond.`;
+            noteText = `Custom slide: "${slide.title}". Review together.`;
           } else {
-            noteText = `Review this slide block together. Emphasize: "${slide.title}". Instruct students to take notes of key terms and rules in their exercise books.`;
+            noteText = `Focus: "${slide.title}". Review vocabulary and grammar notes.`;
           }
         }
         notesContent.innerText = noteText;
       }
-      
+
       // Update the Slide Filmstrip Dock
       renderSlideFilmstrip();
-      
       lucide.createIcons();
     }
 
-    // Initialize 3D Swipe and Gestures Physics on the presentation slider
-    let isDraggingSlide = false;
-    let slideStartX = 0;
-    let slideCurrentX = 0;
-    
     function init3DSwipeHandlers() {
       const viewport = document.getElementById('slide-3d-viewport');
       const slideBox = document.getElementById('presentation-slide-box');
@@ -4526,6 +4398,197 @@
 
     render();
   <\/script>
+
+  <!-- UNIFIED THEME & PALETTE MODAL (Saves Dashboard Space) -->
+  <div id="theme-palette-modal" class="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-md hidden items-center justify-center p-4 transition-all duration-300 no-print">
+    <div class="bg-slate-900 border border-indigo-500/30 rounded-2xl w-full max-w-xl shadow-2xl p-6 relative max-h-[90vh] overflow-y-auto ring-1 ring-white/10 custom-scrollbar animate-fade-in">
+      
+      <!-- Header -->
+      <div class="flex items-center justify-between pb-4 border-b border-slate-800">
+        <div class="flex items-center gap-2.5">
+          <div class="w-8 h-8 rounded-xl bg-gradient-to-tr from-indigo-500 to-purple-600 flex items-center justify-center text-white shadow-md">
+            <i data-lucide="palette" class="w-4 h-4"></i>
+          </div>
+          <div>
+            <h3 class="text-base font-bold text-white tracking-wide">Worksheet Style & Palette</h3>
+            <p class="text-[11px] text-slate-400">Choose visual theme, borders, fonts, and dark mode</p>
+          </div>
+        </div>
+        <button onclick="closeThemePaletteModal()" class="p-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-400 hover:text-white transition-all">
+          <i data-lucide="x" class="w-4 h-4"></i>
+        </button>
+      </div>
+
+      <div class="space-y-5 pt-4">
+        <!-- 1. Visual Themes Grid -->
+        <div>
+          <label class="text-xs font-bold text-slate-200 block mb-2.5 flex items-center justify-between">
+            <span>Color Palette & Themes</span>
+            <span class="text-[10px] text-indigo-400 font-semibold">9 Curated Styles</span>
+          </label>
+          <div class="grid grid-cols-1 sm:grid-cols-3 gap-2.5">
+            <!-- Theme Card 1 -->
+            <button onclick="selectThemeFromModal('ela-book')" id="theme-card-ela-book" class="theme-picker-card p-3 rounded-xl border border-indigo-500/40 bg-indigo-950/40 text-left hover:border-indigo-400 transition-all flex flex-col gap-2 relative group">
+              <div class="flex items-center justify-between">
+                <span class="text-xs font-bold text-white">📖 ELA Textbook</span>
+                <span class="w-2 h-2 rounded-full bg-indigo-400"></span>
+              </div>
+              <div class="flex gap-1">
+                <span class="w-4 h-4 rounded-full bg-indigo-600"></span>
+                <span class="w-4 h-4 rounded-full bg-amber-500"></span>
+                <span class="w-4 h-4 rounded-full bg-emerald-500"></span>
+              </div>
+            </button>
+
+            <!-- Theme Card 2 -->
+            <button onclick="selectThemeFromModal('classic-corporate')" id="theme-card-classic-corporate" class="theme-picker-card p-3 rounded-xl border border-slate-700 bg-slate-800/60 text-left hover:border-indigo-400 transition-all flex flex-col gap-2 relative group">
+              <div class="flex items-center justify-between">
+                <span class="text-xs font-bold text-slate-200">👔 Classic Navy</span>
+              </div>
+              <div class="flex gap-1">
+                <span class="w-4 h-4 rounded-full bg-slate-700"></span>
+                <span class="w-4 h-4 rounded-full bg-blue-600"></span>
+                <span class="w-4 h-4 rounded-full bg-slate-300"></span>
+              </div>
+            </button>
+
+            <!-- Theme Card 3 -->
+            <button onclick="selectThemeFromModal('midnight-tech')" id="theme-card-midnight-tech" class="theme-picker-card p-3 rounded-xl border border-slate-700 bg-slate-800/60 text-left hover:border-indigo-400 transition-all flex flex-col gap-2 relative group">
+              <div class="flex items-center justify-between">
+                <span class="text-xs font-bold text-slate-200">🌙 Midnight Tech</span>
+              </div>
+              <div class="flex gap-1">
+                <span class="w-4 h-4 rounded-full bg-purple-900"></span>
+                <span class="w-4 h-4 rounded-full bg-indigo-500"></span>
+                <span class="w-4 h-4 rounded-full bg-sky-400"></span>
+              </div>
+            </button>
+
+            <!-- Theme Card 4 -->
+            <button onclick="selectThemeFromModal('nordic-pastel')" id="theme-card-nordic-pastel" class="theme-picker-card p-3 rounded-xl border border-slate-700 bg-slate-800/60 text-left hover:border-indigo-400 transition-all flex flex-col gap-2 relative group">
+              <div class="flex items-center justify-between">
+                <span class="text-xs font-bold text-slate-200">🍃 Nordic Sage</span>
+              </div>
+              <div class="flex gap-1">
+                <span class="w-4 h-4 rounded-full bg-teal-700"></span>
+                <span class="w-4 h-4 rounded-full bg-emerald-300"></span>
+                <span class="w-4 h-4 rounded-full bg-lime-200"></span>
+              </div>
+            </button>
+
+            <!-- Theme Card 5 -->
+            <button onclick="selectThemeFromModal('vibrant-gamifier')" id="theme-card-vibrant-gamifier" class="theme-picker-card p-3 rounded-xl border border-slate-700 bg-slate-800/60 text-left hover:border-indigo-400 transition-all flex flex-col gap-2 relative group">
+              <div class="flex items-center justify-between">
+                <span class="text-xs font-bold text-slate-200">🎮 Gamifier Pop</span>
+              </div>
+              <div class="flex gap-1">
+                <span class="w-4 h-4 rounded-full bg-fuchsia-600"></span>
+                <span class="w-4 h-4 rounded-full bg-yellow-400"></span>
+                <span class="w-4 h-4 rounded-full bg-cyan-400"></span>
+              </div>
+            </button>
+
+            <!-- Theme Card 6 -->
+            <button onclick="selectThemeFromModal('emerald-scholar')" id="theme-card-emerald-scholar" class="theme-picker-card p-3 rounded-xl border border-slate-700 bg-slate-800/60 text-left hover:border-indigo-400 transition-all flex flex-col gap-2 relative group">
+              <div class="flex items-center justify-between">
+                <span class="text-xs font-bold text-slate-200">🎓 Scholar Green</span>
+              </div>
+              <div class="flex gap-1">
+                <span class="w-4 h-4 rounded-full bg-emerald-800"></span>
+                <span class="w-4 h-4 rounded-full bg-amber-400"></span>
+                <span class="w-4 h-4 rounded-full bg-slate-200"></span>
+              </div>
+            </button>
+
+            <!-- Theme Card 7 -->
+            <button onclick="selectThemeFromModal('sunset-minimalist')" id="theme-card-sunset-minimalist" class="theme-picker-card p-3 rounded-xl border border-slate-700 bg-slate-800/60 text-left hover:border-indigo-400 transition-all flex flex-col gap-2 relative group">
+              <div class="flex items-center justify-between">
+                <span class="text-xs font-bold text-slate-200">🌅 Sunset Warm</span>
+              </div>
+              <div class="flex gap-1">
+                <span class="w-4 h-4 rounded-full bg-orange-600"></span>
+                <span class="w-4 h-4 rounded-full bg-amber-400"></span>
+                <span class="w-4 h-4 rounded-full bg-rose-400"></span>
+              </div>
+            </button>
+
+            <!-- Theme Card 8 -->
+            <button onclick="selectThemeFromModal('cyberpunk-edgy')" id="theme-card-cyberpunk-edgy" class="theme-picker-card p-3 rounded-xl border border-slate-700 bg-slate-800/60 text-left hover:border-indigo-400 transition-all flex flex-col gap-2 relative group">
+              <div class="flex items-center justify-between">
+                <span class="text-xs font-bold text-slate-200">⚡ Cyber Neon</span>
+              </div>
+              <div class="flex gap-1">
+                <span class="w-4 h-4 rounded-full bg-violet-600"></span>
+                <span class="w-4 h-4 rounded-full bg-pink-500"></span>
+                <span class="w-4 h-4 rounded-full bg-cyan-400"></span>
+              </div>
+            </button>
+
+            <!-- Theme Card 9 -->
+            <button onclick="selectThemeFromModal('oceanic-trust')" id="theme-card-oceanic-trust" class="theme-picker-card p-3 rounded-xl border border-slate-700 bg-slate-800/60 text-left hover:border-indigo-400 transition-all flex flex-col gap-2 relative group">
+              <div class="flex items-center justify-between">
+                <span class="text-xs font-bold text-slate-200">🌊 Oceanic Blue</span>
+              </div>
+              <div class="flex gap-1">
+                <span class="w-4 h-4 rounded-full bg-blue-800"></span>
+                <span class="w-4 h-4 rounded-full bg-sky-400"></span>
+                <span class="w-4 h-4 rounded-full bg-teal-300"></span>
+              </div>
+            </button>
+          </div>
+        </div>
+
+        <!-- 2. Borders & Dark Paper Row -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2 border-t border-slate-800">
+          <div>
+            <label class="text-xs font-bold text-slate-200 block mb-2">Border Style</label>
+            <div class="grid grid-cols-2 gap-1.5">
+              <button onclick="setBorder('frosted')" class="p-2 rounded-lg bg-slate-800 border border-slate-700 hover:border-indigo-500 text-[11px] text-slate-200 font-medium text-left">❄️ Frosted Glass</button>
+              <button onclick="setBorder('minimalist')" class="p-2 rounded-lg bg-slate-800 border border-slate-700 hover:border-indigo-500 text-[11px] text-slate-200 font-medium text-left">📏 Minimalist</button>
+              <button onclick="setBorder('geometric')" class="p-2 rounded-lg bg-slate-800 border border-slate-700 hover:border-indigo-500 text-[11px] text-slate-200 font-medium text-left">📐 Geometric</button>
+              <button onclick="setBorder('artdeco')" class="p-2 rounded-lg bg-slate-800 border border-slate-700 hover:border-indigo-500 text-[11px] text-slate-200 font-medium text-left">🏛️ Art Deco</button>
+              <button onclick="setBorder('playful')" class="p-2 rounded-lg bg-slate-800 border border-slate-700 hover:border-indigo-500 text-[11px] text-slate-200 font-medium text-left">🎈 Playful</button>
+              <button onclick="setBorder('none')" class="p-2 rounded-lg bg-slate-800 border border-slate-700 hover:border-indigo-500 text-[11px] text-slate-200 font-medium text-left">⬜ Clean None</button>
+            </div>
+          </div>
+
+          <div class="space-y-3">
+            <div>
+              <label class="text-xs font-bold text-slate-200 block mb-2">Worksheet Typography</label>
+              <select id="modal-font-select" onchange="applyFontFamily(this.value)" class="w-full bg-slate-800 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-indigo-500 font-medium">
+                <option value="font-merriweather" selected>📚 Merriweather (Classic Book)</option>
+                <option value="font-inter">✨ Inter (Modern Sans)</option>
+                <option value="font-sfpro"> SF Pro (System Clean)</option>
+                <option value="font-playfair">📰 Playfair Display (Editorial)</option>
+                <option value="font-lora">📖 Lora (Literary Serif)</option>
+                <option value="font-sourcesans">📄 Source Sans Pro (Legible)</option>
+                <option value="font-ptserif">🎓 PT Serif (Academic)</option>
+                <option value="font-playful">🎈 Fredoka (Playful)</option>
+              </select>
+            </div>
+
+            <!-- Paper Dark Mode -->
+            <div class="p-3 rounded-xl bg-slate-800/80 border border-slate-700 flex items-center justify-between">
+              <div>
+                <span class="text-xs font-bold text-slate-200 block">Paper Low-Light Mode</span>
+                <span class="text-[10px] text-slate-400">Dark background on screen, white for print</span>
+              </div>
+              <button onclick="togglePaperDarkMode()" class="px-3 py-1 text-xs font-bold rounded-lg bg-slate-700 hover:bg-slate-600 text-white border border-slate-600 transition-all">
+                <span id="modal-paper-dark-label">Toggle</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="mt-6 pt-3 border-t border-slate-800 flex justify-end">
+        <button onclick="closeThemePaletteModal()" class="px-5 py-2 bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-bold rounded-xl shadow-lg shadow-indigo-600/30 transition-all">
+          Done
+        </button>
+      </div>
+    </div>
+  </div>
+
 </body>
 </html>`;
 
