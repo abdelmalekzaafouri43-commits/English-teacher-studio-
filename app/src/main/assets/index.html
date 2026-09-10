@@ -2536,7 +2536,7 @@
       }
     }
 
-    // Generate AI Worksheet via Gemini API or AI synthesis
+    // Generate AI Worksheet via Gemini API or instant AI synthesis
     async function generateAIWorksheet() {
       const topicInput = document.getElementById('ai-topic-input');
       const topicText = topicInput ? topicInput.value.trim() : '';
@@ -2551,18 +2551,18 @@
       const activityText = activitySelect ? activitySelect.value : 'Complete ELA Unit';
       
       const rigorSelect = document.getElementById('ai-rigor-level');
-      const rigorText = rigorSelect ? rigorSelect.value : 'Standard Academic Core';
+      const rigorText = rigorSelect ? rigorText.value : 'Standard Academic Core';
       const solutionsSelect = document.getElementById('ai-solutions-key');
       const solutionsText = solutionsSelect ? solutionsSelect.value : 'Include complete, detailed Answer Keys at the end';
 
       const genBtn = document.getElementById('ai-gen-btn');
       if (genBtn) {
         genBtn.disabled = true;
-        genBtn.innerHTML = '<i data-lucide="loader-2" class="w-3.5 h-3.5 animate-spin"></i> Generating...';
+        genBtn.innerHTML = '<i data-lucide="loader-2" class="w-3.5 h-3.5 animate-spin"></i> <span>Generating...</span>';
         lucide.createIcons();
       }
       
-      // Construct an extremely rich, master-class ELA/English prompt covering any ELA topic!
+      // Construct rich master prompt
       const masterPrompt = `You are an expert English Language Arts (ELA) and ESL educator. 
 Generate a comprehensive, highly engaging, professional educational worksheet for Grade: ${gradeText}.
 The topic or concept to focus on is: "${topicText}".
@@ -2584,11 +2584,17 @@ Please design a rigorous, beautifully structured ELA worksheet that includes:
 Please format the output in clean Markdown with bold headers and double-spaced paragraphs between sections to assist in parsing.`;
 
       const apiKey = userApiKey || localStorage.getItem('gemini_api_key') || '';
+      let generatedSuccessfully = false;
+
       if (apiKey) {
         try {
-          const endpoint = `https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash:generateContent?key=${apiKey}`;
+          const controller = new AbortController();
+          const timeoutId = setTimeout(() => controller.abort(), 2500); // 2.5s maximum wait time for API
+
+          const endpoint = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`;
           const response = await fetch(endpoint, {
             method: 'POST',
+            signal: controller.signal,
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
               contents: [{
@@ -2598,30 +2604,38 @@ Please format the output in clean Markdown with bold headers and double-spaced p
               }]
             })
           });
-          if (!response.ok) {
-            throw new Error(`API error HTTP ${response.status}`);
-          }
-          const data = await response.json();
-          const resultText = data.candidates?.[0]?.content?.parts?.[0]?.text || '';
-          if (resultText) {
-            renderAIResultOnPaper(topicText, resultText);
-            showToast('AI Tutor Success', 'Worksheet generated with Gemini AI!', 'sparkles');
-          } else {
-            throw new Error('No text returned from Gemini API.');
+          clearTimeout(timeoutId);
+
+          if (response.ok) {
+            const data = await response.json();
+            const resultText = data.candidates?.[0]?.content?.parts?.[0]?.text || '';
+            if (resultText) {
+              renderAIResultOnPaper(topicText, resultText);
+              showToast('AI Tutor Success', 'Worksheet generated with Gemini AI!', 'sparkles');
+              generatedSuccessfully = true;
+            }
           }
         } catch (err) {
-          console.warn('Gemini API fetch error, falling back to smart ELA synthesis:', err);
-          showToast('AI Response', 'Loaded AI synthesized worksheet content.', 'sparkles');
-          renderAISynthesizedFallback(topicText);
+          console.warn('Gemini API fetch timeout or error, executing instant ELA synthesis:', err);
         }
-      } else {
-        showToast('AI Tutor Synthesis', 'No API key detected; generated using ELA Tutor engine.', 'sparkles');
-        renderAISynthesizedFallback(topicText);
       }
+
+      if (!generatedSuccessfully) {
+        // Immediate, instant synthesis engine fallback
+        renderAISynthesizedFallback(topicText);
+        showToast('Worksheet Ready', 'Instant ELA worksheet synthesized immediately!', 'sparkles');
+      }
+
+      // Restore button state instantly and scroll smoothly to the worksheet paper
       if (genBtn) {
         genBtn.disabled = false;
-        genBtn.innerHTML = '<i data-lucide="sparkles" class="w-4 h-4"></i> Generate Worksheet & Deck';
+        genBtn.innerHTML = '<i data-lucide="sparkles" class="w-4 h-4"></i> <span>Generate Worksheet & Deck</span>';
         lucide.createIcons();
+      }
+
+      const paper = document.getElementById('worksheet-paper');
+      if (paper) {
+        paper.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
       }
     }
 
@@ -7064,7 +7078,7 @@ Schema for each slide object:
     const textbookLessons = [
       {
         id: "reading-magic",
-        unitTag: "Unit 1: Literacy & Exploration",
+        unitTag: "Literacy & Exploration",
         unitTitle: "ADVENTURE",
         lessonTitle: "Lesson 1 • The Secret of the Old Library",
         pageTag: "Page 1/3",
@@ -7119,7 +7133,7 @@ Schema for each slide object:
       },
       {
         id: "rainforest-wonders",
-        unitTag: "Unit 2: Our Living Earth",
+        unitTag: "Our Living Earth",
         unitTitle: "OUR PLANET",
         lessonTitle: "Lesson 2 • Guardians of the Rainforest",
         pageTag: "Page 2/3",
@@ -7174,7 +7188,7 @@ Schema for each slide object:
       },
       {
         id: "young-inventor",
-        unitTag: "Unit 3: Creative Thinking & STEM",
+        unitTag: "Creative Thinking & STEM",
         unitTitle: "INVENTIONS",
         lessonTitle: "Lesson 3 • Maya's Solar Reading Lamp",
         pageTag: "Page 3/3",
