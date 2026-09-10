@@ -4871,6 +4871,8 @@ Schema for each slide object:
 
       showToast('Slides Applied!', `Loaded ${generatedAIDeckSlides.length} AI slides into classroom presentation.`, 'presentation');
     }
+
+    function openCustomSlideModal() {
       const modal = document.getElementById('custom-slide-modal');
       if (modal) {
         modal.classList.remove('hidden');
