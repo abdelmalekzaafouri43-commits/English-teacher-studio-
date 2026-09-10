@@ -8124,6 +8124,24 @@ Schema for each slide object:
     }
 
     // Classroom Video Hub Modal Controls
+    function extractYouTubeID(urlOrId) {
+      if (!urlOrId) return '8W_U69_7Sok';
+      if (urlOrId.length === 11 && !urlOrId.includes('/') && !urlOrId.includes('.')) return urlOrId;
+      const match = urlOrId.match(/(?:youtu\.be\/|youtube\.com\/(?:embed\/|v\/|watch\?v=|watch\?.+&v=))([\w-]{11})/);
+      return match ? match[1] : urlOrId.trim();
+    }
+
+    function loadCustomUserVideo() {
+      const input = document.getElementById('custom-video-url-input');
+      if (!input || !input.value.trim()) {
+        showToast('Empty URL', 'Please paste a YouTube URL or video ID.', 'alert-triangle');
+        return;
+      }
+      const vidId = extractYouTubeID(input.value.trim());
+      playEmbeddedVideo(vidId);
+      showToast('Video Loaded', 'Streaming selected video to classroom screen.', 'play');
+    }
+
     function openVideoModal() {
       const modal = document.getElementById('classroom-video-modal');
       if (modal) {
@@ -8134,16 +8152,16 @@ Schema for each slide object:
         const videoGrid = document.getElementById('video-suggestions-grid');
         if (videoGrid) {
           let videos = [
-            { title: "English Grammar: The Suffix -er Professions", id: "U-b_qI8U6yM", desc: "Learn how we convert verbs into nouns representing community helper professions." },
-            { title: "Reading Practice: Community Helpers and Jobs Story", id: "A279z_3mI6A", desc: "A colorful, interactive reading guide identifying helpers in our countryside village." },
-            { title: "Learn English: Jobs, Careers and Occupations", id: "r6Ob9M5p9bA", desc: "Expanding English vocabulary for elementary and intermediate ELA classes." }
+            { title: "Parts of Speech: Nouns, Verbs & Adjectives", id: "8W_U69_7Sok", desc: "Interactive ELA breakdown of sentence structure and parts of speech." },
+            { title: "Similes and Metaphors in English Literature", id: "0Wrv_ZviMEc", desc: "Clear figurative language examples with animated sentence breakdowns." },
+            { title: "Context Clues Strategy & Reading Skills", id: "_34kU9U0SIs", desc: "Mastering context clues to deduce unknown vocabulary in passages." }
           ];
           
-          if (currentMode === 'vocabulary') {
+          if (currentMode === 'vocabulary' || currentMode === 'writing') {
             videos = [
-              { title: "Vocabulary Practice: Parts of Speech Overview", id: "8W_U69_7Sok", desc: "Learn essential nouns, verbs, adjectives, and how they interact in sentences." },
-              { title: "Reading Practice for Intermediate Learners", id: "bXp8_L2P7wA", desc: "Improve vocabulary retention, comprehension, and fluency through text readings." },
-              { title: "ELA Interactive Grammar Masterclass", id: "ALL_INTER_GRAMMAR", desc: "Stretching context clue recognition across reading sessions." }
+              { title: "Parts of Speech: Nouns, Verbs & Adjectives", id: "8W_U69_7Sok", desc: "Learn essential parts of speech and sentence building blocks." },
+              { title: "Active Voice vs. Passive Voice Masterclass", id: "L9A7K08Xo6o", desc: "Strengthening writing clarity and grammar mechanics." },
+              { title: "Reading Comprehension & Critical Thinking", id: "v9335NIn4gY", desc: "Strategies for analyzing informational texts and story passages." }
             ];
           }
 
@@ -8155,7 +8173,7 @@ Schema for each slide object:
                 <p class="text-[10px] text-slate-400">${vid.desc}</p>
               </div>
               <div class="mt-3">
-                <button onclick="playEmbeddedVideo('${vid.id}')" class="w-full py-1.5 bg-rose-600 hover:bg-rose-500 text-white text-[11px] font-bold rounded-lg flex items-center justify-center gap-1 transition-all">
+                <button onclick="playEmbeddedVideo('${vid.id}')" class="w-full py-1.5 bg-rose-600 hover:bg-rose-500 text-white text-[11px] font-bold rounded-lg flex items-center justify-center gap-1 transition-all cursor-pointer">
                   <i data-lucide="play" class="w-3.5 h-3.5"></i>
                   <span>${idx === 0 ? 'Playing in Classroom' : 'Play Interactive Video'}</span>
                 </button>
@@ -8191,19 +8209,33 @@ Schema for each slide object:
       }
     }
 
-    function playEmbeddedVideo(id) {
+    function playEmbeddedVideo(rawId) {
+      const cleanId = extractYouTubeID(rawId);
       const playerWrapper = document.getElementById('video-player-wrapper');
       if (playerWrapper) {
         playerWrapper.innerHTML = `
-          <iframe class="w-full h-full rounded-xl" src="https://www.youtube.com/embed/${id}?autoplay=1&mute=0&enablejsapi=1" title="Educational Video Player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
+          <div class="w-full h-full flex flex-col bg-slate-950 rounded-xl overflow-hidden border border-slate-800">
+            <iframe class="w-full flex-1 min-h-[300px]" src="https://www.youtube.com/embed/${cleanId}?autoplay=1&mute=0&enablejsapi=1&rel=0" title="Classroom Educational Video" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
+            <div class="bg-slate-900/90 border-t border-slate-800 p-2 px-3 flex items-center justify-between text-[11px] text-slate-300">
+              <span class="flex items-center gap-1.5 text-slate-400 font-medium">
+                <i data-lucide="check-circle" class="w-3.5 h-3.5 text-emerald-400"></i>
+                <span>Active Classroom Video Stream</span>
+              </span>
+              <a href="https://www.youtube.com/watch?v=${cleanId}" target="_blank" rel="noopener noreferrer" class="px-2.5 py-1 bg-rose-600/30 hover:bg-rose-600 text-rose-200 hover:text-white rounded-lg font-bold flex items-center gap-1.5 transition-all text-[11px]" title="Open video in new YouTube tab if iframe is restricted">
+                <i data-lucide="external-link" class="w-3 h-3"></i>
+                <span>Open in YouTube ↗</span>
+              </a>
+            </div>
+          </div>
         `;
+        lucide.createIcons();
       }
       // Update visual card highlights
       document.querySelectorAll('.video-suggestion-card').forEach(card => {
         card.classList.remove('border-rose-500', 'bg-rose-950/20');
         card.classList.add('border-slate-800', 'bg-slate-950');
       });
-      const activeCard = document.getElementById(`video-card-${id}`);
+      const activeCard = document.getElementById(`video-card-${cleanId}`);
       if (activeCard) {
         activeCard.classList.remove('border-slate-800', 'bg-slate-950');
         activeCard.classList.add('border-rose-500', 'bg-rose-950/20');
@@ -8296,6 +8328,17 @@ Schema for each slide object:
           <div class="p-3 bg-slate-950/40 border-b border-slate-800 flex items-center justify-between">
             <span class="text-[10px] font-extrabold uppercase tracking-widest text-slate-400">Lesson Video Playlist</span>
             <span class="text-[10px] bg-slate-800 text-slate-300 font-bold px-1.5 py-0.5 rounded-full">3 Videos</span>
+          </div>
+
+          <!-- Custom YouTube URL Input Bar -->
+          <div class="p-2.5 bg-slate-950/80 border-b border-slate-800 space-y-1.5">
+            <label class="text-[9px] font-bold text-rose-300 block uppercase tracking-wider">Paste Custom Video URL / ID</label>
+            <div class="flex items-center gap-1.5">
+              <input id="custom-video-url-input" type="text" placeholder="https://youtu.be/... or 8W_U69_7Sok" class="flex-1 bg-slate-900 border border-slate-700 rounded-lg px-2 py-1 text-[11px] text-white focus:outline-none focus:border-rose-500 font-mono">
+              <button onclick="loadCustomUserVideo()" class="px-2.5 py-1 bg-rose-600 hover:bg-rose-500 text-white font-bold rounded-lg text-[11px] shrink-0 transition-all cursor-pointer">
+                Load
+              </button>
+            </div>
           </div>
           
           <div id="video-suggestions-grid" class="flex-1 p-3 overflow-y-auto space-y-3 custom-scrollbar">
