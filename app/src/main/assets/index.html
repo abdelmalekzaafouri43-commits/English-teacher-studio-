@@ -873,14 +873,31 @@
               <span class="text-xs font-medium">Essay & Writing</span>
             </button>
 
-            <!-- High-Fidelity Textbook Showcase Button (Replicating User's Uploaded Screenshot) -->
-            <button onclick="generateTextbookShowcase()" class="col-span-2 flex items-center justify-center gap-3 p-3.5 rounded-xl bg-gradient-to-r from-sky-600/20 via-blue-600/20 to-indigo-600/20 border border-sky-400/40 hover:from-sky-500 hover:to-indigo-600 hover:border-sky-400 text-sky-200 hover:text-white transition-all duration-200 active:scale-95 group shadow-md shadow-sky-950/40">
-              <i data-lucide="book-open" class="w-5 h-5 group-hover:scale-110 group-hover:rotate-3 transition-transform text-sky-400 group-hover:text-white"></i>
-              <div class="text-left">
-                <span class="text-xs font-black block leading-none tracking-wide text-white">✨ PREMIUM TEXTBOOK SHOWCASE</span>
-                <span class="text-[10px] text-sky-300 group-hover:text-sky-100">Unit 4: Caring (Jobs in Our Village)</span>
+            <!-- High-Fidelity Textbook Showcase Module with Lesson Switchers -->
+            <div class="col-span-2 rounded-xl bg-gradient-to-r from-sky-950/50 via-blue-950/50 to-indigo-950/50 border border-sky-400/40 p-3 space-y-2.5 shadow-md shadow-sky-950/40">
+              <div class="flex items-center justify-between">
+                <div class="flex items-center gap-2">
+                  <i data-lucide="book-open" class="w-4 h-4 text-sky-400"></i>
+                  <span class="text-xs font-black tracking-wide text-white">✨ PREMIUM TEXTBOOK LESSONS</span>
+                </div>
+                <span id="textbook-active-pill" class="text-[9px] font-bold px-2 py-0.5 rounded bg-sky-500/20 text-sky-300 border border-sky-500/30">Lesson 1</span>
               </div>
-            </button>
+              <p class="text-[10px] text-sky-200/80 leading-snug">Textbook layout with royal blue banners, mascot headers, reading passages & tiered exercises.</p>
+              <div class="grid grid-cols-3 gap-1.5 pt-0.5">
+                <button onclick="generateTextbookShowcase(0)" id="tb-btn-0" class="py-1.5 px-2 rounded-lg bg-sky-600 text-white font-bold text-[10px] flex flex-col items-center justify-center transition-all shadow-sm active:scale-95 text-center leading-tight">
+                  <span>📖 Lesson 1</span>
+                  <span class="text-[8px] opacity-80 font-normal">Magic of Reading</span>
+                </button>
+                <button onclick="generateTextbookShowcase(1)" id="tb-btn-1" class="py-1.5 px-2 rounded-lg bg-slate-800/80 hover:bg-sky-700/80 text-sky-200 hover:text-white font-bold text-[10px] flex flex-col items-center justify-center transition-all border border-sky-500/30 active:scale-95 text-center leading-tight">
+                  <span>🌿 Lesson 2</span>
+                  <span class="text-[8px] opacity-80 font-normal">Our Rainforest</span>
+                </button>
+                <button onclick="generateTextbookShowcase(2)" id="tb-btn-2" class="py-1.5 px-2 rounded-lg bg-slate-800/80 hover:bg-sky-700/80 text-sky-200 hover:text-white font-bold text-[10px] flex flex-col items-center justify-center transition-all border border-sky-500/30 active:scale-95 text-center leading-tight">
+                  <span>💡 Lesson 3</span>
+                  <span class="text-[8px] opacity-80 font-normal">Young Inventor</span>
+                </button>
+              </div>
+            </div>
           </div>
         </div>
       </div>
@@ -2619,123 +2636,106 @@
         footer: 'Press Next to begin'
       });
 
-      if (currentMode === 'showcase') {
-        // Tunisian Grade 6 Textbook Slide Deck
-        presentationSlides.push({
-          layout: 'bullets',
-          title: "Unit 4: Caring — We are stronger together",
-          subtitle: "Lesson 3: Jobs in Our Village",
-          bullets: [
-            "🎯 Learning Objective: Identify community helpers and build professional titles using the suffix '-er'.",
-            "🤝 Cooperative Value: Helping others is the source of strength in any village community.",
-            "🏠 Village Citizens: Each person has a critical role—farming, teaching, carpentry, or building."
-          ]
-        });
+      if (currentMode === 'showcase' || currentMode === 'textbook') {
+        const activeLesson = (typeof textbookLessons !== 'undefined' && textbookLessons[currentTextbookLessonIndex]) 
+          ? textbookLessons[currentTextbookLessonIndex] 
+          : null;
 
-        presentationSlides.push({
-          layout: 'split',
-          title: "Jobs in Our Village (Reading Circle)",
-          subtitle: "Listen closely to the roles of our community helpers",
-          leftContent: `
-            <div class="text-[11px] leading-relaxed space-y-2 text-slate-700 bg-slate-50 p-3 rounded-lg border border-slate-100 font-serif">
-              <p>In our countryside village, people cooperative together. <strong>Mr. Ali</strong> is a hard worker. He is a farmer. He produces sweet carrots and fresh potatoes.</p>
-              <p><strong>Mr. Hatem</strong> is a carpenter. He works wood with his saw and hammer to make desks for school children.</p>
-              <p><strong>Ms. Salma</strong> is a builder. She builds cozy homes with bricks and stone. <strong>Mrs. Emma</strong> is our teacher.</p>
-            </div>
-          `,
-          rightContent: `
-            <div class="flex flex-col items-center justify-center h-full bg-slate-50 rounded-lg p-3 border border-slate-100">
-              <span class="text-[10px] uppercase font-bold text-sky-700 mb-2">Our Countryside Village</span>
-              <svg class="w-20 h-20 text-[#0e56b2]" viewBox="0 0 100 100">
-                <circle cx="50" cy="50" r="45" fill="#f0f9ff" />
-                <path d="M20 75 H80" stroke="#0e56b2" stroke-width="2" />
-                <rect x="25" y="55" width="20" height="20" fill="#bae6fd" stroke="#0e56b2" />
-                <polygon points="25,55 35,42 45,55" fill="#f43f5e" stroke="#0e56b2" />
-                <rect x="55" y="50" width="20" height="25" fill="#fed7aa" stroke="#0e56b2" />
-                <polygon points="55,50 65,37 75,50" fill="#eab308" stroke="#0e56b2" />
-              </svg>
-              <span class="text-[10px] text-slate-500 mt-2 text-center">"We are stronger together!"</span>
-            </div>
-          `
-        });
+        if (activeLesson) {
+          presentationSlides.push({
+            layout: 'bullets',
+            title: `${activeLesson.unitTag} — ${activeLesson.unitTitle}`,
+            subtitle: activeLesson.lessonTitle,
+            bullets: [
+              `🎯 Curriculum Objective: ${activeLesson.standardText}`,
+              `📖 Text Focus: Read "${activeLesson.storyTitle}" closely and identify key details.`,
+              `✨ ELA Skills: Reading comprehension, contextual vocabulary, and textual evidence.`
+            ]
+          });
 
-        presentationSlides.push({
-          layout: 'bullets',
-          title: "Grammar Master: The Suffix '-er'",
-          subtitle: "Turn action verbs into nouns representing professions",
-          bullets: [
-            "Rule: Verb + Suffix '-er' = The Person Who Does the Action.",
-            "Farm + <strong>-er</strong> = <strong>Farmer</strong> (A person who works on a farm).",
-            "Teach + <strong>-er</strong> = <strong>Teacher</strong> (A person who teaches in a school).",
-            "Build + <strong>-er</strong> = <strong>Builder</strong> (A person who builds cozy houses)."
-          ]
-        });
-
-        presentationSlides.push({
-          layout: 'activity',
-          title: "Smartboard Quiz: Comprehension",
-          subtitle: "Discuss as a class and call students to answer!",
-          activityHtml: `
-            <div class="space-y-3 font-sans">
-              <div class="bg-indigo-50/50 p-2.5 rounded-lg border border-indigo-100">
-                <span class="text-xs font-bold text-indigo-900">Q1. What does Mr. Ali produce on his farm?</span>
+          presentationSlides.push({
+            layout: 'split',
+            title: `${activeLesson.storyTitle} (Shared Reading)`,
+            subtitle: "Follow along closely as we read the passage together",
+            leftContent: `
+              <div class="text-[11px] leading-relaxed space-y-2 text-slate-800 bg-slate-50 p-3 rounded-lg border border-slate-200 font-serif max-h-56 overflow-y-auto">
+                <p>${activeLesson.storyText}</p>
               </div>
-              <div class="bg-violet-50/50 p-2.5 rounded-lg border border-violet-100">
-                <span class="text-xs font-bold text-violet-900">Q2. Who builds homes with bricks and stone?</span>
+            `,
+            rightContent: `
+              <div class="flex flex-col items-center justify-center h-full bg-blue-50/50 rounded-lg p-3 border border-blue-100 text-center space-y-2">
+                <span class="text-[10px] uppercase font-black text-[#0e56b2]">${activeLesson.unitTitle} • ${activeLesson.pageTag}</span>
+                <div class="w-24 h-24 rounded-xl overflow-hidden border-2 border-[#0e56b2] shadow-sm bg-white flex items-center justify-center">
+                  <img src="${activeLesson.imageSrc}" alt="${activeLesson.sceneLabel}" class="w-full h-full object-cover" onerror="this.style.display='none';">
+                </div>
+                <span class="text-[10px] text-slate-600 font-medium italic">"${activeLesson.caption}"</span>
               </div>
-              <div class="bg-amber-50/50 p-2.5 rounded-lg border border-amber-100">
-                <span class="text-xs font-bold text-amber-900">Q3. Why does Mr. Hatem use a saw and hammer?</span>
+            `
+          });
+
+          let qListHtml = activeLesson.comprehension.slice(0, 3).map((item, idx) => `
+            <div class="bg-indigo-50/60 p-2.5 rounded-lg border border-indigo-100">
+              <span class="text-xs font-bold text-indigo-950">Q${idx + 1}. ${item.q}</span>
+            </div>
+          `).join('');
+
+          let ansListHtml = activeLesson.comprehension.slice(0, 3).map((item, idx) => `
+            <p>✔ Q${idx + 1}: ${item.a}</p>
+          `).join('');
+
+          presentationSlides.push({
+            layout: 'activity',
+            title: "Smartboard Quiz: Comprehension",
+            subtitle: "Discuss as a class and call on students to answer!",
+            activityHtml: `
+              <div class="space-y-3 font-sans">
+                ${qListHtml}
               </div>
-            </div>
-          `,
-          answersRevealedHtml: `
-            <div class="mt-4 p-3 bg-emerald-50 border border-emerald-200 rounded-lg space-y-1.5 text-xs text-emerald-850 font-sans font-medium animate-fade-in">
-              <h5 class="font-extrabold uppercase text-[10px] text-emerald-800">★ Solutions Guide ★</h5>
-              <p>✔ Q1: He produces sweet carrots and fresh potatoes.</p>
-              <p>✔ Q2: Ms. Salma is the builder.</p>
-              <p>✔ Q3: To work wood and build desks for school children.</p>
-            </div>
-          `
-        });
+            `,
+            answersRevealedHtml: `
+              <div class="mt-4 p-3 bg-emerald-50 border border-emerald-200 rounded-lg space-y-1.5 text-xs text-emerald-850 font-sans font-medium animate-fade-in">
+                <h5 class="font-extrabold uppercase text-[10px] text-emerald-800">★ Solutions Guide ★</h5>
+                ${ansListHtml}
+              </div>
+            `
+          });
 
-        presentationSlides.push({
-          layout: 'activity',
-          title: "True or False Interactive Grid",
-          subtitle: "Decide whether each helper statement is True (T) or False (F)",
-          activityHtml: `
-            <table class="w-full text-xs font-sans border-collapse">
-              <thead>
-                <tr class="bg-slate-100 text-left border-b border-slate-300">
-                  <th class="p-2 font-bold text-slate-700">Helper Statement</th>
-                  <th class="p-2 font-bold text-slate-700 text-center">Class Guess</th>
-                </tr>
-              </thead>
-              <tbody class="divide-y divide-slate-200">
-                <tr>
-                  <td class="p-2 text-slate-800">1. Mr. Hatem is a builder who lays stone bricks.</td>
-                  <td class="p-2 text-center text-slate-400 font-bold">[ True / False ]</td>
-                </tr>
-                <tr>
-                  <td class="p-2 text-slate-800">2. Cooperative helpers make the village stronger.</td>
-                  <td class="p-2 text-center text-slate-400 font-bold">[ True / False ]</td>
-                </tr>
-                <tr>
-                  <td class="p-2 text-slate-800">3. Mrs. Emma teaches children in the school.</td>
-                  <td class="p-2 text-center text-slate-400 font-bold">[ True / False ]</td>
-                </tr>
-              </tbody>
-            </table>
-          `,
-          answersRevealedHtml: `
-            <div class="mt-4 p-3 bg-emerald-50 border border-emerald-200 rounded-lg text-xs text-emerald-850 font-sans font-medium animate-fade-in">
-              <h5 class="font-extrabold uppercase text-[10px] text-emerald-800">★ Solutions Guide ★</h5>
-              <p>✖ Statement 1: False (Mr. Hatem is the carpenter, Ms. Salma is the builder).</p>
-              <p>✔ Statement 2: True (Strength is in cooperating together!).</p>
-              <p>✔ Statement 3: True (Mrs. Emma is our beloved teacher).</p>
-            </div>
-          `
-        });
+          let tfRowsHtml = activeLesson.trueFalse.map((item, idx) => `
+            <tr>
+              <td class="p-2 text-slate-800">${idx + 1}. ${item.q}</td>
+              <td class="p-2 text-center text-slate-400 font-bold">[ True / False ]</td>
+            </tr>
+          `).join('');
 
+          let tfAnsHtml = activeLesson.trueFalse.map((item, idx) => `
+            <p>${item.ans ? '✔' : '✖'} Statement ${idx + 1}: ${item.ans ? 'True' : 'False'}</p>
+          `).join('');
+
+          presentationSlides.push({
+            layout: 'activity',
+            title: "True or False Interactive Grid",
+            subtitle: "Decide whether each statement is True (T) or False (F)",
+            activityHtml: `
+              <table class="w-full text-xs font-sans border-collapse">
+                <thead>
+                  <tr class="bg-slate-100 text-left border-b border-slate-300">
+                    <th class="p-2 font-bold text-slate-700">Statement</th>
+                    <th class="p-2 font-bold text-slate-700 text-center">Class Guess</th>
+                  </tr>
+                </thead>
+                <tbody class="divide-y divide-slate-200">
+                  ${tfRowsHtml}
+                </tbody>
+              </table>
+            `,
+            answersRevealedHtml: `
+              <div class="mt-4 p-3 bg-emerald-50 border border-emerald-200 rounded-lg text-xs text-emerald-850 font-sans font-medium animate-fade-in">
+                <h5 class="font-extrabold uppercase text-[10px] text-emerald-800">★ Solutions Guide ★</h5>
+                ${tfAnsHtml}
+              </div>
+            `
+          });
+        }
       } else {
         const modeTitle = currentMode.charAt(0).toUpperCase() + currentMode.slice(1);
         
@@ -3621,15 +3621,203 @@
       showToast('Writing Generated', 'Created guided writing and essay outline worksheet.');
     }
 
-    // HIGH-FIDELITY ELA TEXTBOOK SHOWCASE GENERATOR (Matches user's uploaded screenshot)
-    function generateTextbookShowcase() {
+        // HIGH-FIDELITY ELA TEXTBOOK LESSONS DATA (Preserves royal blue #0e56b2, mascots, structure & design)
+    let currentTextbookLessonIndex = 0;
+
+    const textbookLessons = [
+      {
+        id: "reading-magic",
+        unitTag: "Unit 1: Literacy & Exploration",
+        unitTitle: "ADVENTURE",
+        lessonTitle: "Lesson 1 • The Secret of the Old Library",
+        pageTag: "Page 1/3",
+        standardText: "CCSS.ELA-LITERACY.RL.5.1 • Quote accurately from a text when explaining what the text says explicitly.",
+        pageNumber: "42",
+        sceneLabel: "Town Heritage Library Scene",
+        caption: "Leo discovering ancient illustrated folios in the quiet reading rotunda",
+        imageSrc: "images/magical_storybook.jpg",
+        storyTitle: "The Secret of the Old Library",
+        storyText: `Leo pushed open the creaky oak door of the town's oldest library. Beams of warm afternoon sunlight streamed through tall stained-glass windows, illuminating rows of floor-to-ceiling bookshelves. Unlike ordinary rooms, this peaceful sanctuary was filled with the sweet scent of aged parchment and cedar wood.<br><br>In the sunlit corner sat <b>Mrs. Jenkins</b>, the town's beloved head librarian. She adjusted her silver spectacles and smiled warmly. "Welcome, young explorer," she said. "Every book resting on these shelves holds an extraordinary journey waiting for an inquisitive mind." When Leo gently opened a weathered leather volume, luminous illustrations seemed to glow, inviting him into a marvelous world of constellations, ancient castles, and hidden treasures.`,
+        comprehension: [
+          { q: "Where did Leo go at the beginning of the story?", a: "Leo went to the town's oldest library." },
+          { q: "What was streaming through the tall stained-glass windows?", a: "Beams of warm afternoon sunlight were streaming through the windows." },
+          { q: "Who was sitting in the quiet corner of the library?", a: "Mrs. Jenkins, the town's beloved head librarian, was sitting in the corner." },
+          { q: "How did Mrs. Jenkins describe the books to Leo?", a: "She said every book holds an extraordinary journey waiting for an inquisitive mind." },
+          { q: "What happened when Leo opened the weathered leather volume?", a: "Luminous illustrations seemed to glow, inviting him into a world of wonders." }
+        ],
+        vocabChoices: [
+          {
+            q: "A person who visits and studies a library is an _______",
+            opts: ["explorer", "airplane", "umbrella"],
+            ans: 0
+          },
+          {
+            q: "An old book made of worn leather can be described as _______",
+            opts: ["weathered", "noisy", "plastic"],
+            ans: 0
+          },
+          {
+            q: "Someone with a curious, questioning mind is _______",
+            opts: ["asleep", "inquisitive", "frozen"],
+            ans: 1
+          },
+          {
+            q: "The colorful pictures inside a storybook are called _______",
+            opts: ["blankets", "illustrations", "hammers"],
+            ans: 1
+          }
+        ],
+        trueFalse: [
+          { q: "Leo entered the town's oldest library.", ans: true },
+          { q: "Mrs. Jenkins was angry and told Leo to leave.", ans: false },
+          { q: "Warm sunlight streamed through the stained-glass windows.", ans: true },
+          { q: "Leo found an old book with luminous illustrations.", ans: true }
+        ],
+        findInText: [
+          { def: "having a curious and seeking mind", val: "inquisitive" },
+          { def: "giving off warm, glowing light", val: "luminous" },
+          { def: "seasoned or altered by age and time", val: "weathered" },
+          { def: "extraordinary or rare voyage", val: "journey" }
+        ]
+      },
+      {
+        id: "rainforest-wonders",
+        unitTag: "Unit 2: Our Living Earth",
+        unitTitle: "OUR PLANET",
+        lessonTitle: "Lesson 2 • Guardians of the Rainforest",
+        pageTag: "Page 2/3",
+        standardText: "CCSS.ELA-LITERACY.RI.5.2 • Determine main ideas of an informational text and explain supporting details.",
+        pageNumber: "68",
+        sceneLabel: "Amazon Ecological Canopy Scene",
+        caption: "Dr. Elena and student wildlife rangers observing biodiversity high in the canopy",
+        imageSrc: "images/cozy_reading.jpg",
+        storyTitle: "Guardians of the Rainforest",
+        storyText: `The Amazon Rainforest is often called the green lungs of our planet because its vast emerald canopy generates vital oxygen for living creatures worldwide. High above the forest floor, vibrant scarlet macaws glide between towering mahogany branches while spider monkeys swing gracefully across tangled vines.<br><br>On the forest trail below, <b>Dr. Elena</b> leads an enthusiastic group of young wildlife rangers. "Every single organism, from the humble leafcutter ant to the solitary jaguar, maintains a delicate balance in this ecosystem," explains Dr. Elena. Working alongside local communities, the rangers catalog rare botanical species, protect freshwater riverbanks, and plant native saplings to ensure future generations inherit a flourishing natural world.`,
+        comprehension: [
+          { q: "Why is the Amazon Rainforest called the green lungs of our planet?", a: "Because its vast emerald canopy generates vital oxygen for creatures worldwide." },
+          { q: "Which birds glide between the towering mahogany trees?", a: "Vibrant scarlet macaws glide between the trees." },
+          { q: "What does Dr. Elena teach her youth wildlife rangers?", a: "She teaches that every organism maintains a delicate balance in the ecosystem." },
+          { q: "Name two animals that inhabit the rainforest according to the passage.", a: "Spider monkeys and scarlet macaws (or leafcutter ants and jaguars)." },
+          { q: "What actions do the rangers take to safeguard the forest?", a: "They catalog botanical species, protect riverbanks, and plant native saplings." }
+        ],
+        vocabChoices: [
+          {
+            q: "A community of plants and animals interacting together is an _______",
+            opts: ["ecosystem", "engine", "suitcase"],
+            ans: 0
+          },
+          {
+            q: "The uppermost continuous layer of foliage in a forest is the _______",
+            opts: ["cellar", "canopy", "chimney"],
+            ans: 1
+          },
+          {
+            q: "An animal that hunts and moves mostly at night is _______",
+            opts: ["nocturnal", "cheerful", "plastic"],
+            ans: 0
+          },
+          {
+            q: "Young developing trees planted to restore woodlands are _______",
+            opts: ["pebbles", "saplings", "fences"],
+            ans: 1
+          }
+        ],
+        trueFalse: [
+          { q: "The Amazon produces vital oxygen for living beings.", ans: true },
+          { q: "Leafcutter ants play no role in the forest ecosystem.", ans: false },
+          { q: "Dr. Elena works alongside young wildlife rangers.", ans: true },
+          { q: "The rangers plant native saplings to restore the woodland.", ans: true }
+        ],
+        findInText: [
+          { def: "immense or of great extent", val: "vast" },
+          { def: "bright green in color like a jewel", val: "emerald" },
+          { def: "vital and having the highest importance", val: "essential" },
+          { def: "young developing trees", val: "saplings" }
+        ]
+      },
+      {
+        id: "young-inventor",
+        unitTag: "Unit 3: Creative Thinking & STEM",
+        unitTitle: "INVENTIONS",
+        lessonTitle: "Lesson 3 • Maya's Solar Reading Lamp",
+        pageTag: "Page 3/3",
+        standardText: "CCSS.ELA-LITERACY.W.5.2 • Write informative texts examining a process and conveying ideas clearly.",
+        pageNumber: "95",
+        sceneLabel: "Young Inventor Workshop Scene",
+        caption: "Maya assembling sustainable photovoltaic circuits for student reading lamps",
+        imageSrc: "images/creative_writing.jpg",
+        storyTitle: "Maya's Solar Reading Lamp",
+        storyText: `Ten-year-old <b>Maya</b> spent her Saturday mornings exploring her grandfather's workshop, a marvelous room brimming with brass screws, wooden rulers, and discarded mechanical gears. When an unexpected thunderstorm caused an evening blackout in her neighborhood, Maya realized how difficult it was for students to read their English assignments in the dark.<br><br>Determined to find an eco-friendly answer, Maya gathered an empty glass jar, two efficient LED bulbs, and a small solar cell salvaged from an old garden fixture. With steady patience, she soldered the copper contacts, attached a rechargeable battery, and set the device on her sunlit windowsill. By dusk, the compact lantern radiated a warm, steady glow that illuminated her entire desk. Her clever sustainable prototype earned top honors at the district academy fair.`,
+        comprehension: [
+          { q: "Where did Maya spend her Saturday mornings tinkering?", a: "In her grandfather's workshop filled with tools and mechanical parts." },
+          { q: "What problem did Maya encounter that inspired her invention?", a: "An evening thunderstorm blackout made it hard for students to read assignments." },
+          { q: "Which recycled materials did Maya assemble to build her lamp?", a: "An empty glass jar, LED bulbs, and a salvaged solar cell." },
+          { q: "How did Maya charge the lantern before nightfall?", a: "She placed the device on her sunlit windowsill to absorb sunlight." },
+          { q: "How was Maya's invention recognized at school?", a: "Her sustainable prototype earned top honors at the district academy fair." }
+        ],
+        vocabChoices: [
+          {
+            q: "A person who designs new machines and solutions is an _______",
+            opts: ["inventor", "astronaut", "iceberg"],
+            ans: 0
+          },
+          {
+            q: "Capable of being sustained without depleting natural energy is _______",
+            opts: ["fragile", "sustainable", "noisy"],
+            ans: 1
+          },
+          {
+            q: "To experiment with and adjust mechanical components is to _______",
+            opts: ["tinker", "whistle", "freeze"],
+            ans: 0
+          },
+          {
+            q: "A preliminary working model of an invention is called a _______",
+            opts: ["prototype", "sentence", "chalkboard"],
+            ans: 0
+          }
+        ],
+        trueFalse: [
+          { q: "Maya built a solar-powered lamp using recycled items.", ans: true },
+          { q: "The lamp required a wall electrical socket during the blackout.", ans: false },
+          { q: "Maya charged the device using solar energy on her windowsill.", ans: true },
+          { q: "Maya's prototype received honors at the district academy fair.", ans: true }
+        ],
+        findInText: [
+          { def: "small mechanical tools or apparatuses", val: "gadgets" },
+          { def: "shined brightly or sent forth light", val: "radiated" },
+          { def: "rescued or reclaimed from scrap", val: "salvaged" },
+          { def: "first working experimental model", val: "prototype" }
+        ]
+      }
+    ];
+
+    // HIGH-FIDELITY ELA TEXTBOOK SHOWCASE GENERATOR (Modular, Multi-Lesson, Pure Pedagogical ELA)
+    function generateTextbookShowcase(lessonIndex = 0) {
       currentMode = 'textbook';
-      document.getElementById('active-mode-badge').innerText = 'Showcase';
+      currentTextbookLessonIndex = Math.max(0, Math.min(lessonIndex, textbookLessons.length - 1));
+      const lesson = textbookLessons[currentTextbookLessonIndex];
+
+      const modeBadge = document.getElementById('active-mode-badge');
+      if (modeBadge) modeBadge.innerText = 'Textbook';
+
+      // Update sidebar switcher buttons
+      for (let i = 0; i < 3; i++) {
+        const btn = document.getElementById(`tb-btn-${i}`);
+        if (btn) {
+          if (i === currentTextbookLessonIndex) {
+            btn.className = "py-1.5 px-2 rounded-lg bg-sky-600 text-white font-bold text-[10px] flex flex-col items-center justify-center transition-all shadow-sm active:scale-95 text-center leading-tight ring-2 ring-sky-300";
+          } else {
+            btn.className = "py-1.5 px-2 rounded-lg bg-slate-800/80 hover:bg-sky-700/80 text-sky-200 hover:text-white font-bold text-[10px] flex flex-col items-center justify-center transition-all border border-sky-500/30 active:scale-95 text-center leading-tight";
+          }
+        }
+      }
+      const activePill = document.getElementById('textbook-active-pill');
+      if (activePill) activePill.innerText = `Lesson ${currentTextbookLessonIndex + 1}`;
 
       // 1. Force the premium ELA Book Theme!
       const paper = document.getElementById('worksheet-paper');
       if (paper) {
-        // Clear old themes
         const allThemes = [
           'theme-classic-corporate', 'theme-midnight-tech', 'theme-nordic-pastel', 
           'theme-vibrant-gamifier', 'theme-emerald-scholar', 'theme-sunset-minimalist', 
@@ -3638,7 +3826,6 @@
         allThemes.forEach(t => paper.classList.remove(t));
         paper.classList.add('theme-ela-book');
         
-        // Sync select dropdown
         const themeSelect = document.getElementById('theme-select');
         if (themeSelect) themeSelect.value = 'ela-book';
       }
@@ -3647,17 +3834,17 @@
       const illContainer = document.getElementById('ws-illustration-container');
       if (illContainer) illContainer.classList.add('hidden');
 
-      // 2. Build the exact gorgeous, centered textbook header with Boy & Girl waving
+      // 2. Build the exact gorgeous, centered textbook header with Boy & Girl waving mascots
       const headerBox = document.getElementById('worksheet-header');
       if (headerBox) {
         headerBox.className = "border-b-4 border-[#0e56b2] pb-6 mb-6 flex flex-col items-center justify-center relative select-none pt-2";
         headerBox.innerHTML = `
           <!-- Page info top corners -->
-          <div class="absolute top-0 left-0 text-[10px] font-bold text-[#0e56b2] bg-blue-50 px-2 py-0.5 rounded uppercase tracking-wider">Unit 4: Caring</div>
-          <div class="absolute top-0 right-0 text-[10px] font-bold text-slate-500 bg-slate-100 px-2 py-0.5 rounded uppercase tracking-wider">Page 2/3</div>
+          <div class="absolute top-0 left-0 text-[10px] font-bold text-[#0e56b2] bg-blue-50 px-2.5 py-0.5 rounded uppercase tracking-wider border border-blue-200">${lesson.unitTag}</div>
+          <div class="absolute top-0 right-0 text-[10px] font-bold text-slate-600 bg-slate-100 px-2.5 py-0.5 rounded uppercase tracking-wider border border-slate-200">${lesson.pageTag}</div>
 
           <div class="w-full flex items-center justify-between gap-4 max-w-xl mt-3">
-            <!-- Cartoon Boy Waving (Highly polished vector art) -->
+            <!-- Cartoon Boy Waving (Bespoke vector art) -->
             <div class="w-16 h-16 sm:w-20 sm:h-20 flex-shrink-0 animate-bounce" style="animation-duration: 3s;">
               <svg viewBox="0 0 100 100" class="w-full h-full">
                 <!-- Hair -->
@@ -3688,17 +3875,17 @@
               </svg>
             </div>
 
-            <!-- Central Title Banner -->
+            <!-- Central Title Banner (Royal Blue #0e56b2) -->
             <div class="flex-1 flex flex-col items-center text-center">
-              <div class="bg-[#0e56b2] text-white text-3xl font-black px-12 py-3.5 rounded-2xl shadow-md tracking-wider uppercase">
-                Caring
+              <div class="bg-[#0e56b2] text-white text-2xl sm:text-3xl font-black px-10 py-3 rounded-2xl shadow-md tracking-wider uppercase">
+                ${lesson.unitTitle}
               </div>
-              <div class="border-2 border-[#0e56b2] text-[#0e56b2] text-[11px] font-black px-4 py-1 rounded-full mt-2 bg-white/90 shadow-sm uppercase tracking-wide">
-                Lesson 3 • We are stronger together
+              <div class="border-2 border-[#0e56b2] text-[#0e56b2] text-[11px] font-black px-4 py-1 rounded-full mt-2 bg-white/95 shadow-sm uppercase tracking-wide">
+                ${lesson.lessonTitle}
               </div>
             </div>
 
-            <!-- Cartoon Girl Waving (Highly polished vector art) -->
+            <!-- Cartoon Girl Waving (Bespoke vector art) -->
             <div class="w-16 h-16 sm:w-20 sm:h-20 flex-shrink-0 animate-bounce" style="animation-duration: 3s; animation-delay: 0.5s;">
               <svg viewBox="0 0 100 100" class="w-full h-full">
                 <!-- Hair (Pigtails) -->
@@ -3732,199 +3919,52 @@
       // Update Standard text below header
       const stdText = document.getElementById('ws-standard-text');
       if (stdText) {
-        stdText.innerText = "CCSS.ELA-LITERACY.RL.4.1 • Refer to details and examples in a text when explaining what the text says explicitly.";
+        stdText.innerText = lesson.standardText;
       }
 
       // 3. Build the textbook body content
       const body = document.getElementById('worksheet-body');
+      if (!body) return;
       body.innerHTML = '';
       body.className = 'space-y-6 animate-fade-in pt-1';
 
-      // --- SECTION 1: READING (Jobs in Our Village) ---
+      // --- SECTION 1: READING ---
       const section1 = document.createElement('div');
       section1.className = 'space-y-3';
       section1.innerHTML = `
         <div class="flex items-center gap-2">
-          <span class="w-7 h-7 rounded-full bg-[#0e56b2] text-white font-bold flex items-center justify-center text-xs">1</span>
+          <span class="w-7 h-7 rounded-full bg-[#0e56b2] text-white font-bold flex items-center justify-center text-xs shadow-sm">1</span>
           <span class="bg-[#0e56b2] text-white text-xs font-black px-3 py-1 rounded-lg uppercase tracking-wide">Reading</span>
-          <span class="text-xs font-bold text-slate-700">Read the text.</span>
+          <span class="text-xs font-bold text-slate-700">Read the text carefully.</span>
         </div>
 
         <div class="grid grid-cols-1 md:grid-cols-12 gap-4 items-stretch">
-          <!-- Highly detailed vector illustration of a happy cooperative village -->
-          <div class="md:col-span-6 bg-gradient-to-b from-sky-100 to-emerald-50 rounded-xl p-3 border border-sky-200 flex flex-col justify-between shadow-sm min-h-[220px]">
-            <span class="text-[9px] font-black uppercase text-sky-800 tracking-wider">Village Helpers Scene</span>
-            <div class="w-full h-36 my-auto">
-              <svg viewBox="0 0 400 240" class="w-full h-full">
-                <!-- Sky Background Gradient -->
-                <defs>
-                  <linearGradient id="skyGrad" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="0%" stop-color="#bae6fd" />
-                    <stop offset="100%" stop-color="#f0fdf4" />
-                  </linearGradient>
-                  <linearGradient id="hillGrad" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="0%" stop-color="#4ade80" />
-                    <stop offset="100%" stop-color="#15803d" />
-                  </linearGradient>
-                </defs>
-                
-                <rect x="0" y="0" width="400" height="240" rx="12" fill="url(#skyGrad)" />
-                
-                <!-- Back hills -->
-                <path d="M0 140 Q100 110 200 140 T400 140 L400 240 L0 240 Z" fill="#86efac" opacity="0.6" />
-                <path d="M-20 160 Q120 130 260 160 T420 160 L420 240 L-20 240 Z" fill="url(#hillGrad)" />
-                
-                <!-- Winding Path -->
-                <path d="M180 160 Q200 200 160 240 L210 240 Q240 200 220 160 Z" fill="#fef08a" opacity="0.8" />
-                
-                <!-- Sun -->
-                <circle cx="340" cy="40" r="18" fill="#fef08a" />
-                <circle cx="340" cy="40" r="14" fill="#fde047" />
-                
-                <!-- Clouds -->
-                <path d="M40 50 C45 42, 60 42, 65 50 C72 50, 75 58, 65 62 C55 62, 45 62, 40 58 C35 55, 35 50, 40 50 Z" fill="#ffffff" opacity="0.9" />
-                <path d="M280 45 C285 38, 298 38, 303 45 C309 45, 312 52, 304 56 C296 56, 286 56, 281 52 C276 50, 276 45, 280 45 Z" fill="#ffffff" opacity="0.8" />
-
-                <!-- Cozy Village House (Back) -->
-                <rect x="25" y="125" width="45" height="35" rx="3" fill="#fca5a5" />
-                <polygon points="20,125 47,105 75,125" fill="#ef4444" />
-                <rect x="42" y="137" width="10" height="23" fill="#991b1b" />
-                <rect x="30" y="130" width="8" height="8" rx="1" fill="#ffffff" />
-                <rect x="56" y="130" width="8" height="8" rx="1" fill="#ffffff" />
-
-                <!-- School House with flag (Back Right) -->
-                <rect x="260" y="120" width="60" height="40" rx="3" fill="#fed7aa" />
-                <polygon points="255,120 290,100 325,120" fill="#f97316" />
-                <!-- School clock / windows -->
-                <circle cx="290" cy="113" r="5" fill="#ffffff" stroke="#ea580c" stroke-width="1" />
-                <rect x="270" y="135" width="10" height="12" rx="1" fill="#ea580c" />
-                <rect x="300" y="135" width="10" height="12" rx="1" fill="#ea580c" />
-                <rect x="285" y="142" width="10" height="18" fill="#7c2d12" />
-
-                <!-- Helper 1: Mr Ali (Farmer) - Left foreground -->
-                <g transform="translate(65, 175)">
-                  <!-- Body & overalls -->
-                  <path d="M-8 15 L8 15 L6 35 L-6 35 Z" fill="#15803d" />
-                  <circle cx="0" cy="22" r="4" fill="#fef08a" />
-                  <!-- Head -->
-                  <circle cx="0" cy="6" r="7" fill="#fed7aa" />
-                  <circle cx="-2" cy="5" r="1" fill="#1e293b" />
-                  <circle cx="2" cy="5" r="1" fill="#1e293b" />
-                  <path d="M-2 9 Q0 11 2 9" stroke="#be123c" stroke-width="1" fill="none" />
-                  <!-- Straw Hat -->
-                  <ellipse cx="0" cy="0" rx="11" ry="3" fill="#ca8a04" />
-                  <path d="M-6 -1 Q0 -5 6 -1 Z" fill="#eab308" />
-                  <!-- Basket of carrots -->
-                  <rect x="-14" y="18" width="11" height="9" rx="1" fill="#b45309" />
-                  <!-- Green carrot tops -->
-                  <path d="M-12 18 L-13 14 M-10 18 L-10 13 M-8 18 L-7 14" stroke="#22c55e" stroke-width="2.5" stroke-linecap="round" />
-                </g>
-
-                <!-- Helper 2: Mr Hatem (Carpenter) - Center-Left background-ish -->
-                <g transform="translate(140, 160)">
-                  <!-- Wooden Workbench -->
-                  <rect x="-15" y="20" width="30" height="15" fill="#7c2d12" />
-                  <rect x="-12" y="32" width="4" height="12" fill="#451a03" />
-                  <rect x="8" y="32" width="4" height="12" fill="#451a03" />
-                  <!-- Figure -->
-                  <path d="M-6 10 L6 10 L5 24 L-5 24 Z" fill="#ea580c" />
-                  <path d="M-4 12 L4 12 L3 24 L-3 24 Z" fill="#78350f" />
-                  <circle cx="0" cy="2" r="6" fill="#fed7aa" />
-                  <!-- Hair -->
-                  <path d="M-6 0 C-4 -4, 4 -4, 6 0 C5 -2, -5 -2, -6 0" fill="#1a0b00" />
-                  <!-- Hammer in hand -->
-                  <path d="M8 15 L12 11" stroke="#475569" stroke-width="2.5" stroke-linecap="round" />
-                  <rect x="11" y="9" width="4" height="3" fill="#1e293b" />
-                </g>
-
-                <!-- Helper 3: Ms Salma (Builder) - Center-Right foreground -->
-                <g transform="translate(245, 170)">
-                  <!-- Brick wall segment -->
-                  <rect x="8" y="15" width="22" height="24" fill="#fca5a5" stroke="#f87171" stroke-dasharray="4,2" />
-                  <!-- Figure -->
-                  <path d="M-7 12 L7 12 L5 32 L-5 32 Z" fill="#2563eb" />
-                  <path d="M-6 12 L6 12 L4 26 L-4 26 Z" fill="#ea580c" />
-                  <circle cx="0" cy="4" r="6.5" fill="#fed7aa" />
-                  <!-- Yellow Hardhat -->
-                  <ellipse cx="0" cy="-1" rx="8" ry="2.5" fill="#eab308" />
-                  <path d="M-5 -2 C-3 -6, 3 -6, 5 -2 Z" fill="#ca8a04" />
-                  <!-- blueprints -->
-                  <path d="M-12 18 L-6 24" stroke="#ffffff" stroke-width="3" stroke-linecap="round" />
-                  <path d="M-11 19 L-5 25" stroke="#38bdf8" stroke-width="1.5" stroke-linecap="round" />
-                </g>
-
-                <!-- Helper 4: Mrs Emma (Teacher) - Right foreground -->
-                <g transform="translate(325, 160)">
-                  <!-- Blackboard Easel -->
-                  <rect x="-24" y="8" width="18" height="15" rx="1" fill="#1e3a1e" stroke="#78350f" stroke-width="1.5" />
-                  <!-- Easel Stand -->
-                  <line x1="-20" y1="23" x2="-23" y2="38" stroke="#78350f" stroke-width="2" />
-                  <line x1="-10" y1="23" x2="-7" y2="38" stroke="#78350f" stroke-width="2" />
-                  <!-- Chalk writing -->
-                  <text x="-21" y="18" fill="#ffffff" font-size="6" font-family="sans-serif" font-weight="bold">A B C</text>
-                  <!-- Figure -->
-                  <path d="M-6 12 L6 12 L5 34 L-5 34 Z" fill="#7c3aed" />
-                  <circle cx="0" cy="4" r="6.5" fill="#fed7aa" />
-                  <!-- Glasses -->
-                  <circle cx="-2.5" cy="4" r="2.2" fill="none" stroke="#1e293b" stroke-width="1" />
-                  <circle cx="2.5" cy="4" r="2.2" fill="none" stroke="#1e293b" stroke-width="1" />
-                  <line x1="-0.5" y1="4" x2="0.5" y2="4" stroke="#1e293b" stroke-width="1" />
-                  <!-- Red Book in hand -->
-                  <rect x="4" y="16" width="6" height="8" rx="0.5" fill="#dc2626" />
-                  <rect x="5" y="16" width="1" height="8" fill="#fecdd3" />
-                </g>
-
-                <!-- Children playing with Giant 3D Dice - Center Bottom -->
-                <g transform="translate(195, 205)">
-                  <!-- Giant White 3D Dice -->
-                  <path d="M-10 0 L10 0 L10 18 L-10 18 Z" fill="#ffffff" stroke="#94a3b8" stroke-width="1" />
-                  <path d="M-10 0 L-2 -6 L18 -6 L10 0 Z" fill="#e2e8f0" stroke="#94a3b8" stroke-width="1" />
-                  <path d="M10 0 L18 -6 L18 12 L10 18 Z" fill="#cbd5e1" stroke="#94a3b8" stroke-width="1" />
-                  <!-- Dice dots -->
-                  <circle cx="0" cy="9" r="2" fill="#be123c" />
-                  <circle cx="5" cy="-3" r="1.2" fill="#1e293b" />
-                  <circle cx="10" cy="-3" r="1.2" fill="#1e293b" />
-                  <circle cx="14" cy="6" r="1.2" fill="#1e293b" />
-                  <circle cx="14" cy="2" r="1.2" fill="#1e293b" />
-                  
-                  <!-- Child Left (Sami) -->
-                  <g transform="translate(-24, -12)">
-                    <path d="M-5 12 L5 12 L4 24 L-4 24 Z" fill="#ea580c" />
-                    <circle cx="0" cy="5" r="5" fill="#fed7aa" />
-                    <path d="M-5 3 C-4 -1, 4 -1, 5 3 C4 1, -4 1, -5 3" fill="#78350f" />
-                    <circle cx="-1.5" cy="5" r="0.7" fill="#1e293b" />
-                    <circle cx="1.5" cy="5" r="0.7" fill="#1e293b" />
-                    <path d="M-1.5 8 Q0 10 1.5 8" stroke="#be123c" stroke-width="0.8" fill="none" />
-                    <path d="M-5 12 Q-10 5 -8 3" stroke="#fed7aa" stroke-width="2" stroke-linecap="round" />
-                  </g>
-
-                  <!-- Child Right (Lina) -->
-                  <g transform="translate(28, -12)">
-                    <path d="M-5 12 L5 12 L6 24 L-6 24 Z" fill="#ec4899" />
-                    <circle cx="0" cy="5" r="5" fill="#fed7aa" />
-                    <circle cx="-5" cy="2" r="2" fill="#b45309" />
-                    <circle cx="5" cy="2" r="2" fill="#b45309" />
-                    <circle cx="-1.5" cy="5" r="0.7" fill="#1e293b" />
-                    <circle cx="1.5" cy="5" r="0.7" fill="#1e293b" />
-                    <path d="M-1.5 8 Q0 10 1.5 8" stroke="#be123c" stroke-width="0.8" fill="none" stroke-linecap="round" />
-                    <path d="M5 12 Q10 5 8 3" stroke="#fed7aa" stroke-width="2" stroke-linecap="round" />
-                  </g>
-                </g>
-              </svg>
+          <!-- Illustration Box -->
+          <div class="md:col-span-6 bg-gradient-to-b from-sky-50 to-indigo-50/50 rounded-xl p-3 border-2 border-sky-200 flex flex-col justify-between shadow-sm min-h-[200px]">
+            <div class="flex items-center justify-between text-[9px] font-black uppercase text-sky-800 tracking-wider">
+              <span>${lesson.sceneLabel}</span>
+              <span class="text-sky-600 font-semibold">Visual Literacy</span>
             </div>
-            <div class="text-[9px] font-semibold text-slate-500 text-center">Jobs in Our Village cooperative community artwork</div>
+            
+            <div class="w-full my-auto overflow-hidden rounded-lg border border-sky-300/60 shadow-inner bg-slate-900/5 flex items-center justify-center relative p-1">
+              <img src="${lesson.imageSrc}" alt="${lesson.sceneLabel}" class="w-full h-44 object-cover rounded shadow-sm" onerror="this.classList.add('hidden'); this.nextElementSibling.classList.remove('hidden');">
+              <div class="hidden w-full h-44 p-4 flex flex-col items-center justify-center text-center bg-sky-100/60 rounded">
+                <svg class="w-12 h-12 text-[#0e56b2] mb-1" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20M4 19.5A2.5 2.5 0 0 0 6.5 22H20M4 19.5V3A2.5 2.5 0 0 1 6.5 0.5H20v20H6.5a2.5 2.5 0 0 1-2.5-2.5z"/></svg>
+                <span class="text-xs font-bold text-[#0e56b2]">${lesson.storyTitle}</span>
+              </div>
+            </div>
+
+            <div class="text-[9px] font-semibold text-slate-500 text-center">${lesson.caption}</div>
           </div>
 
           <!-- Story Text Box -->
           <div class="md:col-span-6 p-4 rounded-xl border-2 border-[#0e56b2] bg-blue-50/40 flex flex-col justify-center text-xs leading-relaxed space-y-2 shadow-sm">
             <h4 contenteditable="true" class="text-sm font-black text-blue-950 border-b border-blue-200 pb-1 flex items-center gap-1.5 outline-none">
               <svg class="w-4 h-4 text-blue-700" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20M4 19.5A2.5 2.5 0 0 0 6.5 22H20M4 19.5V3A2.5 2.5 0 0 1 6.5 0.5H20v20H6.5a2.5 2.5 0 0 1-2.5-2.5z"/></svg>
-              Jobs in Our Village
+              ${lesson.storyTitle}
             </h4>
             <p contenteditable="true" class="text-[11px] text-blue-950 font-serif outline-none leading-relaxed text-justify">
-              In a small village, people have different jobs and they help each other every day. <b>Mr Ali</b> is a farmer. He grows vegetables and fruit. <b>Mr Hatem</b> is a carpenter. He makes chairs, doors and tables. <b>Ms Salma</b> is a builder. She helps build houses and schools. <b>Mrs Emma</b> is a teacher. She teaches children and helps them learn new things.
-              <br><br>
-              One day, the children want to join a village competition at school. They must work in teams. Sami says, "Every job is important." Lina agrees with him. The children throw a dice, answer questions and talk about village jobs. One boy is sick, so his friends help him. In the end, their team wins because they work together. They are happy and they say, "We are stronger together!"
+              ${lesson.storyText}
             </p>
           </div>
         </div>
@@ -3935,17 +3975,8 @@
       const section2 = document.createElement('div');
       section2.className = 'space-y-3';
       
-      const compQuestions = [
-        { q: "Where do the people live?", a: "The people live in a small village." },
-        { q: "What does Mr Ali grow?", a: "Mr Ali grows vegetables and fruit." },
-        { q: "Who makes chairs and tables?", a: "Mr Hatem, who is a carpenter, makes chairs and tables." },
-        { q: "What does Mrs Emma do?", a: "Mrs Emma is a teacher; she teaches children and helps them learn." },
-        { q: "Why does the team win?", a: "The team wins because they work together." },
-        { q: "What do the children say at the end?", a: "They say, \"We are stronger together!\"" }
-      ];
-
       let qHtml = '';
-      compQuestions.forEach((q, idx) => {
+      lesson.comprehension.forEach((q, idx) => {
         qHtml += `
           <div class="space-y-1">
             <p contenteditable="true" class="font-bold text-slate-950 outline-none">${idx + 1}. ${q.q}</p>
@@ -3960,7 +3991,7 @@
 
       section2.innerHTML = `
         <div class="flex items-center gap-2">
-          <span class="w-7 h-7 rounded-full bg-[#15803d] text-white font-bold flex items-center justify-center text-xs">2</span>
+          <span class="w-7 h-7 rounded-full bg-[#15803d] text-white font-bold flex items-center justify-center text-xs shadow-sm">2</span>
           <span class="bg-[#15803d] text-white text-xs font-black px-3 py-1 rounded-lg uppercase tracking-wide">Comprehension</span>
           <span class="text-xs font-bold text-slate-700">Answer the questions.</span>
         </div>
@@ -3974,31 +4005,8 @@
       const section3 = document.createElement('div');
       section3.className = 'space-y-3';
 
-      const mcQuestions = [
-        {
-          q: "A farmer grows _______",
-          opts: ["vegetables", "airplanes", "clouds"],
-          ans: 0
-        },
-        {
-          q: "A carpenter makes _______",
-          opts: ["clouds", "tables", "jackets"],
-          ans: 1
-        },
-        {
-          q: "The children throw a _______",
-          opts: ["jacket", "dice", "purple"],
-          ans: 1
-        },
-        {
-          q: "One boy is _______",
-          opts: ["purple", "sick", "tables"],
-          ans: 1
-        }
-      ];
-
       let mcHtml = '';
-      mcQuestions.forEach((item, qIdx) => {
+      lesson.vocabChoices.forEach((item, qIdx) => {
         let optHtml = '';
         item.opts.forEach((opt, oIdx) => {
           const isCorrect = (oIdx === item.ans);
@@ -4031,7 +4039,7 @@
 
       section3.innerHTML = `
         <div class="flex items-center gap-2">
-          <span class="w-7 h-7 rounded-full bg-[#7c3aed] text-white font-bold flex items-center justify-center text-xs">3</span>
+          <span class="w-7 h-7 rounded-full bg-[#7c3aed] text-white font-bold flex items-center justify-center text-xs shadow-sm">3</span>
           <span class="bg-[#7c3aed] text-white text-xs font-black px-3 py-1 rounded-lg uppercase tracking-wide">Vocabulary in Context</span>
           <span class="text-xs font-bold text-slate-700">Choose the correct word.</span>
         </div>
@@ -4045,15 +4053,8 @@
       const section4 = document.createElement('div');
       section4.className = 'space-y-3 flex-1 flex flex-col';
 
-      const tfQuestions = [
-        { q: "The people live in a village.", ans: true },
-        { q: "A builder teaches children.", ans: false },
-        { q: "The children work in teams.", ans: true },
-        { q: "The team wins because they work together.", ans: true }
-      ];
-
       let tfHtml = '';
-      tfQuestions.forEach((item, idx) => {
+      lesson.trueFalse.forEach((item, idx) => {
         const correctTick = (item.ans && showAnswerKey) ? `<span class="text-emerald-600 font-black">✓</span>` : '';
         const correctCross = (!item.ans && showAnswerKey) ? `<span class="text-rose-600 font-black">✗</span>` : '';
 
@@ -4076,7 +4077,7 @@
 
       section4.innerHTML = `
         <div class="flex items-center gap-2">
-          <span class="w-7 h-7 rounded-full bg-[#ea580c] text-white font-bold flex items-center justify-center text-xs">4</span>
+          <span class="w-7 h-7 rounded-full bg-[#ea580c] text-white font-bold flex items-center justify-center text-xs shadow-sm">4</span>
           <span class="bg-[#ea580c] text-white text-xs font-black px-3 py-1 rounded-lg uppercase tracking-wide">True or False</span>
           <span class="text-xs font-bold text-slate-700">Tick (✓) or cross (X).</span>
         </div>
@@ -4100,15 +4101,8 @@
       const section5 = document.createElement('div');
       section5.className = 'space-y-3 flex-1 flex flex-col';
 
-      const matchData = [
-        { def: "a place with few houses", val: "village" },
-        { def: "not well", val: "sick" },
-        { def: "to say yes", val: "agree" },
-        { def: "take part in", val: "join" }
-      ];
-
       let matchHtml = '';
-      matchData.forEach((item, idx) => {
+      lesson.findInText.forEach((item, idx) => {
         matchHtml += `
           <div class="flex items-center gap-2 text-[11px]">
             <span class="font-bold text-slate-500 w-4">${idx + 1}.</span>
@@ -4122,7 +4116,7 @@
 
       section5.innerHTML = `
         <div class="flex items-center gap-2">
-          <span class="w-7 h-7 rounded-full bg-[#0284c7] text-white font-bold flex items-center justify-center text-xs">5</span>
+          <span class="w-7 h-7 rounded-full bg-[#0284c7] text-white font-bold flex items-center justify-center text-xs shadow-sm">5</span>
           <span class="bg-[#0284c7] text-white text-xs font-black px-3 py-1 rounded-lg uppercase tracking-wide">Find in the Text</span>
           <span class="text-xs font-bold text-slate-700">Find words that mean:</span>
         </div>
@@ -4131,7 +4125,7 @@
         </div>
       `;
 
-      // 4. Combine Section 4 and Section 5 side-by-side in a responsive grid layout matching the screenshot!
+      // 4. Combine Section 4 and Section 5 side-by-side in responsive grid
       const bottomGrid = document.createElement('div');
       bottomGrid.className = 'grid grid-cols-1 md:grid-cols-2 gap-4 items-stretch';
       bottomGrid.appendChild(section4);
@@ -4143,7 +4137,7 @@
       pageNumberBadge.className = 'w-full flex items-center justify-center py-2 select-none';
       pageNumberBadge.innerHTML = `
         <div class="border-4 border-[#0e56b2] text-[#0e56b2] font-black w-10 h-10 rounded-full flex items-center justify-center text-sm bg-white shadow-md animate-pulse">
-          53
+          ${lesson.pageNumber}
         </div>
       `;
       body.appendChild(pageNumberBadge);
@@ -4160,8 +4154,9 @@
       body.appendChild(footerBadge);
 
       lucide.createIcons();
-      showToast('Textbook Showcase Generated', 'Created high-fidelity ELA Textbook lesson matching your screenshot.', 'book-open');
+      showToast('Textbook Lesson Loaded', `Loaded ${lesson.unitTitle}: ${lesson.lessonTitle}`, 'book-open');
     }
+
 
     // ADD CUSTOM EXERCISE ITEM
     function addCustomQuestion() {
