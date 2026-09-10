@@ -650,6 +650,91 @@
       display: flex !important;
     }
 
+    /* --- Worksheet Paper Dark Mode (Low-Light Editing Comfort) --- */
+    #worksheet-paper.paper-dark-mode {
+      background-color: #1e293b !important;
+      color: #f1f5f9 !important;
+      border-color: #475569 !important;
+      box-shadow: 0 20px 40px -15px rgba(0, 0, 0, 0.7), 0 0 0 1px rgba(255, 255, 255, 0.08) !important;
+    }
+    #worksheet-paper.paper-dark-mode #worksheet-header {
+      border-bottom-color: #475569 !important;
+    }
+    #worksheet-paper.paper-dark-mode #ws-illustration-container {
+      background-color: #0f172a !important;
+      border-color: #334155 !important;
+    }
+    #worksheet-paper.paper-dark-mode #ws-title {
+      color: #ffffff !important;
+    }
+    #worksheet-paper.paper-dark-mode #ws-subtitle {
+      color: #94a3b8 !important;
+    }
+    #worksheet-paper.paper-dark-mode #ws-teacher-display {
+      color: #818cf8 !important;
+    }
+    #worksheet-paper.paper-dark-mode #ws-student-info {
+      color: #cbd5e1 !important;
+      border-left-color: #475569 !important;
+    }
+    #worksheet-paper.paper-dark-mode .text-slate-900,
+    #worksheet-paper.paper-dark-mode .text-slate-800,
+    #worksheet-paper.paper-dark-mode .text-slate-700,
+    #worksheet-paper.paper-dark-mode .text-indigo-950,
+    #worksheet-paper.paper-dark-mode .text-indigo-900,
+    #worksheet-paper.paper-dark-mode .text-indigo-800 {
+      color: #f8fafc !important;
+    }
+    #worksheet-paper.paper-dark-mode .text-slate-600,
+    #worksheet-paper.paper-dark-mode .text-slate-500 {
+      color: #94a3b8 !important;
+    }
+    #worksheet-paper.paper-dark-mode .bg-slate-50,
+    #worksheet-paper.paper-dark-mode .bg-slate-50\/40,
+    #worksheet-paper.paper-dark-mode .bg-slate-100,
+    #worksheet-paper.paper-dark-mode .bg-indigo-50,
+    #worksheet-paper.paper-dark-mode .bg-indigo-50\/30,
+    #worksheet-paper.paper-dark-mode .bg-indigo-50\/40,
+    #worksheet-paper.paper-dark-mode .bg-indigo-50\/50,
+    #worksheet-paper.paper-dark-mode .bg-indigo-50\/60,
+    #worksheet-paper.paper-dark-mode .bg-amber-50\/30,
+    #worksheet-paper.paper-dark-mode .bg-amber-50\/50,
+    #worksheet-paper.paper-dark-mode .exercise-block,
+    #worksheet-paper.paper-dark-mode .question-item,
+    #worksheet-paper.paper-dark-mode .ws-card {
+      background-color: #0f172a !important;
+      border-color: #334155 !important;
+      color: #f1f5f9 !important;
+    }
+    #worksheet-paper.paper-dark-mode .border-slate-200,
+    #worksheet-paper.paper-dark-mode .border-slate-300,
+    #worksheet-paper.paper-dark-mode .border-indigo-100,
+    #worksheet-paper.paper-dark-mode .border-indigo-200,
+    #worksheet-paper.paper-dark-mode .border-indigo-500\/20 {
+      border-color: #334155 !important;
+    }
+    #worksheet-paper.paper-dark-mode .bg-white {
+      background-color: #0f172a !important;
+      border-color: #334155 !important;
+      color: #f1f5f9 !important;
+    }
+    #worksheet-paper.paper-dark-mode #learning-objective-box {
+      background-color: #0f172a !important;
+      border-color: #4338ca !important;
+      color: #c7d2fe !important;
+    }
+    #worksheet-paper.paper-dark-mode span.px-2\.5 {
+      background-color: #312e81 !important;
+      color: #e0e7ff !important;
+      border-color: #4338ca !important;
+    }
+    #worksheet-paper.paper-dark-mode select,
+    #worksheet-paper.paper-dark-mode input[type="text"] {
+      background-color: #0f172a !important;
+      color: #ffffff !important;
+      border-color: #475569 !important;
+    }
+
     /* Flat high-contrast overrides for dark worksheet themes (Midnight Tech & Cyberpunk Edgy) */
     .theme-midnight-tech .text-slate-900,
     .theme-midnight-tech .text-slate-800,
@@ -1417,6 +1502,22 @@
             </select>
           </div>
 
+          <!-- Paper Low-Light Dark Mode Toggle -->
+          <div class="p-2.5 rounded-xl bg-slate-900/90 border border-slate-800 flex items-center justify-between">
+            <div class="flex items-center gap-2">
+              <div id="paper-dark-indicator" class="w-7 h-7 rounded-lg bg-slate-800 border border-slate-700 flex items-center justify-center text-slate-400">
+                <i data-lucide="moon" class="w-3.5 h-3.5"></i>
+              </div>
+              <div>
+                <span class="text-xs font-bold text-slate-200 block leading-tight">Paper Dark Mode</span>
+                <span class="text-[9px] text-slate-400 block">Low-light editing (Prints white)</span>
+              </div>
+            </div>
+            <button onclick="togglePaperDarkMode()" id="btn-paper-dark-toggle" class="px-2.5 py-1 text-[11px] font-bold rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white border border-slate-700 transition-all active:scale-95 flex items-center gap-1">
+              <span id="paper-dark-toggle-label">Enable</span>
+            </button>
+          </div>
+
           <!-- Worksheet Illustration Controls -->
           <div>
             <label class="text-[11px] text-slate-300 mb-1.5 block flex items-center justify-between">
@@ -1585,6 +1686,12 @@
       </div>
       
       <div class="flex items-center gap-2">
+        <!-- Paper Dark Mode Low-Light Toggle -->
+        <button id="btn-paper-dark-top" onclick="togglePaperDarkMode()" class="px-2.5 py-1.5 rounded-lg bg-slate-900 hover:bg-slate-800 border border-slate-700 text-slate-300 hover:text-white text-xs font-semibold flex items-center gap-1.5 transition-all shadow-sm active:scale-95" title="Toggle Low-Light Dark Mode on Worksheet Paper (Prints White)">
+          <i id="paper-dark-top-icon" data-lucide="moon" class="w-3.5 h-3.5 text-indigo-400"></i>
+          <span id="paper-dark-top-label" class="hidden sm:inline">Dark Paper</span>
+        </button>
+
         <button id="btn-split-page" onclick="insertManualPageBreak()" class="px-2.5 py-1.5 rounded-lg bg-indigo-950/80 hover:bg-indigo-900 border border-indigo-500/40 text-indigo-300 text-xs font-semibold flex items-center gap-1 transition-all" title="Insert A4 Page Break">
           <i data-lucide="scissors" class="w-3 h-3 text-indigo-400"></i>
           <span>Split Page</span>
@@ -2972,7 +3079,95 @@
       document.body.setAttribute('data-app-theme', savedAppTheme);
       const appThemeSelect = document.getElementById('app-theme-select');
       if (appThemeSelect) appThemeSelect.value = savedAppTheme;
+
+      // Restore paper dark mode preference
+      const savedPaperDark = localStorage.getItem('ela_paper_dark_mode') === 'true';
+      if (savedPaperDark) {
+        setPaperDarkModeState(true, false);
+      }
     });
+
+    // Worksheet Paper Dark Mode Toggle (Low-Light Editing Comfort)
+    let isPaperDarkMode = false;
+
+    function togglePaperDarkMode() {
+      setPaperDarkModeState(!isPaperDarkMode, true);
+    }
+
+    function setPaperDarkModeState(enable, showNotification = true) {
+      isPaperDarkMode = enable;
+      const paper = document.getElementById('worksheet-paper');
+      const topBtn = document.getElementById('btn-paper-dark-top');
+      const topIcon = document.getElementById('paper-dark-top-icon');
+      const topLabel = document.getElementById('paper-dark-top-label');
+      const sideBtn = document.getElementById('btn-paper-dark-toggle');
+      const sideLabel = document.getElementById('paper-dark-toggle-label');
+      const sideIndicator = document.getElementById('paper-dark-indicator');
+
+      if (!paper) return;
+
+      if (isPaperDarkMode) {
+        paper.classList.add('paper-dark-mode');
+        localStorage.setItem('ela_paper_dark_mode', 'true');
+
+        if (topBtn) {
+          topBtn.classList.remove('bg-slate-900', 'border-slate-700', 'text-slate-300');
+          topBtn.classList.add('bg-indigo-600', 'border-indigo-500', 'text-white', 'shadow-indigo-500/20');
+        }
+        if (topIcon) {
+          topIcon.setAttribute('data-lucide', 'sun');
+          topIcon.classList.remove('text-indigo-400');
+          topIcon.classList.add('text-amber-300');
+        }
+        if (topLabel) topLabel.innerText = 'Light Paper';
+
+        if (sideBtn) {
+          sideBtn.classList.remove('bg-slate-800', 'text-slate-300');
+          sideBtn.classList.add('bg-indigo-600', 'text-white', 'border-indigo-500');
+        }
+        if (sideLabel) sideLabel.innerText = 'Active (Dark)';
+        if (sideIndicator) {
+          sideIndicator.classList.remove('bg-slate-800', 'text-slate-400', 'border-slate-700');
+          sideIndicator.classList.add('bg-indigo-950', 'text-amber-300', 'border-indigo-500/40');
+        }
+
+        if (showNotification) {
+          showToast('Paper Dark Mode', 'Worksheet switched to dark gray for low-light editing. Print output remains clean white.', 'moon');
+        }
+      } else {
+        paper.classList.remove('paper-dark-mode');
+        localStorage.setItem('ela_paper_dark_mode', 'false');
+
+        if (topBtn) {
+          topBtn.classList.add('bg-slate-900', 'border-slate-700', 'text-slate-300');
+          topBtn.classList.remove('bg-indigo-600', 'border-indigo-500', 'text-white', 'shadow-indigo-500/20');
+        }
+        if (topIcon) {
+          topIcon.setAttribute('data-lucide', 'moon');
+          topIcon.classList.add('text-indigo-400');
+          topIcon.classList.remove('text-amber-300');
+        }
+        if (topLabel) topLabel.innerText = 'Dark Paper';
+
+        if (sideBtn) {
+          sideBtn.classList.add('bg-slate-800', 'text-slate-300');
+          sideBtn.classList.remove('bg-indigo-600', 'text-white', 'border-indigo-500');
+        }
+        if (sideLabel) sideLabel.innerText = 'Enable';
+        if (sideIndicator) {
+          sideIndicator.classList.add('bg-slate-800', 'text-slate-400', 'border-slate-700');
+          sideIndicator.classList.remove('bg-indigo-950', 'text-amber-300', 'border-indigo-500/40');
+        }
+
+        if (showNotification) {
+          showToast('Paper Light Mode', 'Worksheet restored to standard white paper display.', 'sun');
+        }
+      }
+
+      // Update vector illustration strokes and colors
+      updateWorksheetIllustration(currentMode);
+      lucide.createIcons();
+    }
 
     // Theme Control
     function applyTheme(themeName) {
