@@ -171,6 +171,67 @@
       color: #ecfdf5 !important;
       border-color: #10b981 !important;
     }
+    /* --- New Premium PowerPoint Slide Templates --- */
+    .slide-theme-sunset {
+      background: linear-gradient(135deg, #7c2d12, #4c1d95) !important;
+      color: #ffedd5 !important;
+      border-color: #f97316 !important;
+    }
+    .slide-theme-sunset h1, .slide-theme-sunset h2 {
+      color: #fdba74 !important;
+    }
+    .slide-theme-sunset p, .slide-theme-sunset span, .slide-theme-sunset li {
+      color: #fed7aa !important;
+    }
+
+    .slide-theme-forest {
+      background: linear-gradient(135deg, #14532d, #064e3b) !important;
+      color: #f0fdf4 !important;
+      border-color: #22c55e !important;
+    }
+    .slide-theme-forest h1, .slide-theme-forest h2 {
+      color: #86efac !important;
+    }
+    .slide-theme-forest p, .slide-theme-forest span, .slide-theme-forest li {
+      color: #bbf7d0 !important;
+    }
+
+    .slide-theme-nordic {
+      background: #f1f5f9 !important;
+      color: #1e293b !important;
+      border-color: #cbd5e1 !important;
+    }
+    .slide-theme-nordic h1, .slide-theme-nordic h2 {
+      color: #0f172a !important;
+    }
+    .slide-theme-nordic p, .slide-theme-nordic span, .slide-theme-nordic li {
+      color: #334155 !important;
+    }
+
+    .slide-theme-luxury {
+      background: linear-gradient(135deg, #0f172a, #1e1b4b) !important;
+      color: #f5e0c3 !important;
+      border-color: #d4af37 !important;
+    }
+    .slide-theme-luxury h1, .slide-theme-luxury h2 {
+      color: #d4af37 !important;
+    }
+    .slide-theme-luxury p, .slide-theme-luxury span, .slide-theme-luxury li {
+      color: #e5d5be !important;
+    }
+
+    .slide-theme-playful {
+      background: #fef08a !important;
+      color: #0f172a !important;
+      border-color: #000000 !important;
+    }
+    .slide-theme-playful h1, .slide-theme-playful h2 {
+      color: #000000 !important;
+    }
+    .slide-theme-playful p, .slide-theme-playful span, .slide-theme-playful li {
+      color: #1e293b !important;
+    }
+
     
     #presentation-container {
       transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
@@ -1016,7 +1077,139 @@
       transform: translateY(-2px);
     }
 
-  </style>
+  
+    /* === POWERPOINT & SMARTBOARD PRESENTATION ENHANCEMENTS === */
+    #slide-draw-canvas {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 25;
+      pointer-events: none;
+      border-radius: 1rem;
+    }
+    #slide-draw-canvas.drawing-active {
+      pointer-events: auto;
+      cursor: crosshair;
+    }
+    #slide-draw-canvas.laser-active {
+      pointer-events: auto;
+      cursor: none;
+    }
+    .laser-dot {
+      position: absolute;
+      width: 14px;
+      height: 14px;
+      border-radius: 50%;
+      background: #ff0055;
+      box-shadow: 0 0 12px 4px #ff0055, 0 0 24px 8px rgba(255, 0, 85, 0.6);
+      transform: translate(-50%, -50%);
+      pointer-events: none;
+      z-index: 28;
+      transition: transform 0.04s ease-out;
+      display: none;
+    }
+    .laser-dot::after {
+      content: '';
+      position: absolute;
+      inset: 2px;
+      border-radius: 50%;
+      background: #ffffff;
+      opacity: 0.9;
+    }
+    .slide-timer-ring {
+      stroke-dasharray: 100;
+      stroke-dashoffset: 0;
+      transition: stroke-dashoffset 0.5s linear;
+    }
+    .quiz-poll-bar {
+      transition: width 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .card-3d-wrapper {
+      perspective: 1000px;
+    }
+    .card-3d-inner {
+      transform-style: preserve-3d;
+      transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .card-3d-inner.is-flipped {
+      transform: rotateY(180deg);
+    }
+    .card-face {
+      backface-visibility: hidden;
+      -webkit-backface-visibility: hidden;
+    }
+    .card-face-back {
+      transform: rotateY(180deg);
+    }
+    .ppt-tool-btn.active {
+      background: #6366f1 !important;
+      color: #ffffff !important;
+      border-color: #818cf8 !important;
+      box-shadow: 0 0 12px rgba(99, 102, 241, 0.5);
+    }
+
+  
+    /* === SMARTBOARD WHITEBOARD & 3D FLASHCARD PRESENTATION STYLES === */
+    #slide-draw-canvas {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 40;
+      pointer-events: none;
+    }
+    #slide-draw-canvas.drawing-active {
+      pointer-events: auto;
+      cursor: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M12 20h9'/%3E%3Cpath d='M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z'/%3E%3C/svg%3E") 0 16, crosshair;
+    }
+    #slide-draw-canvas.laser-active {
+      pointer-events: auto;
+      cursor: none;
+    }
+    .laser-dot {
+      position: absolute;
+      width: 14px;
+      height: 14px;
+      background: radial-gradient(circle, #ff0844 20%, rgba(255, 8, 68, 0.4) 60%, transparent 100%);
+      border-radius: 50%;
+      box-shadow: 0 0 15px #ff0844, 0 0 30px #ff0844;
+      pointer-events: none;
+      z-index: 45;
+      display: none;
+      transform: translate(-50%, -50%);
+      animation: laserPulse 1s infinite alternate;
+    }
+    @keyframes laserPulse {
+      0% { transform: translate(-50%, -50%) scale(0.85); opacity: 0.85; }
+      100% { transform: translate(-50%, -50%) scale(1.25); opacity: 1; }
+    }
+    .backface-hidden {
+      backface-visibility: hidden;
+      -webkit-backface-visibility: hidden;
+    }
+    .transform-style-preserve-3d {
+      transform-style: preserve-3d;
+      -webkit-transform-style: preserve-3d;
+    }
+    .rotate-y-180 {
+      transform: rotateY(180deg);
+    }
+    .flashcard-inner {
+      transform-style: preserve-3d;
+      transition: transform 0.65s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    }
+    .flashcard-inner.flipped {
+      transform: rotateY(180deg);
+    }
+    .ppt-tool-btn.active {
+      border-color: #6366f1 !important;
+      background-color: rgba(99, 102, 241, 0.15) !important;
+      color: #ffffff !important;
+      box-shadow: 0 0 10px rgba(99, 102, 241, 0.3);
+    }
+</style>
   <!-- App Level Themes -->
   <style id="app-level-themes">
     /* Base App Themes override */
@@ -1586,49 +1779,158 @@
             <div>
               <div class="flex items-center gap-2">
                 <h3 class="text-xs sm:text-sm font-black text-white tracking-wide">Interactive Classroom Slideshow</h3>
-                <span class="px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 text-[9px] font-bold">PowerPoint Animated</span>
+                <span id="slide-count-badge" class="px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 text-[9px] font-bold">Slide 1 of 5</span>
               </div>
-              <p class="text-[10px] text-slate-400 hidden sm:block">Smooth animated transitions, interactive quiz reveals & presenter notes</p>
+              <p class="text-[10px] text-slate-400 hidden sm:block">Smooth animated transitions, interactive drawing canvas & classroom timers</p>
             </div>
           </div>
         </div>
 
         <!-- Controls: Animations, Theme, AI Generator -->
         <div class="flex flex-wrap items-center gap-2">
-          
           <!-- Slide Animation Style Selector -->
-          <div class="flex items-center gap-1 bg-slate-900 border border-slate-700 px-2 py-1 rounded-lg">
+          <div class="flex items-center gap-1 bg-slate-900 border border-slate-700 px-2.5 py-1 rounded-xl">
             <i data-lucide="sparkles" class="w-3.5 h-3.5 text-amber-400"></i>
-            <select onchange="setSlideAnimationMode(this.value)" class="bg-transparent text-xs text-slate-200 font-semibold focus:outline-none cursor-pointer">
+            <select onchange="setSlideAnimationMode(this.value)" class="bg-transparent text-xs text-slate-200 font-bold focus:outline-none cursor-pointer">
               <option value="smooth-slide">✨ Smooth Slide</option>
               <option value="zoom-pop">🔍 Zoom & Depth</option>
               <option value="fluid-fade">🌊 Fluid Fade</option>
               <option value="card-flip">🎴 3D Card Flip</option>
+              <option value="morph" selected>🦋 PowerPoint Morph</option>
+              <option value="3d-cube">📦 3D Cube Spin</option>
+              <option value="elastic-spring">🏹 Elastic Spring</option>
             </select>
           </div>
 
-          <!-- Slide Visual Theme -->
-          <div class="flex items-center gap-1 bg-slate-900 border border-slate-700 px-2 py-1 rounded-lg">
-            <i data-lucide="palette" class="w-3.5 h-3.5 text-indigo-400"></i>
-            <select id="slide-theme-select" onchange="applySlideTheme(this.value)" class="bg-transparent text-xs text-slate-200 font-semibold focus:outline-none cursor-pointer">
-              <option value="indigo">Indigo Modern</option>
-              <option value="emerald">Emerald Scholastic</option>
-              <option value="sunset">Sunset Academic</option>
-              <option value="midnight">Midnight Pro</option>
-              <option value="pastel">Nordic Pastel</option>
+          <!-- Presentation Aspect Ratio Selector -->
+          <div class="flex items-center gap-1 bg-slate-900 border border-slate-700 px-2.5 py-1 rounded-xl">
+            <i data-lucide="aspect-ratio" class="w-3.5 h-3.5 text-indigo-400"></i>
+            <select id="slide-aspect-select" onchange="setPresentationAspect(this.value)" class="bg-transparent text-xs text-slate-200 font-bold focus:outline-none cursor-pointer" title="Choose Presentation Aspect Ratio">
+              <option value="aspect-16-9" selected>📐 16:9 Standard</option>
+              <option value="aspect-16-10">🖥️ 16:10 Cinema</option>
+              <option value="aspect-21-9">🎬 21:9 Ultra-Wide</option>
             </select>
           </div>
 
           <!-- Add Slide Button -->
-          <button onclick="openCustomSlideModal()" class="px-2.5 py-1.5 bg-slate-800 hover:bg-slate-700 text-slate-200 hover:text-white rounded-lg text-xs font-bold flex items-center gap-1 border border-slate-700 transition-all active:scale-95" title="Add Custom Teacher Slide">
-            <i data-lucide="plus" class="w-3.5 h-3.5"></i>
+          <button onclick="openCustomSlideModal()" class="px-3 py-1.5 bg-slate-800 hover:bg-slate-700 text-slate-200 hover:text-white rounded-xl text-xs font-bold flex items-center gap-1.5 border border-slate-700 transition-all active:scale-95" title="Add Custom Teacher Slide">
+            <i data-lucide="plus" class="w-3.5 h-3.5 text-emerald-400"></i>
             <span>Add Slide</span>
           </button>
 
           <!-- AI Slides Generator Modal Button -->
-          <button onclick="openAIPresentationModal()" class="px-3 py-1.5 bg-gradient-to-r from-sky-600 via-indigo-600 to-purple-600 hover:from-sky-500 hover:to-purple-500 text-white rounded-lg text-xs font-black shadow-md shadow-sky-600/30 flex items-center gap-1.5 active:scale-95 transition-all">
-            <i data-lucide="sparkles" class="w-3.5 h-3.5 text-sky-200"></i>
+          <button onclick="openAIPresentationModal()" class="px-3 py-1.5 bg-gradient-to-r from-sky-600 via-indigo-600 to-purple-600 hover:from-sky-500 hover:to-purple-500 text-white rounded-xl text-xs font-black shadow-md shadow-sky-600/30 flex items-center gap-1.5 active:scale-95 transition-all">
+            <i data-lucide="sparkles" class="w-3.5 h-3.5 text-sky-200 animate-pulse"></i>
             <span>AI Slide Deck</span>
+          </button>
+
+          <!-- Present with Video Button -->
+          <button onclick="openVideoModal()" class="px-3 py-1.5 bg-rose-600 hover:bg-rose-500 text-white font-bold rounded-xl text-xs flex items-center gap-1.5 shadow transition-all active:scale-95" title="Present Educational Lesson Videos">
+            <i data-lucide="video" class="w-3.5 h-3.5"></i>
+            <span>Video</span>
+          </button>
+
+          <!-- True Fullscreen Projector Mode Toggle -->
+          <button onclick="togglePresentationFullscreen()" id="btn-fullscreen-projector" class="py-1.5 px-3 bg-slate-800 hover:bg-slate-700 text-slate-200 hover:text-white font-bold rounded-xl text-xs flex items-center gap-1.5 transition-all border border-slate-700 active:scale-95" title="Toggle True Fullscreen Projector (F11)">
+            <i id="fullscreen-icon" data-lucide="expand" class="w-3.5 h-3.5 text-sky-400"></i>
+            <span>Projector</span>
+          </button>
+
+          <!-- Theater Mode Toggle -->
+          <button onclick="toggleTheaterMode()" id="btn-theater-mode" class="py-1.5 px-2 bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white font-bold rounded-xl text-xs flex items-center gap-1 transition-all" title="Toggle Widescreen Container">
+            <i id="theater-mode-icon" data-lucide="maximize-2" class="w-3.5 h-3.5"></i>
+          </button>
+        </div>
+      </div>
+
+      <!-- NEW: SMARTBOARD INTERACTIVE CLASSROOM TOOLS CONTROL BAR -->
+      <div class="flex flex-wrap items-center justify-between gap-3 bg-slate-950/80 border border-slate-800 p-2.5 rounded-xl">
+        <!-- Part A: Interactive Annotation Palette (Pen, Highlighter, Laser, Eraser, Undo, Color) -->
+        <div class="flex items-center gap-2 flex-wrap">
+          <span class="text-[10px] uppercase font-black text-slate-400 tracking-wider pr-1">Whiteboard Tools:</span>
+          
+          <button onclick="setSmartboardTool('laser')" id="btn-tool-laser" class="ppt-tool-btn px-2.5 py-1.5 rounded-lg bg-slate-900 border border-slate-700 hover:border-indigo-500 text-slate-300 text-xs font-bold flex items-center gap-1.5 transition-all cursor-pointer" title="Toggle Pulsing Laser Pointer (L)">
+            <i data-lucide="pointer" class="w-3.5 h-3.5 text-rose-500"></i>
+            <span>Laser</span>
+          </button>
+
+          <button onclick="setSmartboardTool('pen')" id="btn-tool-pen" class="ppt-tool-btn px-2.5 py-1.5 rounded-lg bg-slate-900 border border-slate-700 hover:border-indigo-500 text-slate-300 text-xs font-bold flex items-center gap-1.5 transition-all cursor-pointer" title="Toggle Writing Pen (P)">
+            <i data-lucide="pen-tool" class="w-3.5 h-3.5 text-sky-400"></i>
+            <span>Pen</span>
+          </button>
+
+          <button onclick="setSmartboardTool('highlighter')" id="btn-tool-highlighter" class="ppt-tool-btn px-2.5 py-1.5 rounded-lg bg-slate-900 border border-slate-700 hover:border-indigo-500 text-slate-300 text-xs font-bold flex items-center gap-1.5 transition-all cursor-pointer" title="Toggle Highlighter (H)">
+            <i data-lucide="highlighter" class="w-3.5 h-3.5 text-amber-400"></i>
+            <span>Highlighter</span>
+          </button>
+
+          <!-- Color Swatches for Pen/Highlighter -->
+          <div id="smartboard-colors" class="flex items-center gap-1 bg-slate-900 border border-slate-800 p-1 rounded-lg">
+            <button onclick="setSmartboardColor('#ff0844')" class="w-4 h-4 rounded-full bg-rose-500 border border-white/20 active:scale-90 transition-transform cursor-pointer" title="Crimson Red"></button>
+            <button onclick="setSmartboardColor('#00f2fe')" class="w-4 h-4 rounded-full bg-sky-400 border border-white/20 active:scale-90 transition-transform cursor-pointer" title="Electric Cyan"></button>
+            <button onclick="setSmartboardColor('#10b981')" class="w-4 h-4 rounded-full bg-emerald-500 border border-white/20 active:scale-90 transition-transform cursor-pointer" title="Vibrant Green"></button>
+            <button onclick="setSmartboardColor('#facc15')" class="w-4 h-4 rounded-full bg-amber-400 border border-white/20 active:scale-90 transition-transform cursor-pointer" title="Highlighter Yellow"></button>
+          </div>
+
+          <!-- Undo and Clear buttons -->
+          <button onclick="undoSmartboardStroke()" class="px-2 py-1.5 rounded-lg bg-slate-900 hover:bg-slate-800 border border-slate-800 text-slate-400 hover:text-white text-xs font-semibold flex items-center gap-1 transition-all cursor-pointer" title="Undo Last Stroke (Ctrl+Z)">
+            <i data-lucide="undo-2" class="w-3.5 h-3.5"></i>
+            <span>Undo</span>
+          </button>
+
+          <button onclick="clearSmartboardAnnotations()" class="px-2 py-1.5 rounded-lg bg-slate-900 hover:bg-rose-950/40 hover:text-rose-400 border border-slate-800 text-slate-400 text-xs font-semibold flex items-center gap-1 transition-all cursor-pointer" title="Clear All Annotations (C)">
+            <i data-lucide="eraser" class="w-3.5 h-3.5 text-rose-400"></i>
+            <span>Clear</span>
+          </button>
+        </div>
+
+        <!-- Part B: Interactive Countdown Classroom Timer & Stopwatch -->
+        <div class="flex items-center gap-2 flex-wrap sm:flex-nowrap">
+          <span class="text-[10px] uppercase font-black text-slate-400 tracking-wider">Classroom Timer:</span>
+          
+          <div class="flex items-center gap-1.5 bg-slate-900 border border-slate-800 px-2.5 py-1 rounded-xl">
+            <i data-lucide="alarm-clock" class="w-3.5 h-3.5 text-indigo-400 animate-pulse"></i>
+            <span id="ppt-timer-display" class="text-xs font-mono font-bold text-white tracking-wider">02:00</span>
+          </div>
+
+          <button onclick="togglePptTimer()" id="btn-ppt-timer-play" class="p-1.5 rounded-lg bg-slate-900 hover:bg-slate-800 border border-slate-800 text-emerald-400 transition-all cursor-pointer" title="Start / Pause Countdown">
+            <i id="icon-ppt-timer-play" data-lucide="play" class="w-3.5 h-3.5"></i>
+          </button>
+
+          <button onclick="addPptTimerTime(30)" class="px-2 py-1.5 rounded-lg bg-slate-900 hover:bg-slate-800 border border-slate-800 text-indigo-300 text-[10px] font-bold transition-all cursor-pointer" title="Add 30 Seconds">
+            <span>+30s</span>
+          </button>
+
+          <button onclick="resetPptTimer()" class="p-1.5 rounded-lg bg-slate-900 hover:bg-slate-800 border border-slate-800 text-rose-400 transition-all cursor-pointer" title="Reset Countdown">
+            <i data-lucide="rotate-ccw" class="w-3.5 h-3.5"></i>
+          </button>
+
+          <!-- Presets quick selects -->
+          <div class="flex items-center gap-1">
+            <button onclick="setPptTimerPreset(30)" class="px-1.5 py-1 text-[9px] font-extrabold rounded bg-slate-800/80 hover:bg-slate-700 text-slate-300 cursor-pointer">30s</button>
+            <button onclick="setPptTimerPreset(60)" class="px-1.5 py-1 text-[9px] font-extrabold rounded bg-slate-800/80 hover:bg-slate-700 text-slate-300 cursor-pointer">1m</button>
+            <button onclick="setPptTimerPreset(120)" class="px-1.5 py-1 text-[9px] font-extrabold rounded bg-slate-800/80 hover:bg-slate-700 text-slate-300 cursor-pointer">2m</button>
+            <button onclick="setPptTimerPreset(300)" class="px-1.5 py-1 text-[9px] font-extrabold rounded bg-slate-800/80 hover:bg-slate-700 text-slate-300 cursor-pointer">5m</button>
+          </div>
+        </div>
+
+        <!-- Part C: Slideshow Carousel Loop (Auto-Advance) & Audio toggle -->
+        <div class="flex items-center gap-2 flex-wrap">
+          <button onclick="togglePptAutoPlay()" id="btn-ppt-autoplay" class="px-2.5 py-1.5 rounded-lg bg-slate-900 border border-slate-800 hover:border-amber-500 text-slate-300 text-xs font-bold flex items-center gap-1 transition-all cursor-pointer" title="Auto-advance slides">
+            <i id="icon-ppt-autoplay" data-lucide="play-circle" class="w-3.5 h-3.5 text-amber-500"></i>
+            <span>Auto Play</span>
+          </button>
+
+          <select id="ppt-autoplay-speed" class="bg-slate-900 border border-slate-800 text-slate-300 text-[10px] font-semibold rounded px-1.5 py-1 focus:outline-none cursor-pointer" title="Set Auto Play Interval">
+            <option value="3000">3s interval</option>
+            <option value="5000" selected>5s interval</option>
+            <option value="10000">10s interval</option>
+            <option value="15000">15s interval</option>
+          </select>
+
+          <!-- Sound on/off -->
+          <button onclick="toggleClassroomSound()" id="btn-classroom-sound" class="p-1.5 rounded-lg bg-slate-900 hover:bg-slate-800 border border-slate-800 text-indigo-400 transition-all cursor-pointer" title="Toggle Classroom Sound Effects (Chimes/Gongs)">
+            <i id="icon-classroom-sound" data-lucide="volume-2" class="w-3.5 h-3.5"></i>
           </button>
         </div>
       </div>
@@ -1637,50 +1939,7 @@
       <div class="w-full bg-slate-950/80 rounded-full h-1.5 overflow-hidden border border-white/10 shadow-inner">
         <div id="slide-progress-fill" class="bg-gradient-to-r from-indigo-500 via-sky-400 to-purple-500 h-full rounded-full transition-all duration-500 ease-out" style="width: 15%;"></div>
       </div>
-          <span class="hidden sm:inline-block h-5 w-px bg-slate-800"></span>
-          <span id="slide-count-badge" class="px-2.5 py-1 rounded-full bg-indigo-950 border border-indigo-500/30 text-indigo-300 text-[11px] font-bold">Slide 1 of 5</span>
-        </div>
-
-        <div class="flex items-center gap-2 flex-wrap">
-          <!-- AI Slide Studio Button (Glowing highlight) -->
-          <button onclick="openAIPresentationModal()" class="py-1.5 px-3 bg-gradient-to-r from-sky-600 via-indigo-600 to-purple-600 hover:from-sky-500 hover:to-purple-500 text-white font-bold rounded-lg text-xs flex items-center gap-1.5 shadow-lg shadow-indigo-600/30 transition-all border border-white/20 active:scale-95" title="Generate AI Slide Deck">
-            <i data-lucide="sparkles" class="w-3.5 h-3.5 text-sky-200 animate-pulse"></i>
-            <span>✨ AI Slide Generator</span>
-          </button>
-
-          <!-- Add Custom Slide Button -->
-          <button onclick="openCustomSlideModal()" class="py-1.5 px-2.5 bg-indigo-600 hover:bg-indigo-500 text-white font-bold rounded-lg text-xs flex items-center gap-1.5 shadow transition-all active:scale-95" title="Create Custom Slide">
-            <i data-lucide="plus-circle" class="w-3.5 h-3.5"></i>
-            <span class="hidden sm:inline">Add Slide</span>
-          </button>
-
-          <!-- Present with Video Button -->
-          <button onclick="openVideoModal()" class="py-1.5 px-2.5 bg-rose-600 hover:bg-rose-500 text-white font-bold rounded-lg text-xs flex items-center gap-1.5 shadow transition-all active:scale-95" title="Present Educational Lesson Videos">
-            <i data-lucide="video" class="w-3.5 h-3.5"></i>
-            <span class="hidden sm:inline">Video</span>
-          </button>
-
-          <!-- Presentation Sizing / Aspect Ratio Selector -->
-          <select id="slide-aspect-select" onchange="setPresentationAspect(this.value)" class="bg-slate-900 border border-slate-700 text-slate-300 rounded-lg px-2 py-1.5 text-xs focus:outline-none focus:border-indigo-500 font-semibold" title="Choose Presentation Aspect Ratio">
-            <option value="aspect-16-9" selected>📐 16:9 Standard</option>
-            <option value="aspect-16-10">🖥️ 16:10 Cinema</option>
-            <option value="aspect-21-9">🎬 21:9 Ultra-Wide</option>
-          </select>
-
-          <!-- True Fullscreen Projector Mode Toggle -->
-          <button onclick="togglePresentationFullscreen()" id="btn-fullscreen-projector" class="py-1.5 px-2.5 bg-slate-800 hover:bg-slate-700 text-slate-200 hover:text-white font-bold rounded-lg text-xs flex items-center gap-1.5 transition-all border border-slate-700 active:scale-95" title="Toggle True Fullscreen Projector (F11)">
-            <i id="fullscreen-icon" data-lucide="expand" class="w-3.5 h-3.5 text-sky-400"></i>
-            <span class="hidden md:inline">Projector</span>
-          </button>
-
-          <!-- Theater / Widescreen Mode Toggle -->
-          <button onclick="toggleTheaterMode()" id="btn-theater-mode" class="py-1.5 px-2 bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white font-bold rounded-lg text-xs flex items-center gap-1 transition-all" title="Toggle Widescreen Container">
-            <i id="theater-mode-icon" data-lucide="maximize-2" class="w-3.5 h-3.5"></i>
-          </button>
-        </div>
-      </div>
       
-      <!-- 3D Perspective Viewport Container with Swipe Physics -->
       <div id="slide-3d-viewport" class="relative w-full aspect-[16/9] select-none cursor-grab active:cursor-grabbing transition-all duration-300" style="perspective: 1400px; transform-style: preserve-3d;">
         
         <!-- Background Stack Card 2 (Deepest) -->
@@ -1691,6 +1950,10 @@
 
         <!-- Presentation Slide Box -->
         <div id="presentation-slide-box" class="slide-idle-floating absolute inset-0 bg-white rounded-2xl shadow-2xl border border-slate-200 overflow-hidden flex flex-col justify-between p-6 sm:p-10 text-slate-900 transition-all duration-300 origin-center" style="z-index: 10; transform: translate3d(0,0,0) rotateY(0deg) rotateZ(0deg);">
+          <!-- Interactive Smartboard Drawing Canvas -->
+          <canvas id="slide-draw-canvas"></canvas>
+          <!-- Pulsing Laser Pointer Target -->
+          <div id="slide-laser-dot" class="laser-dot"></div>
           
           <!-- Dynamic Holographic Glare Sheen -->
           <div id="slide-glare-overlay" class="slide-glare-overlay"></div>
@@ -1846,6 +2109,11 @@
             <option value="slide-theme-royal-ela">👑 Royal ELA Book</option>
             <option value="slide-theme-cyberpunk">💎 Cyberpunk Glow</option>
             <option value="slide-theme-emerald">🌿 Emerald Scholar</option>
+            <option value="slide-theme-sunset">🌇 Sunset Academic</option>
+            <option value="slide-theme-forest">🌲 Forest Scholastic</option>
+            <option value="slide-theme-nordic">❄ Nordic Minimalist</option>
+            <option value="slide-theme-luxury">✨ Luxury Obsidian & Gold</option>
+            <option value="slide-theme-playful">🎈 Playful Comic Theme</option>
           </select>
 
           <!-- Toggle Answer Reveal -->
@@ -3051,6 +3319,11 @@
           'nordic-pastel': 'slide-theme-warm',
           'vibrant-gamifier': 'slide-theme-clean',
           'emerald-scholar': 'slide-theme-emerald',
+          'slide-theme-sunset',
+          'slide-theme-forest',
+          'slide-theme-nordic',
+          'slide-theme-luxury',
+          'slide-theme-playful',
           'sunset-minimalist': 'slide-theme-warm',
           'cyberpunk-edgy': 'slide-theme-cyberpunk',
           'oceanic-trust': 'slide-theme-clean'
@@ -3417,14 +3690,7 @@
       container.innerHTML = svgContent;
     }
 
-    // Intercept lucide.createIcons to automatically refresh worksheet illustrations
-    const originalCreateIcons = lucide.createIcons;
-    lucide.createIcons = function() {
-      if (typeof originalCreateIcons === 'function') {
-        originalCreateIcons.apply(this, arguments);
-      }
-      updateWorksheetIllustration(currentMode);
-    };
+// Worksheet illustrations update directly on theme/mode change
 
     // Zoom Controls
     function zoomPreview(delta) {
@@ -3565,6 +3831,10 @@
         currentSlideIndex = 0;
         renderCurrentSlide();
         setTimeout(init3DSwipeHandlers, 50);
+        setTimeout(() => {
+          initSmartboardCanvas();
+          setSmartboardTool('laser');
+        }, 150);
       }
     }
 
@@ -3632,22 +3902,24 @@
             <p>✔ Q${idx + 1}: ${item.a}</p>
           `).join('');
 
-          presentationSlides.push({
-            layout: 'activity',
-            title: "Smartboard Quiz: Comprehension",
-            subtitle: "Discuss as a class and call on students to answer!",
-            activityHtml: `
-              <div class="space-y-3 font-sans">
-                ${qListHtml}
-              </div>
-            `,
-            answersRevealedHtml: `
-              <div class="mt-4 p-3 bg-emerald-50 border border-emerald-200 rounded-lg space-y-1.5 text-xs text-emerald-850 font-sans font-medium animate-fade-in">
-                <h5 class="font-extrabold uppercase text-[10px] text-emerald-800">★ Solutions Guide ★</h5>
-                ${ansListHtml}
-              </div>
-            `
-          });
+          // Adding Interactive Vocabulary Flashcards
+          if (activeLesson.findInText && activeLesson.findInText.length > 0) {
+            activeLesson.findInText.slice(0, 3).forEach((item, fIdx) => {
+              presentationSlides.push({
+                layout: 'flashcard',
+                title: 'Textbook Vocabulary Word ' + (fIdx + 1),
+                subtitle: 'Unit Vocabulary Focus',
+                definition: item.def,
+                term: item.val,
+                notes: 'Tap the flashcard to flip and reveal the key ELA term! Use text-to-speech to demonstrate pronunciation.'
+              });
+            });
+          }
+
+          
+
+          
+          
 
           let tfRowsHtml = activeLesson.trueFalse.map((item, idx) => `
             <tr>
@@ -3660,30 +3932,7 @@
             <p>${item.ans ? '✔' : '✖'} Statement ${idx + 1}: ${item.ans ? 'True' : 'False'}</p>
           `).join('');
 
-          presentationSlides.push({
-            layout: 'activity',
-            title: "True or False Interactive Grid",
-            subtitle: "Decide whether each statement is True (T) or False (F)",
-            activityHtml: `
-              <table class="w-full text-xs font-sans border-collapse">
-                <thead>
-                  <tr class="bg-slate-100 text-left border-b border-slate-300">
-                    <th class="p-2 font-bold text-slate-700">Statement</th>
-                    <th class="p-2 font-bold text-slate-700 text-center">Class Guess</th>
-                  </tr>
-                </thead>
-                <tbody class="divide-y divide-slate-200">
-                  ${tfRowsHtml}
-                </tbody>
-              </table>
-            `,
-            answersRevealedHtml: `
-              <div class="mt-4 p-3 bg-emerald-50 border border-emerald-200 rounded-lg text-xs text-emerald-850 font-sans font-medium animate-fade-in">
-                <h5 class="font-extrabold uppercase text-[10px] text-emerald-800">★ Solutions Guide ★</h5>
-                ${tfAnsHtml}
-              </div>
-            `
-          });
+          
         }
       } else {
         const modeTitle = currentMode.charAt(0).toUpperCase() + currentMode.slice(1);
@@ -3722,76 +3971,6 @@
     }
 
     
-    // Theme & Palette Modal Handlers (Reduces Dashboard Complexity)
-    let activeTheme = 'ela-book';
-    let slideAnimationMode = 'smooth-slide'; // 'smooth-slide', 'zoom-pop', 'fluid-fade', 'card-flip'
-
-    function openThemePaletteModal() {
-      const modal = document.getElementById('theme-palette-modal');
-      if (modal) {
-        modal.classList.remove('hidden');
-        modal.classList.add('flex');
-        highlightActiveThemeCard(activeTheme);
-      }
-    }
-
-    function closeThemePaletteModal() {
-      const modal = document.getElementById('theme-palette-modal');
-      if (modal) {
-        modal.classList.add('hidden');
-        modal.classList.remove('flex');
-      }
-    }
-
-    function highlightActiveThemeCard(themeName) {
-      document.querySelectorAll('.theme-picker-card').forEach(card => {
-        card.classList.remove('border-indigo-400', 'ring-2', 'ring-indigo-400/50', 'bg-indigo-950/60');
-        card.classList.add('border-slate-700', 'bg-slate-800/60');
-      });
-      const activeCard = document.getElementById('theme-card-' + themeName);
-      if (activeCard) {
-        activeCard.classList.remove('border-slate-700', 'bg-slate-800/60');
-        activeCard.classList.add('border-indigo-400', 'ring-2', 'ring-indigo-400/50', 'bg-indigo-950/60');
-      }
-    }
-
-    function selectThemeFromModal(themeName) {
-      activeTheme = themeName;
-      applyTheme(themeName);
-      highlightActiveThemeCard(themeName);
-      
-      // Update the single dashboard theme button label
-      const themeLabels = {
-        'ela-book': '📖 ELA Textbook Style',
-        'classic-corporate': '👔 Classic Navy Style',
-        'midnight-tech': '🌙 Midnight Tech Style',
-        'nordic-pastel': '🍃 Nordic Sage Style',
-        'vibrant-gamifier': '🎮 Gamifier Pop Style',
-        'emerald-scholar': '🎓 Scholar Green Style',
-        'sunset-minimalist': '🌅 Sunset Warm Style',
-        'cyberpunk-edgy': '⚡ Cyber Neon Style',
-        'oceanic-trust': '🌊 Oceanic Blue Style'
-      };
-      
-      const subLabel = document.getElementById('theme-btn-sub-label');
-      if (subLabel) {
-        subLabel.innerText = themeLabels[themeName] || (themeName.charAt(0).toUpperCase() + themeName.slice(1));
-      }
-      
-      const themeSelector = document.getElementById('theme-select');
-      if (themeSelector) themeSelector.value = themeName;
-      
-      const presThemeSelect = document.getElementById('slide-theme-select');
-      if (presThemeSelect) {
-        // Map to presentation theme if applicable
-        if (themeName === 'midnight-tech' || themeName === 'cyberpunk-edgy') presThemeSelect.value = 'midnight';
-        else if (themeName === 'emerald-scholar') presThemeSelect.value = 'emerald';
-        else if (themeName === 'sunset-minimalist') presThemeSelect.value = 'sunset';
-        else presThemeSelect.value = 'indigo';
-        applySlideTheme(presThemeSelect.value);
-      }
-    }
-
     function setSlideAnimationMode(mode) {
       slideAnimationMode = mode;
       renderCurrentSlide();
@@ -3900,7 +4079,136 @@
             </div>
           </div>
         `;
-      } else if (slide.layout === 'custom') {
+      } else if (slide.layout === 'flashcard') {
+        html = `
+          <div class="flex-1 flex flex-col justify-between py-2 ${animClass}">
+            <div>
+              <span class="text-[10px] uppercase font-black text-indigo-600 tracking-wider anim-badge-pop block mb-1">Interactive 3D Flashcard</span>
+              <h2 class="text-2xl font-black text-slate-900 mb-2 font-sans border-b pb-2.5 border-slate-200/80 anim-stagger-1 tracking-tight flex items-center justify-between">
+                <span>Vocabulary Focus</span>
+                <span class="text-xs font-bold text-indigo-500 bg-indigo-50 px-2.5 py-1 rounded-full">Tap Card to Flip</span>
+              </h2>
+            </div>
+            
+            <div class="flex-1 flex items-center justify-center py-4">
+              <!-- 3D Card Flip Container -->
+              <div class="w-full max-w-lg aspect-[5/3] cursor-pointer" style="perspective: 1000px;" onclick="this.querySelector('.flashcard-inner').classList.toggle('flipped'); playSynthesizedSound('swoosh');">
+                <div class="flashcard-inner relative w-full h-full transition-transform duration-700 ease-out transform-style-preserve-3d">
+                  
+                  <!-- Card Front (Definition / Prompt) -->
+                  <div class="absolute inset-0 bg-gradient-to-br from-slate-900 to-slate-950 text-white rounded-2xl border border-slate-800 p-6 flex flex-col justify-between backface-hidden shadow-xl">
+                    <div class="flex justify-between items-start">
+                      <span class="px-2 py-1 rounded bg-indigo-600/30 text-indigo-300 text-[9px] font-black tracking-widest uppercase">Question / Definition</span>
+                      <i data-lucide="help-circle" class="w-4 h-4 text-indigo-400"></i>
+                    </div>
+                    <div class="text-center py-4">
+                      <p class="text-xs text-slate-400 uppercase font-bold tracking-wider mb-2">Identify the word for:</p>
+                      <blockquote class="text-base sm:text-lg font-serif italic text-slate-100 leading-relaxed">
+                        "${slide.definition}"
+                      </blockquote>
+                    </div>
+                    <div class="text-center text-[10px] text-slate-500 font-bold uppercase tracking-widest">
+                      Tap anywhere to reveal term
+                    </div>
+                  </div>
+
+                  <!-- Card Back (Term, TTS Audio, Example) -->
+                  <div class="absolute inset-0 bg-white text-slate-900 rounded-2xl border-2 border-indigo-600 p-6 flex flex-col justify-between backface-hidden shadow-xl rotate-y-180">
+                    <div class="flex justify-between items-start">
+                      <span class="px-2.5 py-1 rounded bg-emerald-100 text-emerald-800 text-[9px] font-black tracking-widest uppercase">Key Term Found!</span>
+                      <button onclick="event.stopPropagation(); speakVocabWord('${slide.term}');" class="p-1.5 rounded-lg bg-indigo-50 hover:bg-indigo-100 text-indigo-600 transition-all active:scale-90 shadow-sm cursor-pointer" title="Pronounce Term">
+                        <i data-lucide="volume-2" class="w-4 h-4"></i>
+                      </button>
+                    </div>
+                    <div class="text-center py-2">
+                      <h3 class="text-3xl font-black text-slate-950 tracking-tight font-sans mb-1" data-morph-id="morph-term-${slide.term}">
+                        ${slide.term}
+                      </h3>
+                      <p class="text-[10px] text-slate-400 font-bold uppercase tracking-wider mb-3">Pronunciation Guide</p>
+                      <div class="inline-block bg-slate-50 border border-slate-100 px-3 py-1.5 rounded-xl">
+                        <span class="text-xs text-slate-700 italic font-medium">Contextual ELA Core Vocabulary</span>
+                      </div>
+                    </div>
+                    <div class="text-center text-[10px] text-slate-400 font-bold uppercase tracking-widest">
+                      Tap card again to flip back
+                    </div>
+                  </div>
+
+                </div>
+              </div>
+            </div>
+          </div>
+        `;
+      } else if (slide.layout === 'quiz') {
+        const letters = ['A', 'B', 'C', 'D'];
+        const optionCards = slide.options.map((opt, oIdx) => {
+          const letter = letters[oIdx];
+          return `
+            <button onclick="castClassroomVote(${currentSlideIndex}, '${letter}')" id="quiz-option-${letter}" class="quiz-option-card text-left p-3 rounded-xl border border-slate-200 bg-slate-50/50 hover:bg-indigo-50/30 hover:border-indigo-400 transition-all flex items-center gap-3 active:scale-[0.98] cursor-pointer w-full">
+              <span class="w-7 h-7 rounded-lg bg-indigo-600 text-white flex items-center justify-center text-xs font-black shadow-md shadow-indigo-600/20">${letter}</span>
+              <div class="flex-1 min-w-0">
+                <span class="text-xs font-bold text-slate-800 block truncate">${opt}</span>
+                <!-- Polling progress bar -->
+                <div class="w-full bg-slate-200 rounded-full h-1 mt-1.5 overflow-hidden">
+                  <div id="poll-bar-${letter}" class="bg-gradient-to-r from-indigo-500 to-indigo-600 h-full rounded-full transition-all duration-500 ease-out" style="width: 0%;"></div>
+                </div>
+                <div class="flex justify-between items-center mt-1">
+                  <span id="poll-tally-${letter}" class="text-[9px] text-slate-400 font-bold uppercase">0 votes (0%)</span>
+                  <span class="text-[9px] text-indigo-500 hover:underline font-black uppercase tracking-wider">+1 Clicker</span>
+                </div>
+              </div>
+            </button>
+          `;
+        }).join('');
+
+        const letterMap = { 0: 'A', 1: 'B', 2: 'C', 3: 'D' };
+        const correctLetter = letterMap[slide.correctAnswerIndex] || 'A';
+
+        html = `
+          <div class="flex-1 flex flex-col justify-between py-2 ${animClass}">
+            <div>
+              <span class="text-[10px] uppercase font-black text-indigo-600 tracking-wider anim-badge-pop block mb-1">Interactive Classroom Clicker Quiz</span>
+              <h2 class="text-2xl font-black text-slate-900 mb-3 font-sans border-b pb-2 border-slate-200/80 anim-stagger-1 tracking-tight">
+                ${slide.title}
+              </h2>
+            </div>
+
+            <!-- Quiz Questions Grid -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3.5 flex-1 items-center py-1">
+              ${optionCards}
+            </div>
+
+            <!-- Quiz Solution Reveal Panel -->
+            <div id="quiz-solution-box-${currentSlideIndex}" class="hidden mt-3.5 p-3.5 bg-emerald-50 border border-emerald-200 rounded-xl items-start gap-2.5 animate-fade-in">
+              <div class="w-7 h-7 rounded-full bg-emerald-100 text-emerald-700 flex items-center justify-center flex-shrink-0">
+                <i data-lucide="check-circle" class="w-4 h-4"></i>
+              </div>
+              <div class="space-y-0.5">
+                <h5 class="text-xs font-black text-emerald-950 uppercase tracking-wide">Excellent Class Consensus!</h5>
+                <p class="text-xs text-slate-700 leading-relaxed font-semibold">
+                  The correct answer is indeed <span class="px-1.5 py-0.5 rounded bg-emerald-200 text-emerald-800 font-black">${correctLetter}</span>. Great job exploring textual evidence!
+                </p>
+              </div>
+            </div>
+
+            <!-- Whiteboard Quiz Controls footer -->
+            <div class="mt-3.5 pt-2.5 border-t border-slate-100 flex items-center justify-between">
+              <span class="text-[9px] text-slate-400 font-bold uppercase tracking-wider">Tap +1 to tally student responses</span>
+              <div class="flex items-center gap-2">
+                <button onclick="revealQuizPollSolution(${currentSlideIndex}, '${correctLetter}')" class="px-3 py-1.5 bg-emerald-600 hover:bg-emerald-500 text-white rounded-lg text-xs font-bold shadow flex items-center gap-1 active:scale-95 transition-all cursor-pointer">
+                  <i data-lucide="eye" class="w-3.5 h-3.5"></i>
+                  <span>Reveal Solution</span>
+                </button>
+                <button onclick="resetQuizPoll(${currentSlideIndex})" class="px-2.5 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-600 rounded-lg text-xs font-bold flex items-center gap-1 active:scale-95 transition-all cursor-pointer">
+                  <i data-lucide="rotate-ccw" class="w-3.5 h-3.5"></i>
+                  <span>Reset Poll</span>
+                </button>
+              </div>
+            </div>
+          </div>
+        `;
+      } 
+      else if (slide.layout === 'custom') {
         html = `
           <div class="flex-1 flex flex-col justify-between py-2 ${animClass}">
             <div>
@@ -4184,24 +4492,632 @@
       }
     }
 
-    function prevSlide() {
+    
+    /* === POWERPOINT CLASSROOM ENHANCEMENTS & SMARTBOARD CONTROLLERS === */
+    let classroomSoundsEnabled = true;
+
+    function playSynthesizedSound(type) {
+      if (!classroomSoundsEnabled) return;
+      try {
+        const AudioContext = window.AudioContext || window.webkitAudioContext;
+        if (!AudioContext) return;
+        const ctx = new AudioContext();
+        
+        if (type === 'ding') {
+          const now = ctx.currentTime;
+          const osc1 = ctx.createOscillator();
+          const osc2 = ctx.createOscillator();
+          const gain = ctx.createGain();
+          
+          osc1.type = 'sine';
+          osc1.frequency.setValueAtTime(880, now);
+          osc1.frequency.exponentialRampToValueAtTime(1320, now + 0.1);
+          
+          osc2.type = 'triangle';
+          osc2.frequency.setValueAtTime(440, now);
+          osc2.frequency.exponentialRampToValueAtTime(880, now + 0.15);
+          
+          gain.gain.setValueAtTime(0.15, now);
+          gain.gain.exponentialRampToValueAtTime(0.001, now + 0.6);
+          
+          osc1.connect(gain);
+          osc2.connect(gain);
+          gain.connect(ctx.destination);
+          
+          osc1.start(now);
+          osc2.start(now);
+          osc1.stop(now + 0.65);
+          osc2.stop(now + 0.65);
+        } else if (type === 'gong') {
+          const now = ctx.currentTime;
+          const osc = ctx.createOscillator();
+          const gain = ctx.createGain();
+          
+          osc.type = 'sine';
+          osc.frequency.setValueAtTime(180, now);
+          osc.frequency.linearRampToValueAtTime(140, now + 1.2);
+          
+          gain.gain.setValueAtTime(0.3, now);
+          gain.gain.exponentialRampToValueAtTime(0.001, now + 1.5);
+          
+          osc.connect(gain);
+          gain.connect(ctx.destination);
+          
+          osc.start(now);
+          osc.stop(now + 1.6);
+        } else if (type === 'swoosh') {
+          const now = ctx.currentTime;
+          const bufferSize = ctx.sampleRate * 0.4;
+          const buffer = ctx.createBuffer(1, bufferSize, ctx.sampleRate);
+          const data = buffer.getChannelData(0);
+          for (let i = 0; i < bufferSize; i++) {
+            data[i] = Math.random() * 2 - 1;
+          }
+          
+          const noise = ctx.createBufferSource();
+          noise.buffer = buffer;
+          
+          const filter = ctx.createBiquadFilter();
+          filter.type = 'bandpass';
+          filter.Q.value = 8.0;
+          filter.frequency.setValueAtTime(300, now);
+          filter.frequency.exponentialRampToValueAtTime(4000, now + 0.25);
+          filter.frequency.exponentialRampToValueAtTime(500, now + 0.4);
+          
+          const gain = ctx.createGain();
+          gain.gain.setValueAtTime(0.001, now);
+          gain.gain.linearRampToValueAtTime(0.12, now + 0.15);
+          gain.gain.exponentialRampToValueAtTime(0.001, now + 0.4);
+          
+          noise.connect(filter);
+          filter.connect(gain);
+          gain.connect(ctx.destination);
+          
+          noise.start(now);
+          noise.stop(now + 0.45);
+        } else if (type === 'fanfare') {
+          const notes = [523.25, 659.25, 783.99, 1046.50];
+          const now = ctx.currentTime;
+          notes.forEach((freq, idx) => {
+            const osc = ctx.createOscillator();
+            const gain = ctx.createGain();
+            osc.type = 'sine';
+            osc.frequency.value = freq;
+            gain.gain.setValueAtTime(0.08, now + idx * 0.08);
+            gain.gain.exponentialRampToValueAtTime(0.001, now + idx * 0.08 + 0.3);
+            
+            osc.connect(gain);
+            gain.connect(ctx.destination);
+            osc.start(now + idx * 0.08);
+            osc.stop(now + idx * 0.08 + 0.35);
+          });
+        }
+      } catch(e) {
+        console.warn("Synthesizer audio context failure:", e);
+      }
+    }
+
+    let currentSmartboardTool = 'laser';
+    let currentSmartboardColor = '#ff0844';
+    let isSmartboardDrawing = false;
+    let smartboardStrokes = [];
+    let currentSmartboardStroke = [];
+    let slideCanvasInitialized = false;
+
+    function initSmartboardCanvas() {
+      const canvas = document.getElementById('slide-draw-canvas');
+      if (!canvas) return;
+      
+      const resizeCanvas = () => {
+        const rect = canvas.getBoundingClientRect();
+        const dpr = window.devicePixelRatio || 1;
+        canvas.width = rect.width * dpr;
+        canvas.height = rect.height * dpr;
+        const ctx = canvas.getContext('2d');
+        ctx.scale(dpr, dpr);
+        redrawSmartboardAnnotations();
+      };
+      
+      const getCoordinates = (e) => {
+        const rect = canvas.getBoundingClientRect();
+        const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+        const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+        return {
+          x: clientX - rect.left,
+          y: clientY - rect.top
+        };
+      };
+      
+      const startDrawing = (e) => {
+        if (currentSmartboardTool === 'none' || currentSmartboardTool === 'laser') return;
+        isSmartboardDrawing = true;
+        const coords = getCoordinates(e);
+        currentSmartboardStroke = [{
+          x: coords.x,
+          y: coords.y,
+          tool: currentSmartboardTool,
+          color: currentSmartboardColor,
+          width: currentSmartboardTool === 'highlighter' ? 24 : 3
+        }];
+      };
+      
+      const draw = (e) => {
+        const coords = getCoordinates(e);
+        
+        if (currentSmartboardTool === 'laser') {
+          const dot = document.getElementById('slide-laser-dot');
+          if (dot) {
+            dot.style.display = 'block';
+            dot.style.left = coords.x + 'px';
+            dot.style.top = coords.y + 'px';
+          }
+        }
+        
+        if (!isSmartboardDrawing) return;
+        currentSmartboardStroke.push({
+          x: coords.x,
+          y: coords.y
+        });
+        
+        const ctx = canvas.getContext('2d');
+        ctx.lineCap = 'round';
+        ctx.lineJoin = 'round';
+        
+        if (currentSmartboardTool === 'highlighter') {
+          ctx.strokeStyle = currentSmartboardColor === '#facc15' ? 'rgba(250, 204, 21, 0.4)' : 'rgba(0, 242, 254, 0.4)';
+          ctx.lineWidth = 24;
+        } else {
+          ctx.strokeStyle = currentSmartboardColor;
+          ctx.lineWidth = 3;
+        }
+        
+        const p1 = currentSmartboardStroke[currentSmartboardStroke.length - 2];
+        const p2 = currentSmartboardStroke[currentSmartboardStroke.length - 1];
+        if (p1 && p2) {
+          ctx.beginPath();
+          ctx.moveTo(p1.x, p1.y);
+          ctx.lineTo(p2.x, p2.y);
+          ctx.stroke();
+        }
+      };
+      
+      const endDrawing = () => {
+        if (isSmartboardDrawing) {
+          smartboardStrokes.push(currentSmartboardStroke);
+          currentSmartboardStroke = [];
+          isSmartboardDrawing = false;
+        }
+      };
+      
+      canvas.addEventListener('mousedown', startDrawing);
+      canvas.addEventListener('mousemove', draw);
+      canvas.addEventListener('mouseup', endDrawing);
+      canvas.addEventListener('mouseleave', () => {
+        endDrawing();
+        const dot = document.getElementById('slide-laser-dot');
+        if (dot) dot.style.display = 'none';
+      });
+      
+      canvas.addEventListener('touchstart', startDrawing);
+      canvas.addEventListener('touchmove', draw);
+      canvas.addEventListener('touchend', endDrawing);
+      
+      resizeCanvas();
+      window.addEventListener('resize', resizeCanvas);
+      slideCanvasInitialized = true;
+    }
+
+    function setSmartboardTool(tool) {
+      currentSmartboardTool = tool;
+      const canvas = document.getElementById('slide-draw-canvas');
+      if (!canvas) return;
+      
+      canvas.classList.remove('drawing-active', 'laser-active');
+      if (tool === 'pen' || tool === 'highlighter') {
+        canvas.classList.add('drawing-active');
+      } else if (tool === 'laser') {
+        canvas.classList.add('laser-active');
+      }
+      
+      document.querySelectorAll('.ppt-tool-btn').forEach(btn => btn.classList.remove('active'));
+      const activeBtn = document.getElementById('btn-tool-' + tool);
+      if (activeBtn) activeBtn.classList.add('active');
+      
+      const dot = document.getElementById('slide-laser-dot');
+      if (dot) dot.style.display = (tool === 'laser') ? 'block' : 'none';
+    }
+
+    function setSmartboardColor(color) {
+      currentSmartboardColor = color;
+      showToast('Annotation Color', 'Updated writing tool palette selection.', 'palette');
+    }
+
+    function undoSmartboardStroke() {
+      if (smartboardStrokes.length > 0) {
+        smartboardStrokes.pop();
+        redrawSmartboardAnnotations();
+        showToast('Undo Stroke', 'Reverted the last drawn line.', 'undo');
+      }
+    }
+
+    function clearSmartboardAnnotations() {
+      smartboardStrokes = [];
+      const canvas = document.getElementById('slide-draw-canvas');
+      if (canvas) {
+        const ctx = canvas.getContext('2d');
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+      }
+    }
+
+    function redrawSmartboardAnnotations() {
+      const canvas = document.getElementById('slide-draw-canvas');
+      if (!canvas) return;
+      const ctx = canvas.getContext('2d');
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      
+      ctx.lineCap = 'round';
+      ctx.lineJoin = 'round';
+      
+      smartboardStrokes.forEach(stroke => {
+        if (stroke.length < 2) return;
+        const meta = stroke[0];
+        
+        if (meta.tool === 'highlighter') {
+          ctx.strokeStyle = meta.color === '#facc15' ? 'rgba(250, 204, 21, 0.4)' : 'rgba(0, 242, 254, 0.4)';
+          ctx.lineWidth = meta.width || 24;
+        } else {
+          ctx.strokeStyle = meta.color;
+          ctx.lineWidth = meta.width || 3;
+        }
+        
+        ctx.beginPath();
+        ctx.moveTo(meta.x, meta.y);
+        for (let i = 1; i < stroke.length; i++) {
+          ctx.lineTo(stroke[i].x, stroke[i].y);
+        }
+        ctx.stroke();
+      });
+    }
+
+    let pptTimerInterval = null;
+    let pptTimerSecondsLeft = 120;
+    let isPptTimerRunning = false;
+
+    function formatPptTime(sec) {
+      const m = Math.floor(sec / 60).toString().padStart(2, '0');
+      const s = (sec % 60).toString().padStart(2, '0');
+      return m + ':' + s;
+    }
+
+    function togglePptTimer() {
+      if (isPptTimerRunning) {
+        clearInterval(pptTimerInterval);
+        isPptTimerRunning = false;
+        const playIcon = document.getElementById('icon-ppt-timer-play');
+        if (playIcon) playIcon.setAttribute('data-lucide', 'play');
+        lucide.createIcons();
+        showToast('Timer Paused', 'Classroom countdown has been paused.', 'pause');
+      } else {
+        isPptTimerRunning = true;
+        const playIcon = document.getElementById('icon-ppt-timer-play');
+        if (playIcon) playIcon.setAttribute('data-lucide', 'pause');
+        lucide.createIcons();
+        showToast('Timer Started', 'Classroom countdown began!', 'play');
+        
+        pptTimerInterval = setInterval(() => {
+          if (pptTimerSecondsLeft > 0) {
+            pptTimerSecondsLeft--;
+            document.getElementById('ppt-timer-display').innerText = formatPptTime(pptTimerSecondsLeft);
+            
+            if (pptTimerSecondsLeft > 0 && pptTimerSecondsLeft <= 5) {
+              playSynthesizedSound('swoosh');
+            }
+            
+            if (pptTimerSecondsLeft === 0) {
+              clearInterval(pptTimerInterval);
+              isPptTimerRunning = false;
+              playSynthesizedSound('gong');
+              document.getElementById('ppt-timer-display').classList.add('animate-ping', 'text-rose-500');
+              setTimeout(() => {
+                document.getElementById('ppt-timer-display').classList.remove('animate-ping', 'text-rose-500');
+              }, 3000);
+              showToast('Time is Up!', 'Classroom activity period completed!', 'alarm-clock');
+              if (playIcon) playIcon.setAttribute('data-lucide', 'play');
+              lucide.createIcons();
+            }
+          }
+        }, 1000);
+      }
+    }
+
+    function setPptTimerPreset(sec) {
+      clearInterval(pptTimerInterval);
+      isPptTimerRunning = false;
+      pptTimerSecondsLeft = sec;
+      document.getElementById('ppt-timer-display').innerText = formatPptTime(sec);
+      const playIcon = document.getElementById('icon-ppt-timer-play');
+      if (playIcon) playIcon.setAttribute('data-lucide', 'play');
+      lucide.createIcons();
+      showToast('Timer Preset', 'Set countdown duration to ' + formatPptTime(sec), 'clock');
+    }
+
+    function addPptTimerTime(sec) {
+      pptTimerSecondsLeft += sec;
+      document.getElementById('ppt-timer-display').innerText = formatPptTime(pptTimerSecondsLeft);
+      showToast('Time Boosted', 'Added +' + sec + 's to countdown.', 'plus-circle');
+    }
+
+    function resetPptTimer() {
+      clearInterval(pptTimerInterval);
+      isPptTimerRunning = false;
+      pptTimerSecondsLeft = 120;
+      document.getElementById('ppt-timer-display').innerText = formatPptTime(120);
+      const playIcon = document.getElementById('icon-ppt-timer-play');
+      if (playIcon) playIcon.setAttribute('data-lucide', 'play');
+      lucide.createIcons();
+    }
+
+    let pptAutoPlayInterval = null;
+    let isPptAutoPlaying = false;
+
+    function togglePptAutoPlay() {
+      const autoPlayBtn = document.getElementById('btn-ppt-autoplay');
+      const autoPlayIcon = document.getElementById('icon-ppt-autoplay');
+      const speedSelect = document.getElementById('ppt-autoplay-speed');
+      const speed = speedSelect ? parseInt(speedSelect.value) : 5000;
+      
+      if (isPptAutoPlaying) {
+        clearInterval(pptAutoPlayInterval);
+        isPptAutoPlaying = false;
+        autoPlayBtn.classList.remove('border-amber-500', 'bg-amber-950/40');
+        if (autoPlayIcon) autoPlayIcon.setAttribute('data-lucide', 'play-circle');
+        lucide.createIcons();
+        showToast('Auto-Play Stopped', 'Slideshow automated progression disabled.', 'play-circle');
+      } else {
+        isPptAutoPlaying = true;
+        autoPlayBtn.classList.add('border-amber-500', 'bg-amber-950/40');
+        if (autoPlayIcon) autoPlayIcon.setAttribute('data-lucide', 'pause-circle');
+        lucide.createIcons();
+        showToast('Auto-Play Active', 'Automated slide advancement every ' + (speed/1000) + 's.', 'sparkles');
+        
+        pptAutoPlayInterval = setInterval(() => {
+          if (currentSlideIndex < presentationSlides.length - 1) {
+            nextSlide();
+          } else {
+            currentSlideIndex = 0;
+            renderCurrentSlide();
+            playSynthesizedSound('fanfare');
+          }
+        }, speed);
+      }
+    }
+
+    function toggleClassroomSound() {
+      classroomSoundsEnabled = !classroomSoundsEnabled;
+      const soundIcon = document.getElementById('icon-classroom-sound');
+      if (soundIcon) {
+        soundIcon.setAttribute('data-lucide', classroomSoundsEnabled ? 'volume-2' : 'volume-x');
+      }
+      lucide.createIcons();
+      showToast(
+        classroomSoundsEnabled ? 'Sounds Enabled' : 'Sounds Muted', 
+        classroomSoundsEnabled ? 'Audio cues active.' : 'Audio synthesis silenced.',
+        classroomSoundsEnabled ? 'volume-2' : 'volume-x'
+      );
+    }
+
+    function speakVocabWord(word) {
+      if (!word) return;
+      try {
+        const synth = window.speechSynthesis;
+        if (synth) {
+          synth.cancel();
+          const utterance = new SpeechSynthesisUtterance(word);
+          utterance.lang = 'en-US';
+          utterance.rate = 0.85;
+          synth.speak(utterance);
+          showToast('Audio Pronunciation', 'Speaking term: "' + word + '"', 'volume-2');
+        }
+      } catch(e) {
+        console.warn("Speech Synthesis unsupported:", e);
+      }
+    }
+
+    const activeQuizVotes = {};
+
+    function castClassroomVote(slideIdx, option) {
+      const voteKey = slideIdx + '_' + option;
+      activeQuizVotes[voteKey] = (activeQuizVotes[voteKey] || 0) + 1;
+      playSynthesizedSound('swoosh');
+      updateQuizPollUI(slideIdx);
+    }
+
+    function updateQuizPollUI(slideIdx) {
+      const tallyA = activeQuizVotes[slideIdx + '_A'] || 0;
+      const tallyB = activeQuizVotes[slideIdx + '_B'] || 0;
+      const tallyC = activeQuizVotes[slideIdx + '_C'] || 0;
+      const tallyD = activeQuizVotes[slideIdx + '_D'] || 0;
+      
+      const total = tallyA + tallyB + tallyC + tallyD || 1;
+      
+      const pctA = Math.round((tallyA / total) * 100);
+      const pctB = Math.round((tallyB / total) * 100);
+      const pctC = Math.round((tallyC / total) * 100);
+      const pctD = Math.round((tallyD / total) * 100);
+      
+      const elA = document.getElementById('poll-tally-A');
+      const elB = document.getElementById('poll-tally-B');
+      const elC = document.getElementById('poll-tally-C');
+      const elD = document.getElementById('poll-tally-D');
+      
+      if (elA) elA.innerText = tallyA + ' votes (' + pctA + '%)';
+      if (elB) elB.innerText = tallyB + ' votes (' + pctB + '%)';
+      if (elC) elC.innerText = tallyC + ' votes (' + pctC + '%)';
+      if (elD) elD.innerText = tallyD + ' votes (' + pctD + '%)';
+      
+      const barA = document.getElementById('poll-bar-A');
+      const barB = document.getElementById('poll-bar-B');
+      const barC = document.getElementById('poll-bar-C');
+      const barD = document.getElementById('poll-bar-D');
+      
+      if (barA) barA.style.width = pctA + '%';
+      if (barB) barB.style.width = pctB + '%';
+      if (barC) barC.style.width = pctC + '%';
+      if (barD) barD.style.width = pctD + '%';
+    }
+
+    function revealQuizPollSolution(slideIdx, correctOpt, explanation) {
+      playSynthesizedSound('ding');
+      const solutionBox = document.getElementById('quiz-solution-box-' + slideIdx);
+      if (solutionBox) {
+        solutionBox.classList.remove('hidden');
+        solutionBox.classList.add('flex');
+      }
+      
+      document.querySelectorAll('.quiz-option-card').forEach(card => {
+        card.classList.remove('border-emerald-500', 'bg-emerald-50/50');
+      });
+      
+      const correctCard = document.getElementById('quiz-option-' + correctOpt);
+      if (correctCard) {
+        correctCard.classList.add('border-emerald-500', 'bg-emerald-50/50', 'ring-2', 'ring-emerald-400/50');
+      }
+      showToast('Correct Answer Revealed!', 'Correct Option: ' + correctOpt, 'check-circle');
+    }
+
+    function resetQuizPoll(slideIdx) {
+      activeQuizVotes[slideIdx + '_A'] = 0;
+      activeQuizVotes[slideIdx + '_B'] = 0;
+      activeQuizVotes[slideIdx + '_C'] = 0;
+      activeQuizVotes[slideIdx + '_D'] = 0;
+      
+      updateQuizPollUI(slideIdx);
+      
+      const solutionBox = document.getElementById('quiz-solution-box-' + slideIdx);
+      if (solutionBox) {
+        solutionBox.classList.add('hidden');
+      }
+      
+      document.querySelectorAll('.quiz-option-card').forEach(card => {
+        card.classList.remove('border-emerald-500', 'bg-emerald-50/50', 'ring-2', 'ring-emerald-400/50');
+      });
+    }
+
+    function triggerMorphTransition(oldIdx, newIdx) {
+      const slideBox = document.getElementById('presentation-slide-box');
+      if (!slideBox) return;
+      
+      const morphElements = slideBox.querySelectorAll('[data-morph-id]');
+      const snapshot = {};
+      
+      morphElements.forEach(el => {
+        const id = el.getAttribute('data-morph-id');
+        const rect = el.getBoundingClientRect();
+        const style = window.getComputedStyle(el);
+        snapshot[id] = {
+          html: el.innerHTML,
+          rect: rect,
+          fontSize: style.fontSize,
+          color: style.color,
+          fontWeight: style.fontWeight
+        };
+      });
+      
+      renderCurrentSlide();
+      
+      const targetElements = slideBox.querySelectorAll('[data-morph-id]');
+      targetElements.forEach(targetEl => {
+        const id = targetEl.getAttribute('data-morph-id');
+        if (snapshot[id]) {
+          const source = snapshot[id];
+          const targetRect = targetEl.getBoundingClientRect();
+          
+          const clone = document.createElement('div');
+          clone.innerHTML = source.html;
+          clone.style.position = 'fixed';
+          clone.style.left = source.rect.left + 'px';
+          clone.style.top = source.rect.top + 'px';
+          clone.style.width = source.rect.width + 'px';
+          clone.style.height = source.rect.height + 'px';
+          clone.style.fontSize = source.fontSize;
+          clone.style.color = source.color;
+          clone.style.fontWeight = source.fontWeight;
+          clone.style.zIndex = '9999';
+          clone.style.pointerEvents = 'none';
+          clone.style.transition = 'all 0.62s cubic-bezier(0.16, 1, 0.3, 1)';
+          
+          document.body.appendChild(clone);
+          targetEl.style.opacity = '0';
+          
+          requestAnimationFrame(() => {
+            clone.style.left = targetRect.left + 'px';
+            clone.style.top = targetRect.top + 'px';
+            clone.style.width = targetRect.width + 'px';
+            clone.style.height = targetRect.height + 'px';
+            
+            const targetStyle = window.getComputedStyle(targetEl);
+            clone.style.fontSize = targetStyle.fontSize;
+            clone.style.color = targetStyle.color;
+            
+            setTimeout(() => {
+              targetEl.style.opacity = '1';
+              clone.remove();
+            }, 630);
+          });
+        }
+      });
+    }
+
+
+function prevSlide() {
       if (currentSlideIndex > 0) {
+        clearSmartboardAnnotations();
+        playSynthesizedSound('swoosh');
+        
         const slideBox = document.getElementById('presentation-slide-box');
+        
+        if (slideAnimationMode === 'morph') {
+          triggerMorphTransition(currentSlideIndex, currentSlideIndex - 1);
+          currentSlideIndex--;
+          renderCurrentSlide();
+          resetStackElements();
+          return;
+        }
+        
         if (slideBox) {
           slideBox.classList.remove('slide-idle-floating');
           slideBox.style.transition = 'all 0.45s cubic-bezier(0.19, 1, 0.22, 1)';
-          slideBox.style.transform = 'translate3d(130%, -40px, -320px) rotateY(82deg) rotateZ(22deg)';
+          
+          if (slideAnimationMode === '3d-cube') {
+            slideBox.style.transform = 'rotateY(90deg) translate3d(50%, 0, -200px)';
+          } else if (slideAnimationMode === 'elastic-spring') {
+            slideBox.style.transform = 'scale(0.3) rotate(-10deg)';
+          } else {
+            slideBox.style.transform = 'translate3d(130%, -40px, -320px) rotateY(82deg) rotateZ(22deg)';
+          }
           slideBox.style.opacity = '0';
         }
+        
         setTimeout(() => {
           currentSlideIndex--;
           renderCurrentSlide();
           if (slideBox) {
             slideBox.style.transition = 'none';
-            slideBox.style.transform = 'translate3d(-130%, 40px, -320px) rotateY(-82deg) rotateZ(-22deg)';
+            if (slideAnimationMode === '3d-cube') {
+              slideBox.style.transform = 'rotateY(-90deg) translate3d(-50%, 0, -200px)';
+            } else if (slideAnimationMode === 'elastic-spring') {
+              slideBox.style.transform = 'scale(0.3) rotate(10deg)';
+            } else {
+              slideBox.style.transform = 'translate3d(-130%, 40px, -320px) rotateY(-82deg) rotateZ(-22deg)';
+            }
             slideBox.style.opacity = '0';
-            slideBox.offsetHeight;
-            slideBox.style.transition = 'all 0.48s cubic-bezier(0.175, 0.885, 0.32, 1.15)';
+            slideBox.offsetHeight; // trigger reflow
+            
+            if (slideAnimationMode === 'elastic-spring') {
+              slideBox.style.transition = 'all 0.65s cubic-bezier(0.68, -0.6, 0.32, 1.6)';
+            } else {
+              slideBox.style.transition = 'all 0.48s cubic-bezier(0.175, 0.885, 0.32, 1.15)';
+            }
             slideBox.style.transform = 'translate3d(0, 0, 0) rotateY(0) rotateZ(0) rotateX(0)';
             slideBox.style.opacity = '1';
             setTimeout(() => slideBox.classList.add('slide-idle-floating'), 500);
@@ -4210,25 +5126,56 @@
         }, 240);
       }
     }
-    
+
     function nextSlide() {
       if (currentSlideIndex < presentationSlides.length - 1) {
+        clearSmartboardAnnotations();
+        playSynthesizedSound('swoosh');
+        
         const slideBox = document.getElementById('presentation-slide-box');
+        
+        if (slideAnimationMode === 'morph') {
+          triggerMorphTransition(currentSlideIndex, currentSlideIndex + 1);
+          currentSlideIndex++;
+          renderCurrentSlide();
+          resetStackElements();
+          return;
+        }
+        
         if (slideBox) {
           slideBox.classList.remove('slide-idle-floating');
           slideBox.style.transition = 'all 0.45s cubic-bezier(0.19, 1, 0.22, 1)';
-          slideBox.style.transform = 'translate3d(-130%, -40px, -320px) rotateY(-82deg) rotateZ(-22deg)';
+          
+          if (slideAnimationMode === '3d-cube') {
+            slideBox.style.transform = 'rotateY(-90deg) translate3d(-50%, 0, -200px)';
+          } else if (slideAnimationMode === 'elastic-spring') {
+            slideBox.style.transform = 'scale(0.3) rotate(10deg)';
+          } else {
+            slideBox.style.transform = 'translate3d(-130%, -40px, -320px) rotateY(-82deg) rotateZ(-22deg)';
+          }
           slideBox.style.opacity = '0';
         }
+        
         setTimeout(() => {
           currentSlideIndex++;
           renderCurrentSlide();
           if (slideBox) {
             slideBox.style.transition = 'none';
-            slideBox.style.transform = 'translate3d(130%, 40px, -320px) rotateY(82deg) rotateZ(22deg)';
+            if (slideAnimationMode === '3d-cube') {
+              slideBox.style.transform = 'rotateY(90deg) translate3d(50%, 0, -200px)';
+            } else if (slideAnimationMode === 'elastic-spring') {
+              slideBox.style.transform = 'scale(0.3) rotate(-10deg)';
+            } else {
+              slideBox.style.transform = 'translate3d(130%, 40px, -320px) rotateY(82deg) rotateZ(22deg)';
+            }
             slideBox.style.opacity = '0';
-            slideBox.offsetHeight;
-            slideBox.style.transition = 'all 0.48s cubic-bezier(0.175, 0.885, 0.32, 1.15)';
+            slideBox.offsetHeight; // trigger reflow
+            
+            if (slideAnimationMode === 'elastic-spring') {
+              slideBox.style.transition = 'all 0.65s cubic-bezier(0.68, -0.6, 0.32, 1.6)';
+            } else {
+              slideBox.style.transition = 'all 0.48s cubic-bezier(0.175, 0.885, 0.32, 1.15)';
+            }
             slideBox.style.transform = 'translate3d(0, 0, 0) rotateY(0) rotateZ(0) rotateX(0)';
             slideBox.style.opacity = '1';
             setTimeout(() => slideBox.classList.add('slide-idle-floating'), 500);
@@ -4237,20 +5184,13 @@
         }, 240);
       }
     }
-    
+
     function toggleSlideAnswers() {
       revealSlideAnswers = !revealSlideAnswers;
       renderCurrentSlide();
     }
     
-    function applySlideTheme(theme) {
-      const box = document.getElementById('presentation-slide-box');
-      if (!box) return;
-      
-      box.classList.remove('slide-theme-clean', 'slide-theme-chalkboard', 'slide-theme-midnight', 'slide-theme-warm');
-      box.classList.add(theme);
-      currentSlideTheme = theme;
-    }
+
     
     function printSlides() {
       document.body.classList.add('print-slideshow-active');

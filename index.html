@@ -3417,14 +3417,7 @@
       container.innerHTML = svgContent;
     }
 
-    // Intercept lucide.createIcons to automatically refresh worksheet illustrations
-    const originalCreateIcons = lucide.createIcons;
-    lucide.createIcons = function() {
-      if (typeof originalCreateIcons === 'function') {
-        originalCreateIcons.apply(this, arguments);
-      }
-      updateWorksheetIllustration(currentMode);
-    };
+// Worksheet illustrations update directly on theme/mode change
 
     // Zoom Controls
     function zoomPreview(delta) {
@@ -3722,76 +3715,6 @@
     }
 
     
-    // Theme & Palette Modal Handlers (Reduces Dashboard Complexity)
-    let activeTheme = 'ela-book';
-    let slideAnimationMode = 'smooth-slide'; // 'smooth-slide', 'zoom-pop', 'fluid-fade', 'card-flip'
-
-    function openThemePaletteModal() {
-      const modal = document.getElementById('theme-palette-modal');
-      if (modal) {
-        modal.classList.remove('hidden');
-        modal.classList.add('flex');
-        highlightActiveThemeCard(activeTheme);
-      }
-    }
-
-    function closeThemePaletteModal() {
-      const modal = document.getElementById('theme-palette-modal');
-      if (modal) {
-        modal.classList.add('hidden');
-        modal.classList.remove('flex');
-      }
-    }
-
-    function highlightActiveThemeCard(themeName) {
-      document.querySelectorAll('.theme-picker-card').forEach(card => {
-        card.classList.remove('border-indigo-400', 'ring-2', 'ring-indigo-400/50', 'bg-indigo-950/60');
-        card.classList.add('border-slate-700', 'bg-slate-800/60');
-      });
-      const activeCard = document.getElementById('theme-card-' + themeName);
-      if (activeCard) {
-        activeCard.classList.remove('border-slate-700', 'bg-slate-800/60');
-        activeCard.classList.add('border-indigo-400', 'ring-2', 'ring-indigo-400/50', 'bg-indigo-950/60');
-      }
-    }
-
-    function selectThemeFromModal(themeName) {
-      activeTheme = themeName;
-      applyTheme(themeName);
-      highlightActiveThemeCard(themeName);
-      
-      // Update the single dashboard theme button label
-      const themeLabels = {
-        'ela-book': '📖 ELA Textbook Style',
-        'classic-corporate': '👔 Classic Navy Style',
-        'midnight-tech': '🌙 Midnight Tech Style',
-        'nordic-pastel': '🍃 Nordic Sage Style',
-        'vibrant-gamifier': '🎮 Gamifier Pop Style',
-        'emerald-scholar': '🎓 Scholar Green Style',
-        'sunset-minimalist': '🌅 Sunset Warm Style',
-        'cyberpunk-edgy': '⚡ Cyber Neon Style',
-        'oceanic-trust': '🌊 Oceanic Blue Style'
-      };
-      
-      const subLabel = document.getElementById('theme-btn-sub-label');
-      if (subLabel) {
-        subLabel.innerText = themeLabels[themeName] || (themeName.charAt(0).toUpperCase() + themeName.slice(1));
-      }
-      
-      const themeSelector = document.getElementById('theme-select');
-      if (themeSelector) themeSelector.value = themeName;
-      
-      const presThemeSelect = document.getElementById('slide-theme-select');
-      if (presThemeSelect) {
-        // Map to presentation theme if applicable
-        if (themeName === 'midnight-tech' || themeName === 'cyberpunk-edgy') presThemeSelect.value = 'midnight';
-        else if (themeName === 'emerald-scholar') presThemeSelect.value = 'emerald';
-        else if (themeName === 'sunset-minimalist') presThemeSelect.value = 'sunset';
-        else presThemeSelect.value = 'indigo';
-        applySlideTheme(presThemeSelect.value);
-      }
-    }
-
     function setSlideAnimationMode(mode) {
       slideAnimationMode = mode;
       renderCurrentSlide();
@@ -4243,14 +4166,7 @@
       renderCurrentSlide();
     }
     
-    function applySlideTheme(theme) {
-      const box = document.getElementById('presentation-slide-box');
-      if (!box) return;
-      
-      box.classList.remove('slide-theme-clean', 'slide-theme-chalkboard', 'slide-theme-midnight', 'slide-theme-warm');
-      box.classList.add(theme);
-      currentSlideTheme = theme;
-    }
+
     
     function printSlides() {
       document.body.classList.add('print-slideshow-active');
