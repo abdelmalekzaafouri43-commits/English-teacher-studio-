@@ -1006,6 +1006,23 @@
         outline: none !important;
         background: transparent !important;
       }
+
+      /* Custom print options overrides */
+      #worksheet-paper.print-hide-student-info #ws-student-info {
+        display: none !important;
+      }
+      #worksheet-paper.print-hide-ccss #learning-objective-box {
+        display: none !important;
+      }
+      #worksheet-paper.print-hide-teacher #ws-teacher-display {
+        display: none !important;
+      }
+      #worksheet-paper.print-hide-illustration #ws-illustration-container {
+        display: none !important;
+      }
+      #worksheet-paper.print-hide-answers #ws-teacher-answer-key-section {
+        display: none !important;
+      }
     }
   
     /* ========================================================== */
@@ -1519,6 +1536,17 @@
             <textarea id="ai-topic-input" rows="3" placeholder="e.g. Metaphors & Similes with a story about a brave astronaut, or irregular past tense verbs with proofreading drills..." class="w-full bg-slate-950/80 border border-white/20 rounded-xl px-3 py-2 text-xs text-white placeholder-slate-400 focus:outline-none focus:border-indigo-400 focus:ring-1 focus:ring-indigo-400 resize-none custom-scrollbar"></textarea>
           </div>
 
+          <!-- Suggested Topic Chips -->
+          <div class="space-y-1 bg-slate-950/50 p-2 rounded-xl border border-white/5">
+            <span class="text-[9px] text-indigo-300 font-bold block">Quick ELA Prompt Suggestions:</span>
+            <div class="flex flex-wrap gap-1">
+              <button onclick="prefillAITopic('Metaphors & Similes with a story about space travel')" class="px-2 py-0.5 rounded-md bg-white/5 hover:bg-indigo-600/20 text-slate-300 hover:text-white border border-white/10 text-[9px] font-semibold transition-all active:scale-95 cursor-pointer">🌌 Metaphors</button>
+              <button onclick="prefillAITopic('Active vs Passive Voice in a detective mystery')" class="px-2 py-0.5 rounded-md bg-white/5 hover:bg-indigo-600/20 text-slate-300 hover:text-white border border-white/10 text-[9px] font-semibold transition-all active:scale-95 cursor-pointer">🕵️ Active Voice</button>
+              <button onclick="prefillAITopic('Context Clues featuring Tier-2 vocabulary words')" class="px-2 py-0.5 rounded-md bg-white/5 hover:bg-indigo-600/20 text-slate-300 hover:text-white border border-white/10 text-[9px] font-semibold transition-all active:scale-95 cursor-pointer">🧠 Context Clues</button>
+              <button onclick="prefillAITopic('Persuasive Essay Outline about digital screen time')" class="px-2 py-0.5 rounded-md bg-white/5 hover:bg-indigo-600/20 text-slate-300 hover:text-white border border-white/10 text-[9px] font-semibold transition-all active:scale-95 cursor-pointer">📱 Essay Outline</button>
+            </div>
+          </div>
+
           <div class="grid grid-cols-2 gap-2">
             <div>
               <label class="text-[10px] font-bold text-indigo-200 block mb-1">Grade Level</label>
@@ -1538,6 +1566,24 @@
                 <option value="Reading Comprehension">Reading Comprehension</option>
                 <option value="Grammar & Editing">Grammar & Editing</option>
                 <option value="Creative Writing">Creative Writing</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="grid grid-cols-2 gap-2">
+            <div>
+              <label class="text-[10px] font-bold text-indigo-200 block mb-1">Curriculum Rigor</label>
+              <select id="ai-rigor-level" class="w-full bg-slate-950/80 border border-white/20 rounded-xl px-2.5 py-1.5 text-xs text-slate-200 focus:outline-none focus:border-indigo-400 font-medium">
+                <option value="Standard Academic Core" selected>Academic Core</option>
+                <option value="Advanced Challenge Units">Advanced Challenge</option>
+                <option value="Differentiated Support Focus">Supported / ESL</option>
+              </select>
+            </div>
+            <div>
+              <label class="text-[10px] font-bold text-indigo-200 block mb-1">Answer Guide Style</label>
+              <select id="ai-solutions-key" class="w-full bg-slate-950/80 border border-white/20 rounded-xl px-2.5 py-1.5 text-xs text-slate-200 focus:outline-none focus:border-indigo-400 font-medium">
+                <option value="Include complete, detailed Answer Keys at the end" selected>Detailed Key</option>
+                <option value="Do NOT generate an answer key section">No Answer Key</option>
               </select>
             </div>
           </div>
@@ -2412,6 +2458,11 @@
       const gradeText = gradeSelect ? gradeSelect.value : 'Middle School (Grades 6-8)';
       const activitySelect = document.getElementById('ai-activity-type');
       const activityText = activitySelect ? activitySelect.value : 'Complete ELA Unit';
+      
+      const rigorSelect = document.getElementById('ai-rigor-level');
+      const rigorText = rigorSelect ? rigorSelect.value : 'Standard Academic Core';
+      const solutionsSelect = document.getElementById('ai-solutions-key');
+      const solutionsText = solutionsSelect ? solutionsSelect.value : 'Include complete, detailed Answer Keys at the end';
 
       const genBtn = document.getElementById('ai-gen-btn');
       if (genBtn) {
@@ -2425,17 +2476,21 @@
 Generate a comprehensive, highly engaging, professional educational worksheet for Grade: ${gradeText}.
 The topic or concept to focus on is: "${topicText}".
 The activity focus is: "${activityText}".
+The curriculum rigor level is: "${rigorText}".
+${solutionsText}.
 
 Please design a rigorous, beautifully structured ELA worksheet that includes:
 1. A Clear, Catchy Title and Subtitle.
 2. A list of CCSS (Common Core State Standards) addressed by this worksheet.
 3. Warm-up Explanation: A short, engaging story or explanatory concept paragraph introducing the topic to students.
 4. Active Exercise Items:
-   - If vocabulary-focused: A Word Bank followed by matching sentences or context-clue fill-in-the-blanks.
-   - If reading comprehension: A short passage or story followed by text-evidence questions.
-   - If grammar: A list of sentences with parenthesis forms or correction exercises.
-   - If creative writing: Two guided writing prompts or essay outlines.
-Include complete answer guides at the very end of the content. Format the output in clean Markdown with bold headers and spacing.`;
+   - If vocabulary-focused: Start with the header "Word Bank: [word1, word2, word3, word4]" containing vocabulary words in brackets, followed by fill-in-the-blank questions (numbered 1. 2. 3. 4.).
+   - If reading comprehension: Start with the header "Reading Passage: [Title of story]" followed by a short passage, then followed by comprehension questions (numbered 1. 2. 3. 4.).
+   - If grammar: A numbered list (1. 2. 3. 4.) of sentences with parenthesis forms or correction exercises.
+   - If multiple-choice questions: Format each option as a separate line starting with letters A) B) C) D) (e.g., A) Option 1\\nB) Option 2).
+5. At the very end of the worksheet, include a distinct section starting with the header "Answer Key" containing solutions for each numbered question.
+
+Please format the output in clean Markdown with bold headers and double-spaced paragraphs between sections to assist in parsing.`;
 
       const apiKey = userApiKey || localStorage.getItem('gemini_api_key') || '';
       if (apiKey) {
@@ -2832,39 +2887,173 @@ Include complete answer guides at the very end of the content. Format the output
       body.className = 'space-y-4 animate-fade-in pt-1';
 
       // Parse markdown text into structured exercise cards with page-break protection
-      const paragraphs = resultText.split(/\n\s*\n/);
+      const sections = resultText.split(/\n\s*\n/);
       let itemCount = 0;
+      let answerKeyContent = '';
 
-      paragraphs.forEach((pText, index) => {
-        let trimmed = pText.trim();
+      sections.forEach((sect, sIndex) => {
+        let trimmed = sect.trim();
         if (!trimmed) return;
-        // Skip duplicate title or AI preamble paragraphs from the output
+
+        // Skip preamble and postamble
         if (/^(#+\s*|\*+\s*)?(ai generated|ai-assisted|ai tutor|here is|certainly|sure|below is|title:|created with ai)/i.test(trimmed)) {
           return;
         }
-        if (/^ai generated\s+create/i.test(trimmed)) {
+
+        // Check for Answer Key marker in Gemini's markdown
+        if (/^(#+\s*)?(answer key|solutions|answer guide|answers:|answers\b)/i.test(trimmed)) {
+          answerKeyContent = sect;
           return;
         }
 
         const card = document.createElement('div');
-        card.className = 'exercise-block question-item p-4 rounded-xl border border-indigo-200 bg-indigo-50/30 text-slate-900 font-serif text-xs leading-relaxed space-y-2 relative';
         card.contentEditable = "true";
 
-        // Convert bold markdown **text** to HTML
-        let formatted = trimmed.replace(/\*\*(.*?)\*\*/g, '<strong class="text-indigo-950 font-bold">$1</strong>');
-        card.innerHTML = `<div class="whitespace-pre-line">${formatted}</div>`;
+        // 1. Check if it's a Reading Passage
+        if (/^(passage:|reading passage:|story:|read the passage:|read the following passage)/i.test(trimmed)) {
+          card.className = 'p-5 rounded-2xl border-2 border-indigo-200 bg-slate-50/50 shadow-sm text-slate-800 font-serif text-xs leading-relaxed space-y-3 relative page-break-inside-avoid';
+          let formattedText = trimmed.replace(/\*\*(.*?)\*\*/g, '<strong class="text-indigo-950 font-bold">$1</strong>');
+          card.innerHTML = `
+            <div class="flex items-center gap-1.5 text-[10px] font-bold text-indigo-700 uppercase tracking-widest">
+              <i data-lucide="book-open" class="w-3.5 h-3.5"></i>
+              <span>ELA Context Reading Passage</span>
+            </div>
+            <div class="whitespace-pre-line border-l-4 border-indigo-500 pl-3.5 italic text-slate-700">${formattedText}</div>
+          `;
+          body.appendChild(card);
+          itemCount++;
+          return;
+        }
 
-        body.appendChild(card);
-        itemCount++;
+        // 2. Check if it's a Word Bank
+        if (/^(word bank:|vocabulary list:|words:|wordbank:)/i.test(trimmed) || (trimmed.includes('[') && trimmed.includes(']') && trimmed.toLowerCase().includes('word'))) {
+          card.className = 'p-4 rounded-xl border-2 border-dashed border-indigo-300 bg-indigo-50/40 space-y-2.5 relative page-break-inside-avoid';
+          let wordsHTML = '';
+          let wordsMatch = trimmed.match(/\[(.*?)\]/) || [null, trimmed.replace(/word bank:/i, '')];
+          if (wordsMatch && wordsMatch[1]) {
+            const words = wordsMatch[1].split(/,|\s+/).map(w => w.trim().replace(/[^a-zA-Z0-9-]/g, '')).filter(Boolean);
+            words.forEach(word => {
+              wordsHTML += `<span class="px-2.5 py-1 text-xs font-bold font-sans tracking-wide bg-white text-indigo-700 border border-indigo-200 rounded-lg shadow-sm">${word}</span>`;
+            });
+          } else {
+            wordsHTML = `<div class="text-xs text-indigo-900 font-sans tracking-wide">${trimmed}</div>`;
+          }
+
+          card.innerHTML = `
+            <div class="flex items-center gap-1 text-[10px] font-black uppercase tracking-wider text-indigo-600">
+              <i data-lucide="brain-circuit" class="w-3.5 h-3.5"></i>
+              <span>Worksheet Word Bank</span>
+            </div>
+            <div class="flex flex-wrap gap-2 pt-1">${wordsHTML}</div>
+          `;
+          body.appendChild(card);
+          itemCount++;
+          return;
+        }
+
+        // 3. Check if it's a numbered question
+        const questionMatch = trimmed.match(/^(\d+)[.)]\s*(.*)/s);
+        if (questionMatch) {
+          const qNum = questionMatch[1];
+          const qBody = questionMatch[2];
+          card.className = 'exercise-block question-item p-4.5 rounded-xl border border-indigo-100 bg-white shadow-sm text-slate-800 font-serif text-xs leading-relaxed space-y-3 relative page-break-inside-avoid';
+          
+          let optionLines = qBody.split(/\n/);
+          let questionTitle = optionLines[0];
+          let optionsHTML = '';
+          let isMultipleChoice = false;
+
+          optionLines.forEach(line => {
+            let optTrim = line.trim();
+            const optionMatch = optTrim.match(/^([A-Da-d])[\s).]*(.*)/);
+            if (optionMatch) {
+              isMultipleChoice = true;
+              const optLetter = optionMatch[1].toUpperCase();
+              const optText = optionMatch[2];
+              optionsHTML += `
+                <div class="flex items-center gap-2 px-2.5 py-1.5 rounded-lg border border-slate-100 hover:bg-slate-50 transition-all select-none">
+                  <span class="w-5 h-5 rounded-full border border-slate-300 text-[10px] font-bold text-slate-500 bg-slate-50 flex items-center justify-center">${optLetter}</span>
+                  <span class="text-[11px] text-slate-700">${optText}</span>
+                </div>
+              `;
+            }
+          });
+
+          if (isMultipleChoice) {
+            let formattedTitle = questionTitle.replace(/\*\*(.*?)\*\*/g, '<strong class="text-indigo-950 font-bold">$1</strong>');
+            card.innerHTML = `
+              <div class="flex items-start gap-2.5">
+                <span class="w-6 h-6 rounded-lg bg-indigo-600 text-white font-sans font-bold text-xs flex items-center justify-center shadow-sm">${qNum}</span>
+                <div class="flex-1">
+                  <h4 class="text-xs font-bold text-slate-900 mb-2 leading-snug">${formattedTitle}</h4>
+                  <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 pt-1">${optionsHTML}</div>
+                </div>
+              </div>
+            `;
+          } else {
+            let formattedBody = trimmed.replace(/\*\*(.*?)\*\*/g, '<strong class="text-indigo-950 font-bold">$1</strong>');
+            card.innerHTML = `
+              <div class="flex items-start gap-2.5">
+                <span class="w-6 h-6 rounded-lg bg-indigo-600 text-white font-sans font-bold text-xs flex items-center justify-center shadow-sm">${qNum}</span>
+                <div class="flex-1 space-y-2">
+                  <h4 class="text-xs font-bold text-slate-900 leading-snug">${formattedBody}</h4>
+                  <div class="space-y-2.5 pt-2">
+                    <div class="border-b border-dotted border-slate-400 h-4"></div>
+                    <div class="border-b border-dotted border-slate-400 h-4"></div>
+                    <div class="border-b border-dotted border-slate-400 h-4"></div>
+                  </div>
+                </div>
+              </div>
+            `;
+          }
+          body.appendChild(card);
+          itemCount++;
+        } else {
+          // 4. Default Block
+          card.className = 'exercise-block p-4.5 rounded-xl border border-indigo-100 bg-indigo-50/20 text-slate-800 font-serif text-xs leading-relaxed space-y-2 relative page-break-inside-avoid';
+          let formattedText = trimmed.replace(/\*\*(.*?)\*\*/g, '<strong class="text-indigo-950 font-bold">$1</strong>');
+          card.innerHTML = `<div class="whitespace-pre-line">${formattedText}</div>`;
+          body.appendChild(card);
+          itemCount++;
+        }
 
         // Automatically insert clean A4 Page Break divider after every 5 exercise blocks to ensure proper page breaks
-        if (itemCount % 5 === 0 && index < paragraphs.length - 1) {
+        if (itemCount % 5 === 0 && sIndex < sections.length - 1) {
           const pb = document.createElement('div');
           pb.className = 'page-break-divider my-6 no-print-divider';
           pb.innerHTML = '<div class="page-break"></div>';
           body.appendChild(pb);
         }
       });
+
+      // If we have an Answer Key, we render it at the bottom inside a premium toggleable accordion card!
+      if (answerKeyContent) {
+        const keyContainer = document.createElement('div');
+        keyContainer.id = "ws-teacher-answer-key-section";
+        keyContainer.className = 'p-5 mt-6 rounded-2xl border border-yellow-300 bg-amber-50/40 text-xs text-slate-800 space-y-3 shadow-inner page-break-inside-avoid relative no-print-answers';
+        
+        let formattedKey = answerKeyContent.replace(/\*\*(.*?)\*\*/g, '<strong class="text-amber-950 font-bold">$1</strong>');
+        keyContainer.innerHTML = `
+          <div class="flex items-center justify-between">
+            <div class="flex items-center gap-2">
+              <span class="w-6 h-6 rounded-lg bg-amber-500 text-white flex items-center justify-center">
+                <i data-lucide="check-square" class="w-3.5 h-3.5"></i>
+              </span>
+              <div>
+                <h4 class="text-xs font-bold text-amber-900 leading-tight">Teacher Answer Key & Guide</h4>
+                <p class="text-[10px] text-amber-700">Toggle this guide to show or hide in the final printable copy</p>
+              </div>
+            </div>
+            <button onclick="togglePrintAnswersState()" class="px-2.5 py-1 text-[10px] font-extrabold bg-amber-600 hover:bg-amber-700 text-white rounded-lg transition-all flex items-center gap-1 active:scale-95 shadow-sm">
+              <span id="answers-toggle-label">Hide Answers</span>
+            </button>
+          </div>
+          <div id="ws-answers-body" class="whitespace-pre-line pt-2 text-[11px] text-slate-700 border-t border-amber-200">${formattedKey}</div>
+        `;
+        body.appendChild(keyContainer);
+      }
+
+      lucide.createIcons();
     }
 
     function insertManualPageBreak() {
@@ -7358,14 +7547,158 @@ Schema for each slide object:
 
     // Download PDF / Print
     function downloadPDF() {
-      showToast('Printing PDF', 'Opening print preview dialog...', 'printer');
+      triggerPrintFromApp();
+    }
+
+    function triggerPrintFromApp() {
+      const modal = document.getElementById('a4-print-controls-modal');
+      if (modal) {
+        modal.classList.remove('hidden');
+        modal.classList.add('flex');
+        lucide.createIcons();
+      }
+    }
+
+    function closeA4PrintControlsModal() {
+      const modal = document.getElementById('a4-print-controls-modal');
+      if (modal) {
+        modal.classList.add('hidden');
+        modal.classList.remove('flex');
+      }
+    }
+
+    let currentPrintMargin = '12mm';
+    function selectPrintMargin(marginVal, btnElement) {
+      currentPrintMargin = marginVal;
+      document.querySelectorAll('.print-margin-btn').forEach(btn => {
+        btn.className = 'print-margin-btn px-2.5 py-2 rounded-xl bg-slate-950 border border-slate-800 hover:border-indigo-500 text-xs font-bold text-slate-300 transition-all cursor-pointer flex flex-col items-center justify-center gap-1';
+      });
+      if (btnElement) {
+        btnElement.className = 'print-margin-btn px-2.5 py-2 rounded-xl bg-indigo-950/50 border border-indigo-500/50 hover:border-indigo-500 text-xs font-bold text-white transition-all cursor-pointer flex flex-col items-center justify-center gap-1 shadow bg-indigo-600/20 border-indigo-500/65';
+      }
+      showToast('Margin Updated', `Page margins configured to ${marginVal}.`, 'info');
+    }
+
+    function updatePrintPreviewLayout() {
+      // Live updates can be previewed synchronously if needed
+    }
+
+    function executeA4Print() {
+      closeA4PrintControlsModal();
+      
+      // 1. Inject the dynamic page margins
+      const styleId = 'custom-print-margins-style';
+      let style = document.getElementById(styleId);
+      if (!style) {
+        style = document.createElement('style');
+        style.id = styleId;
+        document.head.appendChild(style);
+      }
+      style.innerHTML = `@media print { @page { margin: ${currentPrintMargin} !important; } }`;
+
+      // 2. Add classes to paper based on toggles
+      const paper = document.getElementById('worksheet-paper');
+      if (paper) {
+        // Student details
+        if (!document.getElementById('print-toggle-student-info').checked) {
+          paper.classList.add('print-hide-student-info');
+        } else {
+          paper.classList.remove('print-hide-student-info');
+        }
+        // CCSS
+        if (!document.getElementById('print-toggle-ccss').checked) {
+          paper.classList.add('print-hide-ccss');
+        } else {
+          paper.classList.remove('print-hide-ccss');
+        }
+        // Teacher Brand
+        if (!document.getElementById('print-toggle-teacher-brand').checked) {
+          paper.classList.add('print-hide-teacher');
+        } else {
+          paper.classList.remove('print-hide-teacher');
+        }
+        // Illustration
+        if (!document.getElementById('print-toggle-illustration').checked) {
+          paper.classList.add('print-hide-illustration');
+        } else {
+          paper.classList.remove('print-hide-illustration');
+        }
+        // QR Code
+        const qrBadge = document.getElementById('ws-header-qr');
+        if (qrBadge) {
+          if (document.getElementById('print-toggle-qr').checked) {
+            qrBadge.classList.remove('hidden');
+          } else {
+            qrBadge.classList.add('hidden');
+          }
+        }
+        // Answer Key
+        if (!document.getElementById('print-toggle-answers').checked) {
+          paper.classList.add('print-hide-answers');
+        } else {
+          paper.classList.remove('print-hide-answers');
+        }
+        
+        // Dynamic Page Number elements (only if checked)
+        const pageNumCheckbox = document.getElementById('print-toggle-page-numbers');
+        document.querySelectorAll('.print-page-footer').forEach(el => el.remove());
+        
+        if (pageNumCheckbox && pageNumCheckbox.checked) {
+          const body = document.getElementById('worksheet-body');
+          const dividers = body.querySelectorAll('.page-break-divider');
+          dividers.forEach((div, idx) => {
+            const footer = document.createElement('div');
+            footer.className = 'print-page-footer hidden print:flex justify-between items-center text-[10px] text-slate-400 border-t border-slate-200 pt-1.5 mt-2';
+            footer.innerHTML = `
+              <span>Grade Core English Language Arts</span>
+              <span>Page ${idx + 1}</span>
+            `;
+            div.parentNode.insertBefore(footer, div);
+          });
+          // Append final page footer
+          const finalFooter = document.createElement('div');
+          finalFooter.className = 'print-page-footer hidden print:flex justify-between items-center text-[10px] text-slate-400 border-t border-slate-200 pt-1.5 mt-4';
+          finalFooter.innerHTML = `
+            <span>Grade Core English Language Arts</span>
+            <span>Page ${dividers.length + 1}</span>
+          `;
+          body.appendChild(finalFooter);
+        }
+      }
+
+      // 3. Trigger printing
       setTimeout(() => {
         if (window.AndroidPrintBridge && typeof window.AndroidPrintBridge.triggerPrint === 'function') {
           window.AndroidPrintBridge.triggerPrint();
         } else {
           window.print();
         }
-      }, 400);
+      }, 350);
+    }
+
+    function togglePrintAnswersState() {
+      const paper = document.getElementById('worksheet-paper');
+      const toggleBtn = document.getElementById('answers-toggle-label');
+      if (paper && toggleBtn) {
+        if (paper.classList.contains('print-hide-answers')) {
+          paper.classList.remove('print-hide-answers');
+          toggleBtn.innerText = 'Hide Answers';
+          showToast('Answer Key Visible', 'Answer key will be printed at the bottom.', 'info');
+        } else {
+          paper.classList.add('print-hide-answers');
+          toggleBtn.innerText = 'Show Answers';
+          showToast('Answer Key Hidden', 'Answer key is excluded from print copies.', 'info');
+        }
+      }
+    }
+
+    function prefillAITopic(topic) {
+      const input = document.getElementById('ai-topic-input');
+      if (input) {
+        input.value = topic;
+        input.focus();
+        showToast('Prompt Selected', 'Prefilled topic focus in input area.', 'sparkles');
+      }
     }
 
     // Save Current Worksheet to Library
@@ -7765,6 +8098,114 @@ Schema for each slide object:
           Close
         </button>
       </div>
+    </div>
+  </div>
+
+  <!-- A4 PDF Print Controls Modal -->
+  <div id="a4-print-controls-modal" class="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-sm hidden items-center justify-center p-4 no-print">
+    <div class="bg-slate-900 border border-slate-800 rounded-2xl w-full max-w-lg overflow-hidden shadow-2xl flex flex-col max-h-[85vh] animate-fade-in">
+      
+      <!-- Modal Header -->
+      <div class="p-4 border-b border-slate-800 flex items-center justify-between bg-slate-950/60">
+        <div class="flex items-center gap-2.5">
+          <div class="w-8 h-8 rounded-lg bg-indigo-600/20 border border-indigo-500/40 text-indigo-400 flex items-center justify-center">
+            <i data-lucide="printer" class="w-4 h-4"></i>
+          </div>
+          <div>
+            <h3 class="text-sm font-bold text-white">Perfect A4 PDF Print Controls</h3>
+            <p class="text-[11px] text-slate-400">Optimize and format worksheet before printing or saving</p>
+          </div>
+        </div>
+        <button onclick="closeA4PrintControlsModal()" class="p-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-400 hover:text-white transition-all cursor-pointer">
+          <i data-lucide="x" class="w-4 h-4"></i>
+        </button>
+      </div>
+
+      <!-- Modal Body (Settings) -->
+      <div class="p-5 overflow-y-auto space-y-4 custom-scrollbar text-slate-300">
+        
+        <!-- 1. Page Margins Selector -->
+        <div class="space-y-1.5">
+          <label class="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">A4 Page Margins</label>
+          <div class="grid grid-cols-3 gap-2">
+            <button onclick="selectPrintMargin('6mm', this)" class="print-margin-btn px-2.5 py-2 rounded-xl bg-slate-950 border border-slate-800 hover:border-indigo-500 text-xs font-bold text-slate-300 transition-all cursor-pointer flex flex-col items-center justify-center gap-1">
+              <span class="text-sm">📐</span>
+              <span>Compact (6mm)</span>
+            </button>
+            <button onclick="selectPrintMargin('12mm', this)" class="print-margin-btn px-2.5 py-2 rounded-xl bg-indigo-950/50 border border-indigo-500/50 hover:border-indigo-500 text-xs font-bold text-white transition-all cursor-pointer flex flex-col items-center justify-center gap-1 shadow bg-indigo-600/20 border-indigo-500/65">
+              <span class="text-sm">📐</span>
+              <span>Standard (12mm)</span>
+            </button>
+            <button onclick="selectPrintMargin('20mm', this)" class="print-margin-btn px-2.5 py-2 rounded-xl bg-slate-950 border border-slate-800 hover:border-indigo-500 text-xs font-bold text-slate-300 transition-all cursor-pointer flex flex-col items-center justify-center gap-1">
+              <span class="text-sm">📐</span>
+              <span>Wide (20mm)</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- 2. Interactive Visibility Checkboxes -->
+        <div class="space-y-2">
+          <label class="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">Include Elements in PDF</label>
+          <div class="grid grid-cols-2 gap-3 bg-slate-950/60 p-3 rounded-xl border border-slate-800">
+            
+            <label class="flex items-center gap-2.5 cursor-pointer text-xs select-none hover:text-white transition-colors">
+              <input type="checkbox" id="print-toggle-student-info" checked onchange="updatePrintPreviewLayout()" class="rounded bg-slate-900 border-slate-700 text-indigo-600 focus:ring-0 focus:ring-offset-0 w-4 h-4">
+              <span>Student Details Grid</span>
+            </label>
+
+            <label class="flex items-center gap-2.5 cursor-pointer text-xs select-none hover:text-white transition-colors">
+              <input type="checkbox" id="print-toggle-ccss" checked onchange="updatePrintPreviewLayout()" class="rounded bg-slate-900 border-slate-700 text-indigo-600 focus:ring-0 focus:ring-offset-0 w-4 h-4">
+              <span>CCSS Standard Block</span>
+            </label>
+
+            <label class="flex items-center gap-2.5 cursor-pointer text-xs select-none hover:text-white transition-colors">
+              <input type="checkbox" id="print-toggle-teacher-brand" checked onchange="updatePrintPreviewLayout()" class="rounded bg-slate-900 border-slate-700 text-indigo-600 focus:ring-0 focus:ring-offset-0 w-4 h-4">
+              <span>Teacher Name Brand</span>
+            </label>
+
+            <label class="flex items-center gap-2.5 cursor-pointer text-xs select-none hover:text-white transition-colors">
+              <input type="checkbox" id="print-toggle-illustration" checked onchange="updatePrintPreviewLayout()" class="rounded bg-slate-900 border-slate-700 text-indigo-600 focus:ring-0 focus:ring-offset-0 w-4 h-4">
+              <span>Topic Illustration Card</span>
+            </label>
+
+            <label class="flex items-center gap-2.5 cursor-pointer text-xs select-none hover:text-white transition-colors">
+              <input type="checkbox" id="print-toggle-qr" onchange="updatePrintPreviewLayout()" class="rounded bg-slate-900 border-slate-700 text-indigo-600 focus:ring-0 focus:ring-offset-0 w-4 h-4">
+              <span>Digital Resource QR</span>
+            </label>
+
+            <label class="flex items-center gap-2.5 cursor-pointer text-xs select-none hover:text-white transition-colors">
+              <input type="checkbox" id="print-toggle-answers" checked onchange="updatePrintPreviewLayout()" class="rounded bg-slate-900 border-slate-700 text-indigo-600 focus:ring-0 focus:ring-offset-0 w-4 h-4">
+              <span>Teacher Answer Key</span>
+            </label>
+
+          </div>
+        </div>
+
+        <!-- 3. Dynamic Page Numbers Checkbox -->
+        <div class="flex items-center justify-between bg-slate-950/60 p-3 rounded-xl border border-slate-800">
+          <div class="space-y-0.5">
+            <span class="text-xs font-bold text-white block">A4 Page Number Footers</span>
+            <span class="text-[10px] text-slate-400">Adds "Page X of Y" dynamically to printouts</span>
+          </div>
+          <label class="relative inline-flex items-center cursor-pointer">
+            <input type="checkbox" id="print-toggle-page-numbers" checked onchange="updatePrintPreviewLayout()" class="sr-only peer">
+            <div class="w-9 h-5 bg-slate-800 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-slate-400 after:border-slate-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-indigo-600 peer-checked:after:bg-white"></div>
+          </label>
+        </div>
+
+      </div>
+
+      <!-- Modal Footer actions -->
+      <div class="p-4 border-t border-slate-800 flex items-center justify-between bg-slate-950/60">
+        <button onclick="closeA4PrintControlsModal()" class="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-bold rounded-xl transition-all cursor-pointer">
+          Cancel
+        </button>
+        <button onclick="executeA4Print()" class="px-5 py-2 bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-500 hover:to-purple-500 text-white text-xs font-black rounded-xl transition-all shadow-md active:scale-95 cursor-pointer flex items-center gap-1.5">
+          <i data-lucide="printer" class="w-4 h-4"></i>
+          <span>Open Print Dialog</span>
+        </button>
+      </div>
+
     </div>
   </div>
 
