@@ -2891,7 +2891,6 @@
     async function generateAIWorksheet() {
       // 1. Immediately switch view mode to worksheet so user sees output
       setViewMode('worksheet');
-
       const topicInput = document.getElementById('ai-topic-input');
       let topicText = topicInput ? topicInput.value.trim() : '';
       if (!topicText) {
@@ -2924,30 +2923,32 @@
 
         if (apiKey) {
           try {
-            const masterPrompt = `You are an expert English Language Arts (ELA) and ESL educator. 
-Generate a comprehensive, highly engaging, professional educational worksheet for Grade: ${gradeText}.
-The topic or concept to focus on is: "${topicText}".
+            const masterPrompt = `You are an expert English Language Arts (ELA) and ESL educator. Generate a comprehensive, highly engaging, professional educational worksheet strictly in the ENGLISH LANGUAGE for Grade: ${gradeText}.
+
+The topic or concept requested by the teacher is: "${topicText}".
 The activity focus is: "${activityText}".
 The curriculum rigor level is: "${rigorText}".
 ${solutionsText}.
 
-Please design a rigorous, beautifully structured ELA worksheet that includes:
-1. A Clear, Catchy Title and Subtitle.
-2. A list of CCSS (Common Core State Standards) addressed by this worksheet.
-3. Warm-up Explanation: A short, engaging story or explanatory concept paragraph introducing the topic to students.
-4. Active Exercise Items:
-   - If vocabulary-focused: Start with the header "Word Bank: [word1, word2, word3, word4]" containing vocabulary words in brackets, followed by fill-in-the-blank questions (numbered 1. 2. 3. 4.).
-   - If reading comprehension: Start with the header "Reading Passage: [Title of story]" followed by a short passage, then followed by comprehension questions (numbered 1. 2. 3. 4.).
-   - If grammar-focused (e.g. Parts of speech, Tenses, Sentence Structure, Punctuation, Active/Passive Voice, Clauses, Mechanics): Start with a clear "Grammar Rules & Examples" instructional block. Then provide a numbered list (1. 2. 3. 4.) of targeted grammar drills requiring students to identify, correct, conjugate, or rewrite sentences based on the target. 
-   - If multiple-choice questions: Format each option as a separate line starting with letters A) B) C) D) (e.g., A) Option 1\nB) Option 2).
-5. At the very end of the worksheet, include a distinct section starting with the header "Answer Key" containing solutions for each numbered question.
+STRICT ELA & TOPIC ALIGNMENT MANDATES:
+1. ALL output MUST be 100% in the ENGLISH LANGUAGE and strictly focused on English Language Arts (ELA) skills (reading comprehension, vocabulary, grammar, writing, phonics, sentence mechanics, or literary analysis).
+2. The topic "${topicText}" MUST be the primary thematic subject of the worksheet. Even if the topic relates to cross-curricular themes (e.g. science, history, space, nature, sports, mystery), frame it entirely as an ELA Reading Passage, Contextual Vocabulary Word Bank, Grammar/Sentence Mechanics Drills, and Reading Comprehension Questions in English.
+3. NEVER generate pure math calculations, non-English text, or non-ELA content.
+4. Structuring required:
+   - Clear, Catchy Title and Subtitle reflecting "${topicText}".
+   - List of CCSS (Common Core State Standards for ELA) addressed.
+   - Warm-up Explanation or Reading Passage: A short story or informational text introducing "${topicText}".
+   - Vocabulary Word Bank: Header "Word Bank: [word1, word2, word3, word4, word5]" containing key vocabulary words in brackets.
+   - Active Exercise Items (Numbered 1. 2. 3. 4. 5.):
+     - Include vocabulary fill-in-the-blanks, multiple-choice comprehension questions (formatted with A) B) C) D) on separate lines), grammar identification/editing drills, and open-ended text analysis questions.
+   - At the very end of the worksheet, include a distinct section starting with the header "Answer Key" containing complete solutions for each numbered item.
 
-Please format the output in clean Markdown with bold headers and double-spaced paragraphs between sections to assist in parsing.`;
+Format the output in clean Markdown with bold headers and double-spaced paragraphs between sections.`;
 
             const controller = new AbortController();
-            const timeoutId = setTimeout(() => controller.abort(), 10000); // 10s timeout
+            const timeoutId = setTimeout(() => controller.abort(), 25000); // 25s timeout
+            const endpoint = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`;
 
-            const endpoint = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`;
             const response = await fetch(endpoint, {
               method: 'POST',
               signal: controller.signal,
@@ -2960,6 +2961,7 @@ Please format the output in clean Markdown with bold headers and double-spaced p
                 }]
               })
             });
+
             clearTimeout(timeoutId);
 
             if (response.ok) {
@@ -3191,7 +3193,7 @@ Please format the output in clean Markdown with bold headers and double-spaced p
       
       if (apiKey) {
         try {
-          const endpoint = `https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash:generateContent?key=${apiKey}`;
+          const endpoint = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`;
           const response = await fetch(endpoint, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
@@ -3600,217 +3602,340 @@ Please format the output in clean Markdown with bold headers and double-spaced p
       const cleanTitle = formatWorksheetTitle(promptText);
       const titleEl = document.getElementById('ws-title');
       if (titleEl) titleEl.innerText = cleanTitle;
-      const subEl = document.getElementById('ws-subtitle');
-      if (subEl) subEl.innerText = 'Read the directions and answer each question with complete sentences.';
-      const stdEl = document.getElementById('ws-standard-text');
-      if (stdEl) stdEl.innerText = 'CCSS.ELA-LITERACY • Core Language Arts Standards';
 
+      const gradeSelect = document.getElementById('ai-grade-level')?.value || 'Middle School (Grades 6-8)';
+      const actSelect = document.getElementById('ai-activity-type')?.value || 'Complete Educational Unit';
+
+      const subEl = document.getElementById('ws-subtitle');
+      if (subEl) subEl.innerText = `Grade Level: ${gradeSelect} • ${actSelect} • Read directions and complete all exercises.`;
+
+      const stdEl = document.getElementById('ws-standard-text');
+      if (stdEl) stdEl.innerText = 'CCSS.ELA-LITERACY Curriculum Standards • English Language Arts Core';
       const body = document.getElementById('worksheet-body');
       if (!body) return;
       body.innerHTML = '';
       body.className = 'space-y-4 animate-fade-in pt-1';
 
-      // Featured Illustration
+      // Extract keywords from prompt
+      const rawWords = promptText
+        .replace(/[^a-zA-Z0-9\s]/g, ' ')
+        .split(/\s+/)
+        .filter(w => w.length > 2 && !['for', 'the', 'and', 'with', 'about', 'from', 'into', 'that', 'this', 'have', 'grade', 'level', 'unit', 'lesson', 'worksheet', 'story', 'prompt', 'create', 'generate', 'write', 'make', 'please', 'just', 'english'].includes(w.toLowerCase()));
+      const mainKeyword = rawWords.length > 0 ? rawWords.join(' ') : cleanTitle;
+
+      let category = 'reading';
+      if (/verb|noun|adjective|adverb|pronoun|preposition|conjunction|punctuation|comma|apostrophe|tense|passive|active|clause|sentence|grammar|mechanics|capitalization|speech/i.test(promptText)) {
+        category = 'grammar';
+      } else if (/simile|metaphor|personification|hyperbole|figurative|onomatopoeia|alliteration|imagery|idiom|symbolism|analogy/i.test(promptText)) {
+        category = 'figurative';
+      } else if (/vocabulary|word bank|synonym|antonym|root|prefix|suffix|affix|etymology|tier-2|meaning|definition/i.test(promptText)) {
+        category = 'vocabulary';
+      } else if (/poe|shakespeare|raven|macbeth|romeo|juliet|character|plot|conflict|setting|gothic|poetry|rhyme|stanza|drama|novel|literature/i.test(promptText)) {
+        category = 'literature';
+      }
+
+      // Hero Image Selection
       const heroImage = document.createElement('div');
-      heroImage.className = 'w-full flex justify-center mb-4';
-      heroImage.innerHTML = `<img src="images/magical_storybook.jpg" class="w-full max-w-[500px] rounded-xl shadow-md border-2 border-slate-200" alt="Magical Storybook">`;
+      heroImage.className = 'w-full flex justify-center mb-3';
+      let imgSrc = 'images/magical_storybook.jpg';
+      if (category === 'grammar' || category === 'vocabulary') imgSrc = 'images/classroom_hero.jpg';
+      heroImage.innerHTML = `<img src="${imgSrc}" class="w-full max-w-[500px] rounded-xl shadow-md border-2 border-slate-200" alt="Worksheet Header Image">`;
       body.appendChild(heroImage);
 
-      // Normalize prompt to identify key topics
-      const promptLower = promptText.toLowerCase();
-
-      let title = "Vocabulary & Reading Comprehension";
+      let passageText = '';
+      let wordBankList = [];
       let exercises = [];
 
-      if (promptLower.includes('egypt') || promptLower.includes('pharaoh') || promptLower.includes('pyramid') || promptLower.includes('nile')) {
-        title = "Ancient Egypt ELA Lesson";
+      if (category === 'grammar') {
+        passageText = `Grammar and sentence mechanics form the structural foundation of clear communication in English Language Arts. When studying "${cleanTitle}", writers must pay close attention to syntax, agreement, punctuation, and clause structure. Applying proper grammatical conventions ensures that sentences express complete thoughts clearly and maintain audience engagement across all genres of writing.`;
+        wordBankList = [mainKeyword, 'Syntax', 'Agreement', 'Predicate', 'Auxiliary', 'Convention'];
         exercises = [
           {
-            type: "vocabulary",
-            question: "1. Match the definition with the correct vocabulary word from the context of Ancient Egypt: \"A ruler of ancient Egypt, often considered a living god.\"",
-            choicesLabel: "Student Answer:",
-            choicesPlaceholder: "Pharaoh (e.g. Pharaoh / Hieroglyphs / Mummy)",
-            answer: "Pharaoh"
+            num: 1,
+            type: 'fill-in',
+            question: `1. Rule Application Drill: Fill in the blank with the appropriate form or concept related to ${cleanTitle}: "When revising a draft, a student writer must check that each sentence demonstrates proper ________."`,
+            placeholder: `e.g., ${mainKeyword} / syntax / agreement`,
+            answer: mainKeyword
           },
           {
-            type: "fill-in",
-            question: "2. Fill in the blank: \"The annual flooding of the ________ River provided rich soil, allowing agriculture to flourish in the desert.\"",
-            choicesLabel: "Student Choice:",
-            choicesPlaceholder: "Nile (e.g. Nile / Tigris / Euphrates)",
-            answer: "Nile"
+            num: 2,
+            type: 'mc',
+            question: `2. Multiple Choice Identification: Which of the following sentences correctly applies standard English grammar principles regarding ${cleanTitle}?`,
+            options: [
+              `A) The student carefully reviewed the draft to apply standard ${mainKeyword} rules.`,
+              `B) The student carefully review the draft with missing punctuation everywhere.`,
+              `C) Carefully the student review without proper grammar or agreement structure.`,
+              `D) Reviewing student draft without subject verb or proper syntax.`
+            ],
+            answer: 'A'
           },
           {
-            type: "comprehension",
-            question: "3. Passage: \"To safeguard their legacy, Egyptians developed a complex writing system of pictorial symbols called hieroglyphs. Scribes spent years mastering these sacred carvings on papyrus scrolls.\"\n\nQuestion: What was the primary medium used by scribes for writing hieroglyphs in ancient Egypt? Explain using details from the passage.",
-            answer: "Scribes primarily wrote hieroglyphs on papyrus scrolls, after spending years mastering these sacred carvings."
+            num: 3,
+            type: 'open',
+            question: `3. Sentence Revision Drill: Read the unedited sentence below:\n"the students was studying ${mainKeyword} in english class yesterday when the teacher asked a question"\nTask: Rewrite the sentence above in correct English using proper capitalization, punctuation, and subject-verb agreement.`,
+            placeholder: 'Write your corrected English sentence here...',
+            answer: `The students were studying ${mainKeyword} in English class yesterday when the teacher asked a question.`
+          },
+          {
+            num: 4,
+            type: 'open',
+            question: `4. Structural Analysis: Explain why applying correct ${cleanTitle} rules improves the clarity and effectiveness of a written passage. Cite an example from your writing.`,
+            placeholder: 'Student response area...',
+            answer: `Proper ${cleanTitle} conventions allow readers to follow the author's logic without grammatical confusion.`
+          },
+          {
+            num: 5,
+            type: 'open',
+            question: `5. Creative Application: Write two original English sentences that demonstrate your complete understanding of ${cleanTitle}. Underline the target structure in each sentence.`,
+            placeholder: 'Sentence 1:\nSentence 2:',
+            answer: `Student responses will vary. Each sentence must correctly demonstrate ${cleanTitle}.`
           }
         ];
-      } else if (promptLower.includes('space') || promptLower.includes('planet') || promptLower.includes('universe') || promptLower.includes('star') || promptLower.includes('galaxy') || promptLower.includes('astronaut')) {
-        title = "Cosmic Space Travel & Astronomy";
+      } else if (category === 'figurative') {
+        passageText = `Figurative language elevates writing by painting vivid sensory imagery in the reader's mind. When exploring "${cleanTitle}", authors compare unlike items, endow objects with human traits, or exaggerate for dramatic effect. Understanding how these literary devices operate allows readers to analyze tone, mood, atmosphere, and deeper thematic meaning in English literature.`;
+        wordBankList = [mainKeyword, 'Simile', 'Metaphor', 'Imagery', 'Personification', 'Sensory Details'];
         exercises = [
           {
-            type: "vocabulary",
-            question: "1. Complete the sentence with the correct vocabulary word: \"The extreme pull of ________ prevents light from escaping a black hole.\"",
-            choicesLabel: "Student Answer:",
-            choicesPlaceholder: "gravity (e.g. gravity / friction / inertia)",
-            answer: "gravity"
+            num: 1,
+            type: 'fill-in',
+            question: `1. Device Classification (${cleanTitle}): Identify the figurative language term: "A comparison between two unlike things using 'like' or 'as' is a simile, whereas stating one thing directly IS another is a ________."`,
+            placeholder: 'metaphor (e.g. metaphor / personification)',
+            answer: 'metaphor'
           },
           {
-            type: "fill-in",
-            question: "2. Fill in the blank: \"Neil Armstrong was the first ________ to walk on the moon during the Apollo 11 mission in 1969.\"",
-            choicesLabel: "Student Choice:",
-            choicesPlaceholder: "astronaut (e.g. astronaut / astronomer / astrologer)",
-            answer: "astronaut"
+            num: 2,
+            type: 'mc',
+            question: `2. Multiple Choice Identification: Read the quote: "The old library books were ancient treasures waiting to reveal their secrets." What figurative device is featured?`,
+            options: [
+              'A) Metaphor (direct comparison without using like or as)',
+              'B) Simile (comparison using like or as)',
+              'C) Onomatopoeia (sound word representation)',
+              'D) Literal statement of facts'
+            ],
+            answer: 'A'
           },
           {
-            type: "comprehension",
-            question: "3. Passage: \"Our Solar System belongs to the Milky Way galaxy, which contains billions of stars, exoplanets, and nebulas. Light takes about eight minutes to travel from our central star, the Sun, to Earth.\"\n\nQuestion: How long does it take for sunlight to reach Earth? Support your answer with a detail from the text.",
-            answer: "It takes approximately eight minutes for light to travel from our central star, the Sun, to Earth."
+            num: 3,
+            type: 'open',
+            question: `3. Figurative Transformation Drill:\nPlain Sentence: "The storm was very loud and scary."\nTask: Rewrite this plain sentence into a powerful, evocative English statement incorporating ${cleanTitle} and vivid sensory details.`,
+            placeholder: 'Write your transformed figurative sentence here...',
+            answer: `Sample: "The storm roared like an enraged lion, its thunderous claws shaking the fragile windowpanes."`
+          },
+          {
+            num: 4,
+            type: 'open',
+            question: `4. Textual Analysis & Impact: How does the author's choice to incorporate ${cleanTitle} influence the reader's emotional connection to the passage?`,
+            placeholder: 'Explain emotional impact and sensory imagery...',
+            answer: `${cleanTitle} creates memorable imagery and emotional depth, making the narrative atmosphere far more engaging.`
+          },
+          {
+            num: 5,
+            type: 'open',
+            question: `5. Creative Writing Composition: Write a short descriptive paragraph (3-4 sentences) set in a bustling school or atmospheric wilderness. Include at least two distinct examples of ${cleanTitle}.`,
+            placeholder: 'Write your original descriptive paragraph...',
+            answer: 'Student paragraphs will vary. Must feature 2 distinct examples of figurative language.'
           }
         ];
-      } else if (promptLower.includes('verb') || promptLower.includes('grammar') || promptLower.includes('tense') || promptLower.includes('sentence') || promptLower.includes('punctuation')) {
-        title = "Grammar & Sentence Mechanics";
+      } else if (category === 'vocabulary') {
+        passageText = `Expanding vocabulary and mastering context clues are vital components of reading fluency and analytical writing. In our lesson on "${cleanTitle}", students encounter key terms, analyze prefixes and roots, and decipher word meanings in passage context. Utilizing high-level English vocabulary allows writers to express complex ideas with precision and confidence.`;
+        wordBankList = [mainKeyword, 'Context Clues', 'Synonym', 'Antonym', 'Etymology', 'Nuance'];
         exercises = [
           {
-            type: "grammar",
-            question: "1. Correct the grammatical error in this sentence: \"She have gone to the library to research community helpers yesterday.\"",
-            choicesLabel: "Correct Sentence:",
-            choicesPlaceholder: "She went to the library... / She had gone...",
-            answer: "She went to the library to research community helpers yesterday."
+            num: 1,
+            type: 'fill-in',
+            question: `1. Contextual Vocabulary Drill: Complete the sentence using a target word from the lesson on ${cleanTitle}: "When encountering an unfamiliar word in an English text, readers examine surrounding ________ to infer its definition."`,
+            placeholder: 'context clues (e.g. context clues / punctuation)',
+            answer: 'context clues'
           },
           {
-            type: "fill-in",
-            question: "2. Choose the correct pronoun: \"Although the project was difficult, ________ (him / he) completed it before the smartboard presentation.\"",
-            choicesLabel: "Student Choice:",
-            choicesPlaceholder: "he (e.g. he / him)",
-            answer: "he"
+            num: 2,
+            type: 'mc',
+            question: `2. Multiple Choice Vocabulary Definition: What is the primary purpose of studying Tier-2 vocabulary and contextual synonyms in English class?`,
+            options: [
+              `A) To enrich reading comprehension and enable precise, descriptive writing in essays and stories.`,
+              `B) To replace all simple words with complex terms regardless of sentence meaning.`,
+              `C) To memorize definitions without understanding how words function in sentences.`,
+              `D) To avoid reading full passages and focus only on isolated word lists.`
+            ],
+            answer: 'A'
           },
           {
-            type: "grammar-analysis",
-            question: "3. Identify the principal verb and the auxiliary verb in this sentence: \"The classroom has adopted modern tablet worksheets for reading assignments.\"",
-            answer: "Auxiliary Verb: 'has'. Principal Verb: 'adopted'."
-          }
-        ];
-      } else if (promptLower.includes('vocabulary') || promptLower.includes('word') || promptLower.includes('synonym') || promptLower.includes('antonym')) {
-        title = "Advanced ELA Vocabulary Builder";
-        exercises = [
-          {
-            type: "vocabulary",
-            question: "1. Identify the synonym for 'Meticulous' from the choices below: \"The ELA editor reviewed the slides with meticulous attention to detail.\"",
-            choicesLabel: "Student Choice:",
-            choicesPlaceholder: "careful (e.g. careful / hasty / indifferent)",
-            answer: "careful"
+            num: 3,
+            type: 'open',
+            question: `3. Sentence Enrichment Drill:\nSimple Sentence: "The teacher gave a good lesson."\nTask: Rewrite the sentence replacing "good" with a sophisticated Tier-2 synonym related to ${cleanTitle} (e.g., captivating, resplendent, insightful, exemplary).`,
+            placeholder: 'Write your enriched sentence here...',
+            answer: `Sample: "The teacher delivered an exceptionally insightful and captivating English lesson."`
           },
           {
-            type: "fill-in",
-            question: "2. Complete the sentence using appropriate context vocabulary: \"The principal gave a ________ argument that convinced the board to expand the digital curriculum.\"",
-            choicesLabel: "Student Answer:",
-            choicesPlaceholder: "compelling (e.g. compelling / flimsy)",
-            answer: "compelling"
+            num: 4,
+            type: 'open',
+            question: `4. Antonym & Synonym Analysis: Define ${mainKeyword} in your own words. Provide one accurate synonym and one accurate antonym in English.`,
+            placeholder: 'Definition:\nSynonym:\nAntonym:',
+            answer: `Definition and usage will vary based on ${mainKeyword}. Synonym and antonym should accurately reflect core meaning.`
           },
           {
-            type: "vocabulary-use",
-            question: "3. Define the ELA term 'Context Clues' and write a sentence demonstrating how to infer a word's meaning from its surroundings.",
-            answer: "Context clues are hints found within a sentence or passage that help a reader understand the meaning of unfamiliar words. Example: 'The tropical sun was sweltering, making us sweat profusely.'"
-          }
-        ];
-      } else if (promptLower.includes('adjective') || promptLower.includes('noun') || promptLower.includes('pronoun') || promptLower.includes('parts of speech')) {
-        title = "Parts of Speech & Word Classification";
-        exercises = [
-          {
-            type: "fill-in",
-            question: "1. Identify the adjectives in this sentence: \"The quiet, diligent student completed her ELA quiz ahead of schedule.\"",
-            choicesLabel: "Adjectives:",
-            choicesPlaceholder: "quiet, diligent (e.g. quiet / diligent / student)",
-            answer: "quiet, diligent"
-          },
-          {
-            type: "fill-in",
-            question: "2. Choose the correct objective pronoun to complete the sentence: \"The ELA teacher invited ________ (we / us) to co-author the new slide deck.\"",
-            choicesLabel: "Student Choice:",
-            choicesPlaceholder: "us (e.g. we / us)",
-            answer: "us"
-          },
-          {
-            type: "classification",
-            question: "3. Read this passage and classify the underlined words: \"The modern digital slideshow **instantly** improves student **engagement** in the classroom.\"",
-            answer: "instantly: Adverb. engagement: Noun."
+            num: 5,
+            type: 'open',
+            question: `5. Vocabulary Application Paragraph: Write a 3-sentence narrative or informative paragraph incorporating ${cleanTitle} and at least two words from the Word Bank above.`,
+            placeholder: 'Write your original paragraph...',
+            answer: 'Student paragraphs will vary. Must demonstrate accurate usage of target vocabulary.'
           }
         ];
       } else {
-        // General custom synthesis based on the user's prompt text
-        title = cleanTitle;
-        const formattedPrompt = cleanTitle;
+        // Reading Comprehension, Literature Analysis, and ELA Unit on requested topic
+        passageText = `Reading comprehension and active text analysis expand through engaging informational prose and narrative stories in English Language Arts. In our reading unit on "${cleanTitle}", students analyze key details, contextual vocabulary, and authorial purpose while building core ELA competencies. Understanding how main ideas connect with supporting textual evidence allows readers to draw logical inferences, evaluate character motivations, and communicate ideas with clarity.`;
+        wordBankList = [mainKeyword, 'Comprehension', 'Context Clues', 'Main Idea', 'Textual Evidence', 'Inference'];
         exercises = [
           {
-            type: "vocabulary",
-            question: `1. Define a core vocabulary word or concept essential to understanding "${formattedPrompt}":`,
-            choicesLabel: "Student Concept Focus:",
-            choicesPlaceholder: `Define key terms related to "${formattedPrompt}"`,
-            answer: `Key vocabulary associated with ${formattedPrompt} is essential for ELA comprehension.`
+            num: 1,
+            type: 'fill-in',
+            question: `1. Contextual Reading Drill: Complete the sentence based on your reading of ${cleanTitle}: "In English Language Arts reading analysis, identifying the author's primary ________ allows us to understand the central lesson or message of the passage."`,
+            placeholder: 'main idea (e.g. main idea / punctuation)',
+            answer: 'main idea'
           },
           {
-            type: "fill-in",
-            question: `2. Fill in the blank with a term related to "${formattedPrompt}": "We must read closely to identify the author's primary theme regarding ________ in this ELA text."`,
-            choicesLabel: "Answer choice:",
-            choicesPlaceholder: `e.g., theme, perspective, context of ${formattedPrompt}`,
-            answer: "theme"
+            num: 2,
+            type: 'mc',
+            question: `2. Multiple Choice Reading Analysis: When analyzing a text or story focusing on ${cleanTitle}, what is the most effective reading strategy?`,
+            options: [
+              `A) Combine key passage details with specific textual evidence to construct a deep, accurate response.`,
+              `B) Read quickly through the text without checking the meaning of unfamiliar words.`,
+              `C) Memorize random facts without connecting them to the main theme of the story.`,
+              `D) Ignore the author's purpose and skip reading the conclusion of the passage.`
+            ],
+            answer: 'A'
           },
           {
-            type: "comprehension",
-            question: `3. Short Passage: \"When studying ELA topics like ${formattedPrompt}, readers must combine literal comprehension with deep analytical reasoning. Analyzing structural choices, tone, and character dynamics allows students to unlock complex meanings beyond the text.\"\n\nQuestion: Based on the passage, what must readers combine to successfully analyze complex topics?`,
-            answer: "Readers must combine literal comprehension with deep analytical reasoning to unlock complex meanings."
+            num: 3,
+            type: 'open',
+            question: `3. Textual Evidence & Main Idea Analysis: Re-read the introductory passage on ${cleanTitle}. State the main idea in one sentence and cite one piece of supporting textual evidence from the passage.`,
+            placeholder: 'Main Idea:\nTextual Evidence:',
+            answer: `Main Idea: Analyzing ${cleanTitle} develops essential reading comprehension and evidence-based analytical skills. Evidence: Supporting details allow readers to draw logical inferences.`
+          },
+          {
+            num: 4,
+            type: 'open',
+            question: `4. Sentence Mechanics & Proofreading Drill:\nUnedited Sentence: "when students read about ${mainKeyword} they learns valuable english skills and vocabulary"\nTask: Rewrite the sentence above with correct English capitalization, subject-verb agreement, and ending punctuation.`,
+            placeholder: 'Write your corrected English sentence here...',
+            answer: `When students read about ${mainKeyword}, they learn valuable English skills and vocabulary.`
+          },
+          {
+            num: 5,
+            type: 'open',
+            question: `5. Creative Synthesis Response: Write a short English paragraph (3-4 sentences) summarizing what you learned about ${cleanTitle} today. Use at least two words from the Word Bank above.`,
+            placeholder: 'Write your synthesis response here...',
+            answer: 'Student responses will vary. Paragraph must accurately address topic and include target word bank terms.'
           }
         ];
       }
 
-      document.getElementById('ws-title').innerText = title;
+      // Render Passage Block
+      const passageCard = document.createElement('div');
+      passageCard.className = 'p-5 rounded-2xl border-2 border-indigo-200 bg-slate-50/50 shadow-sm text-slate-800 font-serif text-xs leading-relaxed space-y-2.5 relative page-break-inside-avoid';
+      passageCard.contentEditable = "true";
+      passageCard.innerHTML = `
+        <div class="flex items-center gap-1.5 text-[10px] font-bold text-indigo-700 uppercase tracking-widest">
+          <i data-lucide="book-open" class="w-3.5 h-3.5"></i>
+          <span>ELA Reading Passage & Lesson Focus</span>
+        </div>
+        <div class="whitespace-pre-line border-l-4 border-indigo-500 pl-3.5 italic text-slate-800 font-medium">${passageText}</div>
+      `;
+      body.appendChild(passageCard);
 
-      // Render the exercises beautifully
-      exercises.forEach((ex, idx) => {
+      // Render Word Bank Block
+      const wbCard = document.createElement('div');
+      wbCard.className = 'p-4 rounded-xl border-2 border-dashed border-indigo-300 bg-indigo-50/40 space-y-2 relative page-break-inside-avoid';
+      wbCard.contentEditable = "true";
+      let wbHTML = wordBankList.map(w => `<span class="px-2.5 py-1 text-xs font-bold font-sans tracking-wide bg-white text-indigo-700 border border-indigo-200 rounded-lg shadow-sm">${w}</span>`).join(' ');
+      wbCard.innerHTML = `
+        <div class="flex items-center gap-1 text-[10px] font-black uppercase tracking-wider text-indigo-600">
+          <i data-lucide="brain-circuit" class="w-3.5 h-3.5"></i>
+          <span>ELA Word Bank & Target Vocabulary</span>
+        </div>
+        <div class="flex flex-wrap gap-2 pt-1">${wbHTML}</div>
+      `;
+      body.appendChild(wbCard);
+
+      // Render Exercises
+      exercises.forEach((ex) => {
         const card = document.createElement('div');
-        card.className = 'exercise-block question-item p-4 rounded-xl border border-indigo-200 bg-indigo-50/30 space-y-2 text-xs text-slate-900 font-serif relative';
+        card.className = 'exercise-block question-item p-4.5 rounded-xl border border-indigo-100 bg-white shadow-sm text-slate-800 font-serif text-xs leading-relaxed space-y-3 relative page-break-inside-avoid';
         card.contentEditable = "true";
-
-        let html = '';
-        if (ex.type === "vocabulary" || ex.type === "fill-in" || ex.type === "grammar") {
-          html = `
-            <div class="flex justify-between font-bold text-indigo-900 text-[11px] uppercase tracking-wider mb-1">
-              <span>English Language Practice</span>
-              <span class="bg-indigo-100 text-indigo-800 px-2 py-0.5 rounded">Exercise Item</span>
+        if (ex.type === 'fill-in') {
+          card.innerHTML = `
+            <div class="flex items-start gap-2.5">
+              <span class="w-6 h-6 rounded-lg bg-indigo-600 text-white font-sans font-bold text-xs flex items-center justify-center shadow-sm flex-shrink-0">${ex.num}</span>
+              <div class="flex-1 space-y-2">
+                <h4 class="text-xs font-bold text-slate-900 leading-snug">${ex.question}</h4>
+                <div class="pt-1 flex items-center gap-2">
+                  <span class="font-bold text-indigo-950 text-[11px]">Student Answer:</span>
+                  <span class="border-b-2 border-slate-800 min-w-[200px] inline-block px-1 ${showAnswerKey ? 'text-rose-600 font-bold' : 'text-slate-400 font-medium'}">
+                    ${showAnswerKey ? ex.answer : ex.placeholder}
+                  </span>
+                </div>
+              </div>
             </div>
-            <p class="leading-relaxed pt-1 font-semibold">${ex.question}</p>
-            <div class="pt-1 flex items-center gap-2">
-              <span class="font-bold text-indigo-950">${ex.choicesLabel}</span>
-              <span contenteditable="true" class="border-b-2 border-slate-800 min-w-[160px] inline-block px-1 ${showAnswerKey ? 'text-rose-600 font-bold' : 'text-slate-400 font-medium'}">
-                ${showAnswerKey ? ex.answer : ex.choicesPlaceholder}
-              </span>
+          `;
+        } else if (ex.type === 'mc') {
+          let optionsHTML = ex.options.map(opt => {
+            return `
+              <div class="flex items-center gap-2 px-2.5 py-1.5 rounded-lg border border-slate-100 bg-slate-50/50">
+                <span class="text-[11px] text-slate-800 font-medium">${opt}</span>
+              </div>
+            `;
+          }).join('');
+          card.innerHTML = `
+            <div class="flex items-start gap-2.5">
+              <span class="w-6 h-6 rounded-lg bg-indigo-600 text-white font-sans font-bold text-xs flex items-center justify-center shadow-sm flex-shrink-0">${ex.num}</span>
+              <div class="flex-1 space-y-2">
+                <h4 class="text-xs font-bold text-slate-900 leading-snug">${ex.question}</h4>
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 pt-1">${optionsHTML}</div>
+                ${showAnswerKey ? `<div class="mt-2 text-xs font-bold text-rose-600 bg-rose-50 p-2 rounded-lg border border-rose-200">★ Correct Answer: Choice ${ex.answer}</div>` : ''}
+              </div>
             </div>
           `;
         } else {
-          html = `
-            <div class="flex justify-between font-bold text-indigo-900 text-[11px] uppercase tracking-wider mb-1">
-              <span>Reading & Analysis Focus</span>
-              <span class="bg-indigo-100 text-indigo-800 px-2 py-0.5 rounded">Comprehension</span>
-            </div>
-            <div class="whitespace-pre-line leading-relaxed pt-1">${ex.question}</div>
-            <div class="space-y-2 pt-1.5 border-t border-indigo-100/40 mt-1">
-              <div contenteditable="true" class="border-b border-slate-300 min-h-[24px] px-1 pb-1 ${showAnswerKey ? 'text-rose-600 font-medium italic' : 'text-slate-400'}">
-                ${showAnswerKey ? 'Sample Answer: ' + ex.answer : 'Student Response Area (Click to type...)'}
+          card.innerHTML = `
+            <div class="flex items-start gap-2.5">
+              <span class="w-6 h-6 rounded-lg bg-indigo-600 text-white font-sans font-bold text-xs flex items-center justify-center shadow-sm flex-shrink-0">${ex.num}</span>
+              <div class="flex-1 space-y-2">
+                <h4 class="text-xs font-bold text-slate-900 leading-snug whitespace-pre-line">${ex.question}</h4>
+                <div class="space-y-2 pt-1.5 border-t border-indigo-100/60">
+                  <div class="border-b border-dotted border-slate-400 min-h-[24px] px-1 pb-1 ${showAnswerKey ? 'text-rose-600 font-bold italic bg-rose-50/50 p-2 rounded' : 'text-slate-400'}">
+                    ${showAnswerKey ? '★ Answer Key: ' + ex.answer : ex.placeholder}
+                  </div>
+                  ${!showAnswerKey ? '<div class="border-b border-dotted border-slate-400 h-4"></div><div class="border-b border-dotted border-slate-400 h-4"></div>' : ''}
+                </div>
               </div>
-              ${!showAnswerKey ? '<div class="border-b border-slate-300 h-4"></div>' : ''}
             </div>
           `;
         }
-
-        card.innerHTML = html;
         body.appendChild(card);
       });
-      if (typeof lucide !== 'undefined' && lucide.createIcons) { lucide.createIcons(); }
-    }
 
-    // Switch Dashboard Drawer Tabs (Create, Style, Tools) to Reduce Complexity
-    function switchDashboardTab(tabId) {
+      // Render Answer Key Footer
+      const akCard = document.createElement('div');
+      akCard.className = 'mt-6 p-5 rounded-2xl border-2 border-rose-200 bg-rose-50/40 space-y-3 relative page-break-inside-avoid';
+      akCard.contentEditable = "true";
+      let akHTML = exercises.map(ex => `<div class="text-xs font-serif text-slate-800"><strong class="text-rose-800 font-bold">Q${ex.num}:</strong> ${ex.answer}</div>`).join('');
+      akCard.innerHTML = `
+        <div class="flex items-center justify-between border-b border-rose-200 pb-2">
+          <div class="flex items-center gap-1.5 text-xs font-black uppercase tracking-wider text-rose-800">
+            <i data-lucide="key-round" class="w-4 h-4"></i>
+            <span>Teacher Answer Key & Solutions Guide (ELA)</span>
+          </div>
+          <span class="text-[10px] font-bold px-2 py-0.5 rounded bg-rose-100 text-rose-800">Confidential / Educator Reference</span>
+        </div>
+        <div class="space-y-2 pt-1">${akHTML}</div>
+      `;
+      body.appendChild(akCard);
+
+      if (typeof lucide !== 'undefined' && lucide.createIcons) {
+        lucide.createIcons();
+      }
+}
+
+function switchDashboardTab(tabId) {
       // Hide all contents safely
       const g = document.getElementById('tab-generators-content');
       const d = document.getElementById('tab-design-content');
@@ -6863,6 +6988,9 @@ Create a complete, pedagogical, interactive ${slideCount}-slide classroom presen
 Target Level: ${targetLevel}.
 Deck Style: ${deckStyle}.
 
+CRITICAL ELA INSTRUCTION:
+This presentation deck MUST focus strictly on English Language Arts (ELA) / ESL skills (reading comprehension, vocabulary acquisition, grammar mechanics, sentence structure, or literary devices) using "${topic}" as the narrative background. Do NOT generate math calculations or non-English subject lessons.
+
 Return ONLY a valid JSON array of objects with no surrounding markdown formatting or backticks.
 Schema for each slide object:
 [
@@ -6882,7 +7010,7 @@ Schema for each slide object:
             const controller = new AbortController();
             const timeoutId = setTimeout(() => controller.abort(), 10000);
 
-            const endpoint = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`;
+            const endpoint = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`;
             const response = await fetch(endpoint, {
               method: 'POST',
               signal: controller.signal,
@@ -6967,115 +7095,120 @@ Schema for each slide object:
     }
 
     function synthesizeELASlideDeck(topic, slideCount, targetLevel, deckStyle, slideTheme) {
-      const lower = topic.toLowerCase();
       const cleanTitle = topic.charAt(0).toUpperCase() + topic.slice(1);
       const slides = [];
-
+      const rawWords = topic
+        .replace(/[^a-zA-Z0-9\s]/g, ' ')
+        .split(/\s+/)
+        .filter(w => w.length > 2 && !['for', 'the', 'and', 'with', 'about', 'from', 'into', 'that', 'this', 'have', 'grade', 'level', 'unit', 'lesson', 'worksheet', 'story', 'prompt', 'create', 'generate', 'write', 'make'].includes(w.toLowerCase()));
+      const mainKeyword = rawWords.length > 0 ? rawWords.join(' ') : cleanTitle;
+      
+      let category = 'general';
+      if (/verb|noun|adjective|adverb|pronoun|preposition|conjunction|punctuation|comma|apostrophe|tense|passive|active|clause|sentence|grammar|mechanics|capitalization|speech/i.test(topic)) {
+        category = 'grammar';
+      } else if (/simile|metaphor|personification|hyperbole|figurative|onomatopoeia|alliteration|imagery|idiom|symbolism|analogy/i.test(topic)) {
+        category = 'figurative';
+      } else if (/reading|comprehension|passage|story|main idea|inference|context clue|cause and effect|author|purpose|perspective|summary|textual evidence|nonfiction|fiction/i.test(topic)) {
+        category = 'reading';
+      } else if (/vocabulary|word bank|synonym|antonym|root|prefix|suffix|affix|etymology|tier-2|meaning|definition/i.test(topic)) {
+        category = 'vocabulary';
+      } else if (/poe|shakespeare|raven|macbeth|romeo|juliet|character|plot|conflict|setting|gothic|poetry|rhyme|stanza|drama|novel|literature/i.test(topic)) {
+        category = 'literature';
+      }
+      
       // 1. Title Slide
       slides.push({
         layout: 'title',
         title: cleanTitle,
-        subtitle: `Mastering English Language Arts • Level: ${targetLevel.replace('-', ' ').toUpperCase()}`,
-        notes: `Introduce today's lesson on "${cleanTitle}". State learning targets clearly and set an encouraging, interactive tone for student participation.`
+        subtitle: `ELA Curriculum Unit • Grade Level: ${targetLevel.replace('-', ' ').toUpperCase()}`,
+        notes: `Introduce today's English Language Arts lesson on "${cleanTitle}". State learning targets clearly and set an encouraging tone for student participation.`
       });
-
-      // 2. Learning Objectives & Key Concepts
+      
+      // 2. Learning Objectives Slide
       slides.push({
         layout: 'bullets',
-        title: `🎯 Learning Objectives: ${cleanTitle}`,
-        subtitle: 'Curriculum Standards & Goals',
+        title: `🎯 Objectives: ${cleanTitle}`,
+        subtitle: 'ELA Learning Targets & Core Standards',
         bullets: [
-          `Define and analyze the core rules and structural conventions of ${cleanTitle}.`,
-          `Identify context clues and apply accurate vocabulary in classroom sentence practice.`,
-          `Synthesize textual evidence and evaluate literary and grammatical choices in writing.`
+          `Master the fundamental ELA rules, vocabulary, and concepts associated with ${mainKeyword}.`,
+          `Analyze contextual evidence and evaluate textual examples during classroom practice.`,
+          `Synthesize key takeaways to complete independent ELA reading and writing exercises accurately.`
         ],
-        notes: `Have student volunteers read each objective aloud. Ask: 'Why is mastering this concept essential for effective English communication?'`
+        notes: `Have student volunteers read each objective aloud. Ask: 'Why is mastering ${mainKeyword} important in English communication?'`
       });
-
-      // 3. Concept Deep Dive / Grammar & Literary Mechanics
-      if (lower.includes('past') || lower.includes('perfect') || lower.includes('tense') || lower.includes('verb')) {
+      
+      // 3. Deep Dive / Mechanics Slide
+      if (category === 'grammar') {
         slides.push({
           layout: 'bullets',
-          title: "Timeline & Structural Formula",
-          subtitle: "Past Perfect: [had + Past Participle]",
+          title: `Grammatical Breakdown: ${cleanTitle}`,
+          subtitle: `Structural Formula & Rules for ${mainKeyword}`,
           bullets: [
-            "Action 1 (Earlier in the past): 'The train had departed...'",
-            "Action 2 (Later in the past): '...before we arrived at the station.'",
-            "Key Signal Markers: before, by the time, already, after, until then.",
-            "Common Mistake: Do NOT use two past perfect verbs in the same clause."
+            `Rule 1: Always check subject-verb agreement and proper tense consistency in clauses.`,
+            `Rule 2: Identify whether sentences are active vs passive or require specific punctuation.`,
+            `Rule 3: Revise fragments and run-ons to ensure complete sentence thoughts.`,
+            `Common Pitfall: Avoid mixing conflicting verb tenses within the same paragraph.`
           ],
-          notes: "Draw a simple timeline on the whiteboard. Place Action 1 to the far left and Action 2 to the right to illustrate sequential past events."
+          notes: `Demonstrate before-and-after sentence transformations on the whiteboard.`
         });
-      } else if (lower.includes('metaphor') || lower.includes('simile') || lower.includes('figurative')) {
+      } else if (category === 'figurative') {
         slides.push({
           layout: 'bullets',
-          title: "Figurative Language Breakdown",
-          subtitle: "Simile vs. Metaphor vs. Personification",
+          title: `Figurative Devices: ${cleanTitle}`,
+          subtitle: 'Literary Devices & Sensory Imagery Breakdown',
           bullets: [
-            "Simile: Direct comparison using 'like' or 'as' ('Her heart is like an open book').",
-            "Metaphor: States that one concept IS another ('Her heart is an open book').",
-            "Personification: Giving human traits to non-human entities ('The wind whispered secrets').",
-            "Impact: Evokes visceral imagery and elevates sensory descriptions in narrative prose."
+            `Simile vs. Metaphor: Similes use 'like' or 'as'; metaphors state direct equivalency.`,
+            `Personification: Endowing non-human entities with human traits or emotions.`,
+            `Sensory Impact: Authors use figurative devices to evoke vivid mental imagery.`,
+            `Analysis Strategy: Identify the literal base item and the figurative comparison.`
           ],
-          notes: "Ask students to transform a plain sentence (e.g. 'The rain fell') into a powerful figurative statement."
+          notes: `Ask students to transform a plain sentence into a vivid figurative statement.`
         });
       } else {
         slides.push({
           layout: 'bullets',
-          title: `Core Principles: ${cleanTitle}`,
-          subtitle: "Essential Vocabulary & Rules",
+          title: `Core ELA Principles: ${cleanTitle}`,
+          subtitle: `Essential Concepts & Vocabulary for ${mainKeyword}`,
           bullets: [
-            `Principle 1: Understand the foundational terminology underpinning ${cleanTitle}.`,
-            `Principle 2: Observe how context alters meaning and emotional tone.`,
-            `Principle 3: Practice constructive peer feedback when analyzing student examples.`
+            `Concept 1: Understand the core ELA terminology and word meanings underpinning ${cleanTitle}.`,
+            `Concept 2: Analyze contextual clues, author perspective, and evidence in related reading passages.`,
+            `Concept 3: Apply evidence-based reasoning and proper sentence structure when responding in writing.`
           ],
-          notes: `Walk through these core principles step by step. Highlight key terms in bold.`
+          notes: `Walk through these core ELA principles step by step. Highlight key vocabulary on screen.`
         });
       }
-
-      // 4. Interactive Classroom Quiz / Activity Slide
+      
+      // 4. Interactive Quiz / Practice Slide
       slides.push({
         layout: 'activity',
-        title: `Interactive Challenge: ${cleanTitle}`,
-        subtitle: "Classroom Whiteboard Engagement",
+        title: `Interactive ELA Challenge: ${cleanTitle}`,
+        subtitle: 'Classroom Whiteboard Engagement',
         activityHtml: `
           <div class="space-y-3 font-sans text-xs">
             <div class="bg-indigo-50/70 p-3 rounded-xl border border-indigo-100">
-              <span class="font-bold text-indigo-950">Q1. Which sentence correctly demonstrates the target rule for ${cleanTitle}?</span>
+              <span class="font-bold text-indigo-950">Q1. Which option correctly demonstrates the core ELA target principle for ${cleanTitle}?</span>
               <div class="grid grid-cols-2 gap-2 mt-2">
-                <span class="p-2 bg-white rounded-lg border border-slate-200 font-medium">A) Example sentence exhibiting correct syntax</span>
-                <span class="p-2 bg-white rounded-lg border border-slate-200 font-medium">B) Example containing common grammatical error</span>
+                <span class="p-2 bg-white rounded-lg border border-slate-200 font-medium text-slate-800">A) Correct choice exhibiting ${mainKeyword}</span>
+                <span class="p-2 bg-white rounded-lg border border-slate-200 font-medium text-slate-800">B) Choice containing sentence error</span>
               </div>
             </div>
             <div class="bg-indigo-50/70 p-3 rounded-xl border border-indigo-100">
-              <span class="font-bold text-indigo-950">Q2. Complete with context clues: "The author utilized this structure to emphasize ________."</span>
+              <span class="font-bold text-indigo-950">Q2. Write a 1-sentence response using target vocabulary for ${cleanTitle}.</span>
+              <div class="mt-2 border-b-2 border-slate-300 h-6"></div>
             </div>
           </div>
         `,
         answersRevealedHtml: `
-          <div class="mt-4 p-3 bg-emerald-50 border border-emerald-200 rounded-lg space-y-1 text-xs text-emerald-850 font-medium animate-fade-in">
-            <h5 class="font-extrabold uppercase text-[10px] text-emerald-800">★ Solutions Guide ★</h5>
-            <p>✔ Q1: Choice A represents the correct standard ELA convention.</p>
-            <p>✔ Q2: The author utilizes structure to emphasize thematic contrast and narrative depth.</p>
+          <div class="p-3 bg-emerald-50 border border-emerald-200 rounded-xl text-xs space-y-1 text-emerald-950">
+            <strong class="text-emerald-800 font-bold block">★ ELA Teacher Solutions:</strong>
+            <p><strong>Q1:</strong> Choice A correctly applies target ELA conventions.</p>
+            <p><strong>Q2:</strong> Sample: Student sentences will vary; check for proper punctuation and target vocabulary usage.</p>
           </div>
         `,
-        notes: "Invite two students to the board to circle the correct answers. Discuss why Choice B was a distractor."
+        notes: `Give students 3 minutes to write their answers on mini whiteboards before displaying the solutions.`
       });
-
-      // 5. Wrap Up & Student Reflection Slide
-      slides.push({
-        layout: 'bullets',
-        title: "Lesson Summary & Exit Ticket",
-        subtitle: "Consolidating Classroom Mastery",
-        bullets: [
-          `Key Takeaway: Remember the central rules and strategies we practiced today.`,
-          `Exit Ticket Challenge: Write one original sentence applying ${cleanTitle} in your notebook.`,
-          `Homework Extension: Complete the corresponding digital worksheet exercises.`
-        ],
-        notes: "Give students 3 minutes of silent reflection to write their exit ticket responses before dismissal."
-      });
-
-      return slides.slice(0, Math.max(3, slideCount));
+      
+      return slides;
     }
 
     function applyAISlidesToPresentation(mode = 'replace') {
