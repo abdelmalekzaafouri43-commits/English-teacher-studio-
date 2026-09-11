@@ -1,0 +1,5993 @@
+
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            brand: {
+              50: '#eef2ff',
+              100: '#e0e7ff',
+              500: '#6366f1',
+              600: '#4f46e5',
+              700: '#4338ca',
+              900: '#312e81',
+            }
+          },
+          fontFamily: {
+            inter: ['Inter', 'sans-serif'],
+            sfpro: ['-apple-system', 'BlinkMacSystemFont', '"SF Pro Text"', '"SF Pro Display"', '"SF Pro"', 'Helvetica Neue', 'sans-serif'],
+            roboto: ['Roboto', 'sans-serif'],
+            playfair: ['"Playfair Display"', 'serif'],
+            merriweather: ['Merriweather', 'serif'],
+            lora: ['Lora', 'serif'],
+            sourcesans: ['"Source Sans 3"', '"Source Sans Pro"', 'sans-serif'],
+            ptserif: ['"PT Serif"', 'serif'],
+            sans: ['Inter', 'sans-serif'],
+            playful: ['Fredoka', 'cursive'],
+            serif: ['Merriweather', 'serif'],
+            handwriting: ['Caveat', 'cursive'],
+            mono: ['JetBrains Mono', 'monospace'],
+          }
+        }
+      }
+    }
+  
+
+    // State variables
+    let currentBorder = 'minimalist';
+    let currentScale = 1.0;
+    let currentMode = 'vocabulary';
+    let showAnswerKey = false;
+    let showIllustrations = true;
+    let currentIllustrationStyle = 'academic-color';
+
+    // PowerPoint Presentation State
+    let viewMode = 'worksheet';
+    let presentationSlides = [];
+    let customUserSlides = [];
+    let currentSlideIndex = 0;
+    let revealSlideAnswers = false;
+    let currentSlideTheme = 'slide-theme-clean';
+    let isTheaterMode = false;
+
+    // English Teacher Data Bank
+    const vocabData = {
+      elementary: [
+        { word: 'Eager', meaning: 'Very excited and keen to do something.' },
+        { word: 'Glint', meaning: 'A tiny, quick flash of bright light.' },
+        { word: 'Curious', meaning: 'Eager to learn or know about things.' },
+        { word: 'Gentle', meaning: 'Mild and soft in temperament or behavior.' },
+        { word: 'Discover', meaning: 'To find or learn something new.' },
+        { word: 'Brave', meaning: 'Showing courage when facing danger or difficulty.' }
+      ],
+      intermediate: [
+        { word: 'Resilient', meaning: 'Able to recover quickly from difficult conditions.' },
+        { word: 'Meticulous', meaning: 'Showing great attention to detail; very careful.' },
+        { word: 'Eloquent', meaning: 'Fluent or persuasive in speaking or writing.' },
+        { word: 'Compassion', meaning: 'Sympathy and concern for the sufferings of others.' },
+        { word: 'Luminous', meaning: 'Full of or shedding light; bright or shining.' },
+        { word: 'Persevere', meaning: 'To continue trying despite difficulties.' },
+        { word: 'Nostalgia', meaning: 'A sentimental longing for the past.' },
+        { word: 'Authentic', meaning: 'Genuine, real, and not fake.' }
+      ],
+      advanced: [
+        { word: 'Ambigous', meaning: 'Open to more than one interpretation; unclear.' },
+        { word: 'Juxtaposition', meaning: 'Placing two elements close together for contrast.' },
+        { word: 'Pragmatic', meaning: 'Dealing with things sensibly and realistically.' },
+        { word: 'Ephemeral', meaning: 'Lasting for a very short time; fleeting.' },
+        { word: 'Sycophant', meaning: 'A person who flatters someone for self-gain.' },
+        { word: 'Superfluous', meaning: 'Unnecessary; exceeding what is required.' },
+        { word: 'Cognizant', meaning: 'Having knowledge or being aware of something.' },
+        { word: 'Benevolent', meaning: 'Well-meaning, kind, and charitable.' }
+      ]
+    };
+
+    const grammarData = [
+      { sentence: "She _____ (walk / walked) to the library yesterday to return her books.", target: "walked", concept: "Past Tense Verb" },
+      { sentence: "The _____ (bright / brightly) sun shone above the clear blue ocean.", target: "bright", concept: "Adjective Usage" },
+      { sentence: "Neither of the students _____ (has / have) finished the assignment yet.", target: "has", concept: "Subject-Verb Agreement" },
+      { sentence: "Please place the magazines _____ (on / in) the wooden coffee table.", target: "on", concept: "Preposition" },
+      { sentence: "Although it was raining, _____ (they / them) decided to go for a walk.", target: "they", concept: "Subject Pronoun" },
+      { sentence: "An _____ (honest / honesty) person always tells the truth.", target: "honest", concept: "Adjective" },
+      { sentence: "We must speak _____ (polite / politely) when asking for assistance.", target: "politely", concept: "Adverb" },
+      { sentence: "Each of the puppies _____ (is / are) sleeping peacefully in the basket.", target: "is", concept: "Singular Agreement" }
+    ];
+
+    const proofreadingData = [
+      { incorrect: "my friend alex and i went to central park on monday", correct: "My friend Alex and I went to Central Park on Monday.", rule: "Capitalization (Names, Days, Cities)" },
+      { incorrect: "she dont like eating apples in the winter", correct: "She doesn't like eating apples in the winter.", rule: "Subject-Verb Agreement / Contractions" },
+      { incorrect: "where did you leave your notebook askedmr johnson", correct: "Where did you leave your notebook? asked Mr. Johnson.", rule: "Direct Quotations & Punctuation" },
+      { incorrect: "we bought bananas oranges and grapes at the store", correct: "We bought bananas, oranges, and grapes at the store.", rule: "Commas in a Series" },
+      { incorrect: "their going to the zoo after school finishes", correct: "They're going to the zoo after school finishes.", rule: "Homophones (They're / Their / There)" }
+    ];
+
+    const figurativeData = [
+      { example: "The snow was a white blanket covering the quiet town.", type: "Metaphor", answer: "Compares snow to a white blanket directly without using like or as." },
+      { example: "Her voice sounded as clear as a bell ringing on Sunday.", type: "Simile", answer: "Uses 'as' to compare the clarity of her voice to a bell." },
+      { example: "The gentle autumn wind whispered secrets through the trees.", type: "Personification", answer: "Gives the human quality of 'whispering' to the wind." },
+      { example: "Peter Piper picked a peck of pickled peppers.", type: "Alliteration", answer: "Repeats the initial 'P' consonant sound in consecutive words." },
+      { example: "I have told you a million times to clean your classroom desk!", type: "Hyperbole", answer: "Extreme exaggeration to emphasize a point." }
+    ];
+
+    const readingStories = [
+      {
+        title: "The Whispering Oak of Eldridge",
+        passage: "Deep within Eldridge Forest stood an ancient oak tree whose leaves shimmered like spun gold at sunset. Local villagers believed that if you listened closely on quiet autumn evenings, the oak would whisper tales of ancient travelers. Eleven-year-old Maya visited the tree every Saturday morning with her sketchbook, recording every subtle change in its golden canopy.",
+        questions: [
+          { q: "What made the leaves of the ancient oak tree unique at sunset?", a: "They shimmered like spun gold at sunset." },
+          { q: "How did Maya interact with the tree every Saturday morning?", a: "She visited with her sketchbook and recorded subtle changes in its golden canopy." },
+          { q: "What main character trait does Maya display in this passage? Explain using details from the text.", a: "Maya is observant and creative, as evidenced by her weekly visits to carefully sketch the tree." }
+        ]
+      },
+      {
+        title: "The Lighthouse Keeper's Secret",
+        passage: "Arthur had maintained the Cape Hope lighthouse for over forty years. Every evening at dusk, he ascended the spiral staircase of 142 steps to ensure the beacon guided ships safely around the jagged reefs. One stormy evening, a sudden generator failure threatened the light. Arthur knew he had only minutes to engage the manual backup mechanism.",
+        questions: [
+          { q: "How long had Arthur served as the keeper of Cape Hope lighthouse?", a: "Arthur had maintained the lighthouse for over forty years." },
+          { q: "What immediate crisis occurred during the stormy evening?", a: "A sudden generator failure threatened to extinguish the light." },
+          { q: "Why was the lighthouse beacon critical to the safety of passing ships?", a: "It guided ships safely around the dangerous, jagged reefs." }
+        ]
+      }
+    ];
+
+    // Initialize Lucide icons
+    document.addEventListener('DOMContentLoaded', () => {
+      lucide.createIcons();
+      loadSavedApiKey();
+    });
+
+    let userApiKey = '';
+
+    // Load API Key on Startup
+    function loadSavedApiKey() {
+      // Check if Android bridge is available and provides a valid API key
+      if (typeof AndroidPrintBridge !== 'undefined' && typeof AndroidPrintBridge.getGeminiApiKey === 'function') {
+        const androidKey = AndroidPrintBridge.getGeminiApiKey();
+        if (androidKey && androidKey !== 'MY_GEMINI_API_KEY' && androidKey !== 'null') {
+          userApiKey = androidKey;
+          localStorage.setItem('gemini_api_key', androidKey);
+          const keyInput = document.getElementById('gemini-api-key-input');
+          if (keyInput) keyInput.value = androidKey;
+          const label = document.getElementById('key-saved-label');
+          if (label) label.innerText = 'System Key Injected ✓';
+          const badge = document.getElementById('ai-status-badge');
+          if (badge) {
+            badge.innerText = 'SYSTEM KEY ACTIVE';
+            badge.className = 'px-2 py-0.5 text-[9px] font-bold bg-emerald-500/20 text-emerald-300 border border-emerald-400/30 rounded-full';
+          }
+          return;
+        }
+      }
+
+      const savedKey = localStorage.getItem('gemini_api_key') || '';
+      if (savedKey) {
+        userApiKey = savedKey;
+        const keyInput = document.getElementById('gemini-api-key-input');
+        if (keyInput) keyInput.value = savedKey;
+        const label = document.getElementById('key-saved-label');
+        if (label) label.innerText = 'Key Saved ✓';
+        const badge = document.getElementById('ai-status-badge');
+        if (badge) {
+          badge.innerText = 'KEY ACTIVE';
+          badge.className = 'px-2 py-0.5 text-[9px] font-bold bg-emerald-500/20 text-emerald-300 border border-emerald-400/30 rounded-full';
+        }
+      }
+    }
+
+    // Save API Key
+    function saveApiKey(val) {
+      userApiKey = val.trim();
+      if (userApiKey) {
+        localStorage.setItem('gemini_api_key', userApiKey);
+        showToast('API Key Saved', 'Gemini API Key saved for session.', 'key');
+        const label = document.getElementById('key-saved-label');
+        if (label) label.innerText = 'Key Saved ✓';
+        const badge = document.getElementById('ai-status-badge');
+        if (badge) {
+          badge.innerText = 'KEY ACTIVE';
+          badge.className = 'px-2 py-0.5 text-[9px] font-bold bg-emerald-500/20 text-emerald-300 border border-emerald-400/30 rounded-full';
+        }
+      } else {
+        localStorage.removeItem('gemini_api_key');
+        showToast('API Key Cleared', 'Key removed.', 'info');
+      }
+    }
+
+    // Paste API Key from Clipboard
+    async function pasteApiKey() {
+      try {
+        if (navigator.clipboard && navigator.clipboard.readText) {
+          const text = await navigator.clipboard.readText();
+          if (text) {
+            const keyInput = document.getElementById('gemini-api-key-input');
+            if (keyInput) keyInput.value = text.trim();
+            saveApiKey(text.trim());
+          } else {
+            showToast('Clipboard Empty', 'No text found in clipboard.', 'info');
+          }
+        } else {
+          showToast('Paste Key', 'Please paste your key manually into the box.', 'info');
+        }
+      } catch (e) {
+        showToast('Paste Key', 'Please paste key directly into the input box.', 'info');
+      }
+    }
+
+    // Generate AI Worksheet via Gemini API or instant AI synthesis
+    async function generateAIWorksheet() {
+      const topicInput = document.getElementById('ai-topic-input');
+      const topicText = topicInput ? topicInput.value.trim() : '';
+      if (!topicText) {
+        showToast('Enter Prompt', 'Please enter an ELA topic or instruction for the AI Tutor.', 'info');
+        return;
+      }
+      
+      const gradeSelect = document.getElementById('ai-grade-level');
+      const gradeText = gradeSelect ? gradeSelect.value : 'Middle School (Grades 6-8)';
+      const activitySelect = document.getElementById('ai-activity-type');
+      const activityText = activitySelect ? activitySelect.value : 'Complete ELA Unit';
+      
+      const rigorSelect = document.getElementById('ai-rigor-level');
+      const rigorText = rigorSelect ? rigorText.value : 'Standard Academic Core';
+      const solutionsSelect = document.getElementById('ai-solutions-key');
+      const solutionsText = solutionsSelect ? solutionsSelect.value : 'Include complete, detailed Answer Keys at the end';
+
+      const genBtn = document.getElementById('ai-gen-btn');
+      if (genBtn) {
+        genBtn.disabled = true;
+        genBtn.innerHTML = '<i data-lucide="loader-2" class="w-3.5 h-3.5 animate-spin"></i> <span>Generating...</span>';
+        lucide.createIcons();
+      }
+      
+      // Construct rich master prompt
+      const masterPrompt = `You are an expert English Language Arts (ELA) and ESL educator. 
+Generate a comprehensive, highly engaging, professional educational worksheet for Grade: ${gradeText}.
+The topic or concept to focus on is: "${topicText}".
+The activity focus is: "${activityText}".
+The curriculum rigor level is: "${rigorText}".
+${solutionsText}.
+
+Please design a rigorous, beautifully structured ELA worksheet that includes:
+1. A Clear, Catchy Title and Subtitle.
+2. A list of CCSS (Common Core State Standards) addressed by this worksheet.
+3. Warm-up Explanation: A short, engaging story or explanatory concept paragraph introducing the topic to students.
+4. Active Exercise Items:
+   - If vocabulary-focused: Start with the header "Word Bank: [word1, word2, word3, word4]" containing vocabulary words in brackets, followed by fill-in-the-blank questions (numbered 1. 2. 3. 4.).
+   - If reading comprehension: Start with the header "Reading Passage: [Title of story]" followed by a short passage, then followed by comprehension questions (numbered 1. 2. 3. 4.).
+   - If grammar-focused (e.g. Parts of speech, Tenses, Sentence Structure, Punctuation, Active/Passive Voice, Clauses, Mechanics): Start with a clear "Grammar Rules & Examples" instructional block. Then provide a numbered list (1. 2. 3. 4.) of targeted grammar drills requiring students to identify, correct, conjugate, or rewrite sentences based on the target. 
+   - If multiple-choice questions: Format each option as a separate line starting with letters A) B) C) D) (e.g., A) Option 1\\nB) Option 2).
+5. At the very end of the worksheet, include a distinct section starting with the header "Answer Key" containing solutions for each numbered question.
+
+Please format the output in clean Markdown with bold headers and double-spaced paragraphs between sections to assist in parsing.`;
+
+      const apiKey = userApiKey || localStorage.getItem('gemini_api_key') || '';
+      let generatedSuccessfully = false;
+
+      if (apiKey) {
+        try {
+          const controller = new AbortController();
+          const timeoutId = setTimeout(() => controller.abort(), 2500); // 2.5s maximum wait time for API
+
+          const endpoint = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`;
+          const response = await fetch(endpoint, {
+            method: 'POST',
+            signal: controller.signal,
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              contents: [{
+                parts: [{
+                  text: masterPrompt
+                }]
+              }]
+            })
+          });
+          clearTimeout(timeoutId);
+
+          if (response.ok) {
+            const data = await response.json();
+            const resultText = data.candidates?.[0]?.content?.parts?.[0]?.text || '';
+            if (resultText) {
+              renderAIResultOnPaper(topicText, resultText);
+              showToast('AI Tutor Success', 'Worksheet generated with Gemini AI!', 'sparkles');
+              generatedSuccessfully = true;
+            }
+          }
+        } catch (err) {
+          console.warn('Gemini API fetch timeout or error, executing instant ELA synthesis:', err);
+        }
+      }
+
+      if (!generatedSuccessfully) {
+        // Immediate, instant synthesis engine fallback
+        renderAISynthesizedFallback(topicText);
+        showToast('Worksheet Ready', 'Instant ELA worksheet synthesized immediately!', 'sparkles');
+      }
+
+      // Restore button state instantly and scroll smoothly to the worksheet paper
+      if (genBtn) {
+        genBtn.disabled = false;
+        genBtn.innerHTML = '<i data-lucide="sparkles" class="w-4 h-4"></i> <span>Generate Worksheet & Deck</span>';
+        lucide.createIcons();
+      }
+
+      const paper = document.getElementById('worksheet-paper');
+      if (paper) {
+        paper.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+      }
+    }
+
+    // ==========================================
+    // GLASS AI TUTOR INTERACTIVE DIALOG CONTROLLER
+    // ==========================================
+    function openGlassTutorModal() {
+      const modal = document.getElementById('glass-ai-tutor-modal');
+      if (modal) {
+        modal.classList.remove('hidden');
+        modal.classList.add('flex');
+        lucide.createIcons();
+        setTimeout(() => {
+          const input = document.getElementById('glass-tutor-input');
+          if (input) input.focus();
+        }, 100);
+      }
+    }
+
+    function closeGlassTutorModal() {
+      const modal = document.getElementById('glass-ai-tutor-modal');
+      if (modal) {
+        modal.classList.add('hidden');
+        modal.classList.remove('flex');
+      }
+    }
+
+    function clearGlassTutorInput() {
+      const input = document.getElementById('glass-tutor-input');
+      if (input) {
+        input.value = '';
+        input.focus();
+      }
+    }
+
+    function useQuickTutorPrompt(promptText) {
+      const input = document.getElementById('glass-tutor-input');
+      if (input) {
+        input.value = promptText;
+        sendGlassTutorMessage();
+      }
+    }
+
+    async function sendGlassTutorMessage() {
+      const input = document.getElementById('glass-tutor-input');
+      const text = input ? input.value.trim() : '';
+      if (!text) return;
+
+      // Append User message bubble
+      appendTutorUserMessage(text);
+      input.value = '';
+
+      // Show typing indicator
+      showTutorTypingIndicator();
+
+      const sendBtn = document.getElementById('glass-tutor-send-btn');
+      if (sendBtn) sendBtn.disabled = true;
+
+      try {
+        const responseData = await generateGlassTutorAIResponse(text);
+        removeTutorTypingIndicator();
+        appendTutorAIMessage(responseData.html, responseData.rawText);
+      } catch (err) {
+        removeTutorTypingIndicator();
+        appendTutorAIMessage(
+          `<p class="text-rose-300">An error occurred while generating a response. Please check your network or try again.</p>`,
+          "An error occurred."
+        );
+      } finally {
+        if (sendBtn) sendBtn.disabled = false;
+      }
+    }
+
+    function appendTutorUserMessage(text) {
+      const history = document.getElementById('glass-tutor-chat-history');
+      if (!history) return;
+
+      const userDiv = document.createElement('div');
+      userDiv.className = 'flex items-start justify-end gap-3 animate-fade-in';
+      userDiv.innerHTML = `
+        <div class="space-y-1 max-w-[85%] text-right">
+          <span class="font-semibold text-[10px] text-indigo-300">You (Teacher / Learner)</span>
+          <div class="glass-chat-bubble-user text-white rounded-2xl rounded-tr-none p-3.5 text-xs sm:text-sm font-sans leading-relaxed text-left">
+            ${escapeHtml(text)}
+          </div>
+        </div>
+        <div class="w-8 h-8 rounded-xl bg-indigo-600 flex-shrink-0 flex items-center justify-center text-white shadow-md ring-1 ring-white/20">
+          <i data-lucide="user" class="w-4 h-4"></i>
+        </div>
+      `;
+      history.appendChild(userDiv);
+      history.scrollTop = history.scrollHeight;
+      lucide.createIcons();
+    }
+
+    function showTutorTypingIndicator() {
+      const history = document.getElementById('glass-tutor-chat-history');
+      if (!history) return;
+
+      let indicator = document.getElementById('tutor-typing-indicator');
+      if (!indicator) {
+        indicator = document.createElement('div');
+        indicator.id = 'tutor-typing-indicator';
+        indicator.className = 'flex items-start gap-3 animate-fade-in';
+        indicator.innerHTML = `
+          <div class="w-8 h-8 rounded-xl bg-gradient-to-tr from-indigo-500 to-purple-600 flex-shrink-0 flex items-center justify-center text-white shadow-md ring-1 ring-white/20">
+            <i data-lucide="bot" class="w-4 h-4 animate-spin"></i>
+          </div>
+          <div class="glass-chat-bubble-ai rounded-2xl rounded-tl-none px-4 py-3 text-slate-300 flex items-center gap-1.5 text-xs">
+            <span class="w-2 h-2 rounded-full bg-indigo-400 animate-bounce" style="animation-delay: 0s;"></span>
+            <span class="w-2 h-2 rounded-full bg-purple-400 animate-bounce" style="animation-delay: 0.2s;"></span>
+            <span class="w-2 h-2 rounded-full bg-pink-400 animate-bounce" style="animation-delay: 0.4s;"></span>
+            <span class="ml-2 text-indigo-200 font-medium">Tutor thinking...</span>
+          </div>
+        `;
+        history.appendChild(indicator);
+        history.scrollTop = history.scrollHeight;
+        lucide.createIcons();
+      }
+    }
+
+    function removeTutorTypingIndicator() {
+      const indicator = document.getElementById('tutor-typing-indicator');
+      if (indicator) indicator.remove();
+    }
+
+    function appendTutorAIMessage(contentHtml, rawText) {
+      const history = document.getElementById('glass-tutor-chat-history');
+      if (!history) return;
+
+      const encodedText = encodeURIComponent(rawText);
+      const aiDiv = document.createElement('div');
+      aiDiv.className = 'flex items-start gap-3 animate-fade-in group';
+      aiDiv.innerHTML = `
+        <div class="w-8 h-8 rounded-xl bg-gradient-to-tr from-indigo-500 to-purple-600 flex-shrink-0 flex items-center justify-center text-white shadow-md ring-1 ring-white/20">
+          <i data-lucide="bot" class="w-4 h-4"></i>
+        </div>
+        <div class="space-y-2 max-w-[88%] flex-1">
+          <div class="flex items-center justify-between">
+            <div class="flex items-center gap-2">
+              <span class="font-bold text-white text-xs">Glass AI Tutor</span>
+              <span class="text-[10px] text-indigo-300 bg-indigo-950/60 px-2 py-0.5 rounded-full border border-indigo-500/30">Pedagogical ELA</span>
+            </div>
+            <div class="flex items-center gap-1 opacity-80 group-hover:opacity-100 transition-opacity">
+              <button onclick="copyTutorMessage('${encodedText}')" class="p-1 rounded-lg bg-white/10 hover:bg-white/20 text-indigo-200 hover:text-white text-[10px] flex items-center gap-1 transition-all" title="Copy Response">
+                <i data-lucide="copy" class="w-3 h-3"></i>
+                <span class="hidden sm:inline">Copy</span>
+              </button>
+              <button onclick="insertTutorResponseIntoWorksheet('${encodedText}')" class="px-2 py-1 rounded-lg bg-indigo-600/60 hover:bg-indigo-600 text-white text-[10px] font-semibold flex items-center gap-1 transition-all border border-indigo-400/30" title="Insert into Worksheet Paper">
+                <i data-lucide="file-plus-2" class="w-3 h-3"></i>
+                <span>Add to Sheet</span>
+              </button>
+              <button onclick="speakTutorMessage('${encodedText}')" class="p-1 rounded-lg bg-white/10 hover:bg-white/20 text-indigo-200 hover:text-white text-[10px] transition-all" title="Read Aloud">
+                <i data-lucide="volume-2" class="w-3 h-3"></i>
+              </button>
+            </div>
+          </div>
+          <div class="glass-chat-bubble-ai rounded-2xl rounded-tl-none p-4 text-slate-100 space-y-2.5 leading-relaxed font-sans text-xs sm:text-sm">
+            ${contentHtml}
+          </div>
+        </div>
+      `;
+      history.appendChild(aiDiv);
+      history.scrollTop = history.scrollHeight;
+      lucide.createIcons();
+    }
+
+    async function generateGlassTutorAIResponse(userText) {
+      const apiKey = userApiKey || localStorage.getItem('gemini_api_key') || '';
+      
+      if (apiKey) {
+        try {
+          const endpoint = `https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash:generateContent?key=${apiKey}`;
+          const response = await fetch(endpoint, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              contents: [{
+                parts: [{
+                  text: `You are the Glass AI English Language Arts Tutor, a master ELA educator. Strictly restrict all answers to English Language Arts (grammar, vocabulary, reading comprehension, writing, phonics, literary analysis, punctuation). User question: "${userText}". Provide a concise, highly engaging, pedagogical answer formatted with clear bullet points, examples, and friendly teaching tone.`
+                }]
+              }]
+            })
+          });
+
+          if (response.ok) {
+            const data = await response.json();
+            const textResult = data.candidates?.[0]?.content?.parts?.[0]?.text;
+            if (textResult) {
+              const html = formatMarkdownToHTML(textResult);
+              return { html: html, rawText: textResult };
+            }
+          }
+        } catch (e) {
+          console.warn('Gemini tutor stream error, falling back to smart ELA knowledge bank:', e);
+        }
+      }
+
+      // Smart ELA Pedagogical Knowledge Fallback
+      return synthesizeELATutorKnowledge(userText);
+    }
+
+    function synthesizeELATutorKnowledge(query) {
+      const lower = query.toLowerCase();
+      let rawText = '';
+      let html = '';
+
+      if (lower.includes('simile') || lower.includes('metaphor')) {
+        rawText = `### Figurative Language: Similes vs. Metaphors\n\n• **Simile**: A comparison between two unlike things using the words **"like"** or **"as"**.\n  *Example:* "Her smile was as radiant **as** the morning sun."\n\n• **Metaphor**: A direct comparison that states one thing **is** another thing (without like/as).\n  *Example:* "Time **is** a thief that steals our precious moments."\n\n💡 **Teacher Tip**: Remind students that metaphors build stronger emotional resonance in poetic and narrative writing.`;
+      } else if (lower.includes('passive') || lower.includes('active')) {
+        rawText = `### Active Voice vs. Passive Voice Guide\n\n• **Active Voice**: The subject performs the action. (Clear, energetic, direct)\n  *Example:* "The student **wrote** an outstanding essay."\n\n• **Passive Voice**: The subject receives the action. (Often uses forms of 'to be' + past participle)\n  *Example:* "An outstanding essay **was written** by the student."\n\n💡 **Classroom Rule**: Use active voice to make student narratives punchy and concise!`;
+      } else if (lower.includes('synonym') || lower.includes('beautiful') || lower.includes('vocabulary') || lower.includes('word')) {
+        rawText = `### Advanced ELA Vocabulary Expansion\n\nHere are 5 sophisticated synonyms to enrich student writing:\n\n1. **Resplendent** (*adj.*): Attractive and impressive through being richly colorful or shining.\n2. **Exquisite** (*adj.*): Extremely beautiful and typically delicate or finely crafted.\n3. **Luminous** (*adj.*): Emitting glowing light; radiant and brilliantly clear.\n4. **Picturesque** (*adj.*): Visually charming or quaint, like a painting.\n5. **Sublime** (*adj.*): Of such excellence or grandeur as to inspire great admiration.\n\n✨ *Practice Challenge:* Write a descriptive sentence using at least two of these words!`;
+      } else if (lower.includes('punctuation') || lower.includes('semicolon') || lower.includes('comma') || lower.includes('colon')) {
+        rawText = `### Essential Punctuation Rules for ELA\n\n• **Semicolon (;)**: Connects two independent clauses that are closely related in thought.\n  *Rule:* "She loves reading classical poetry; he prefers modern drama."\n\n• **Colon (:)**: Introduces a list, explanation, or quotation after a complete thought.\n  *Rule:* "The curriculum contains three primary pillars: reading, writing, and rhetoric."\n\n• **Oxford Comma**: The final comma in a list before 'and'.\n  *Rule:* "We studied verbs, adjectives, and adverbs."`;
+      } else if (lower.includes('reading') || lower.includes('comprehension') || lower.includes('question') || lower.includes('theme')) {
+        rawText = `### Deep Reading Comprehension Discussion Points\n\nHere are 3 critical thinking questions to assess student understanding of literary texts:\n\n1. **Theme & Message**: What central truth about human nature is the author conveying through the protagonist's decisions?\n2. **Textual Evidence**: Cite two specific quotes from paragraph 3 that reveal the speaker's shifting tone.\n3. **Character Motivation**: How does the antagonist's background influence the climax of the conflict?`;
+      } else {
+        rawText = `### English Language Arts Pedagogical Guidance: "${escapeHtml(query)}"\n\n• **Key Concept**: When analyzing and mastering English language skills, focus on identifying grammatical structure, contextual vocabulary, and authorial purpose.\n• **Student Application**: Practice applying this concept by writing complete sentences and identifying textual evidence.\n• **Pedagogical Takeaway**: Regular interactive feedback reinforces accurate spelling, syntax mechanics, and reading comprehension.\n\n💡 *Ask me to generate a complete worksheet or lesson slide on this topic anytime!*`;
+      }
+
+      html = formatMarkdownToHTML(rawText);
+      return { html: html, rawText: rawText };
+    }
+
+    function formatMarkdownToHTML(text) {
+      if (!text) return '';
+      let formatted = text
+        .replace(/### (.*?)\n/g, '<h4 class="text-sm font-bold text-indigo-300 pb-1 border-b border-white/10 mb-2">$1</h4>')
+        .replace(/## (.*?)\n/g, '<h3 class="text-base font-black text-white pb-1 border-b border-white/10 mb-2">$1</h3>')
+        .replace(/\*\*(.*?)\*\*/g, '<strong class="text-indigo-200 font-bold">$1</strong>')
+        .replace(/\*(.*?)\*/g, '<em class="text-indigo-100 italic">$1</em>')
+        .replace(/\n\s*• (.*?)(?=\n|$)/g, '<li class="ml-4 list-disc text-slate-200">$1</li>')
+        .replace(/\n\s*\d+\.\s*(.*?)(?=\n|$)/g, '<li class="ml-4 list-decimal text-slate-200">$1</li>')
+        .replace(/\n\n/g, '</p><p class="mt-2 text-slate-200">');
+
+      return `<div class="space-y-2 text-slate-100">${formatted}</div>`;
+    }
+
+    function copyTutorMessage(encodedText) {
+      try {
+        const text = decodeURIComponent(encodedText);
+        navigator.clipboard.writeText(text);
+        showToast('Copied to Clipboard', 'AI Tutor explanation copied.', 'copy');
+      } catch (e) {
+        showToast('Copy Error', 'Could not copy message.', 'alert-circle');
+      }
+    }
+
+    function insertTutorResponseIntoWorksheet(encodedText) {
+      try {
+        const text = decodeURIComponent(encodedText);
+        const body = document.getElementById('worksheet-body');
+        if (!body) return;
+
+        const card = document.createElement('div');
+        card.className = 'exercise-block question-item p-4 rounded-xl border border-indigo-200 bg-indigo-50/40 text-slate-900 font-serif text-xs leading-relaxed space-y-2 relative';
+        card.contentEditable = "true";
+
+        let formatted = formatMarkdownToHTML(text);
+        card.innerHTML = `
+          <div class="flex justify-between font-bold text-indigo-900 text-[11px] uppercase tracking-wider mb-1 no-print">
+            <span>Glass AI Tutor Knowledge Card</span>
+            <span class="bg-indigo-100 text-indigo-800 px-2 py-0.5 rounded">ELA Insight</span>
+          </div>
+          <div class="whitespace-pre-line text-slate-900">${formatted}</div>
+        `;
+
+        body.appendChild(card);
+        closeGlassTutorModal();
+        showToast('Added to Worksheet', 'Glass AI Tutor content inserted into canvas!', 'sparkles');
+        lucide.createIcons();
+      } catch (e) {
+        showToast('Insert Error', 'Could not insert into worksheet.', 'alert-circle');
+      }
+    }
+
+    function speakTutorMessage(encodedText) {
+      try {
+        const text = decodeURIComponent(encodedText).replace(/[#*•_]/g, '');
+        if ('speechSynthesis' in window) {
+          window.speechSynthesis.cancel();
+          const utterance = new SpeechSynthesisUtterance(text);
+          utterance.rate = 0.95;
+          utterance.pitch = 1.0;
+          utterance.lang = 'en-US';
+          window.speechSynthesis.speak(utterance);
+          showToast('Reading Aloud', 'Glass AI Tutor speaking...', 'volume-2');
+        } else {
+          showToast('Text to Speech', 'Speech synthesis is not supported on this browser.', 'info');
+        }
+      } catch (e) {
+        showToast('Speech Error', 'Could not synthesize speech.', 'alert-circle');
+      }
+    }
+
+    function escapeHtml(str) {
+      if (!str) return '';
+      return str
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+    }
+
+    // Format and sanitize prompt text into a clean, professional ELA worksheet title
+    function formatWorksheetTitle(promptText) {
+      if (!promptText || typeof promptText !== 'string') {
+        return 'English Language Arts Practice';
+      }
+      let cleaned = promptText.trim();
+      
+      // Thoroughly strip AI prefixes, command verbs ("create", "generate"), and conversational filler in a loop
+      let prev;
+      do {
+        prev = cleaned;
+        cleaned = cleaned.replace(/^ai[- ]?(generated|assisted|tutor|created|prompt)?[:\-–—]?\s*/i, '');
+        cleaned = cleaned.replace(/^(please\s+)?(create|generate|make|build|design|write|produce|develop|draft|give me|provide)\b\s*/i, '');
+        cleaned = cleaned.replace(/^(a|an|the)\b\s*/i, '');
+        cleaned = cleaned.replace(/^(worksheet|lesson|exercise|exercises|activity|activities|quiz|test|assessment|handout|questions|drills|practice|prompt|passage)\b\s*/i, '');
+        cleaned = cleaned.replace(/^(about|on|for|regarding|with|focusing on|centered on|covering)\b\s*/i, '');
+        cleaned = cleaned.replace(/^[:\-–—]\s*/, '');
+        cleaned = cleaned.trim();
+      } while (cleaned !== prev && cleaned.length > 0);
+
+      cleaned = cleaned.replace(/[.!?:]+$/, '').trim();
+
+      if (!cleaned || /^(create|generate|worksheet|ai|practice|lesson)$/i.test(cleaned)) {
+        return 'English Language Arts Practice';
+      }
+      
+      // Clean up multiple spaces and title-case the words
+      cleaned = cleaned.split(/\s+/).map(word => {
+        if (!word) return '';
+        return word.charAt(0).toUpperCase() + word.slice(1).toLowerCase();
+      }).join(' ');
+
+      if (cleaned.length > 38) {
+        cleaned = cleaned.substring(0, 38).trim() + '...';
+      }
+      return cleaned;
+    }
+
+    function renderAIResultOnPaper(promptText, resultText) {
+      resetStandardHeader();
+      const cleanTitle = formatWorksheetTitle(promptText);
+      document.getElementById('ws-title').innerText = cleanTitle;
+      document.getElementById('ws-subtitle').innerText = 'Read the directions carefully and complete each English exercise below.';
+      document.getElementById('ws-standard-text').innerText = 'CCSS.ELA-LITERACY • Core Language Arts Curriculum Standards';
+
+      const body = document.getElementById('worksheet-body');
+      body.innerHTML = '';
+      body.className = 'space-y-4 animate-fade-in pt-1';
+
+      // Parse markdown text into structured exercise cards with page-break protection
+      const sections = resultText.split(/\n\s*\n/);
+      let itemCount = 0;
+      let answerKeyContent = '';
+
+      sections.forEach((sect, sIndex) => {
+        let trimmed = sect.trim();
+        if (!trimmed) return;
+
+        // Skip preamble and postamble
+        if (/^(#+\s*|\*+\s*)?(ai generated|ai-assisted|ai tutor|here is|certainly|sure|below is|title:|created with ai)/i.test(trimmed)) {
+          return;
+        }
+
+        // Check for Answer Key marker in Gemini's markdown
+        if (/^(#+\s*)?(answer key|solutions|answer guide|answers:|answers\b)/i.test(trimmed)) {
+          answerKeyContent = sect;
+          return;
+        }
+
+        const card = document.createElement('div');
+        card.contentEditable = "true";
+
+        // 1. Check if it's a Reading Passage
+        if (/^(passage:|reading passage:|story:|read the passage:|read the following passage)/i.test(trimmed)) {
+          card.className = 'p-5 rounded-2xl border-2 border-indigo-200 bg-slate-50/50 shadow-sm text-slate-800 font-serif text-xs leading-relaxed space-y-3 relative page-break-inside-avoid';
+          let formattedText = trimmed.replace(/\*\*(.*?)\*\*/g, '<strong class="text-indigo-950 font-bold">$1</strong>');
+          card.innerHTML = `
+            <div class="flex items-center gap-1.5 text-[10px] font-bold text-indigo-700 uppercase tracking-widest">
+              <i data-lucide="book-open" class="w-3.5 h-3.5"></i>
+              <span>ELA Context Reading Passage</span>
+            </div>
+            <div class="whitespace-pre-line border-l-4 border-indigo-500 pl-3.5 italic text-slate-700">${formattedText}</div>
+          `;
+          body.appendChild(card);
+          itemCount++;
+          return;
+        }
+
+        // 2. Check if it's a Word Bank
+        if (/^(word bank:|vocabulary list:|words:|wordbank:)/i.test(trimmed) || (trimmed.includes('[') && trimmed.includes(']') && trimmed.toLowerCase().includes('word'))) {
+          card.className = 'p-4 rounded-xl border-2 border-dashed border-indigo-300 bg-indigo-50/40 space-y-2.5 relative page-break-inside-avoid';
+          let wordsHTML = '';
+          let wordsMatch = trimmed.match(/\[(.*?)\]/) || [null, trimmed.replace(/word bank:/i, '')];
+          if (wordsMatch && wordsMatch[1]) {
+            const words = wordsMatch[1].split(/,|\s+/).map(w => w.trim().replace(/[^a-zA-Z0-9-]/g, '')).filter(Boolean);
+            words.forEach(word => {
+              wordsHTML += `<span class="px-2.5 py-1 text-xs font-bold font-sans tracking-wide bg-white text-indigo-700 border border-indigo-200 rounded-lg shadow-sm">${word}</span>`;
+            });
+          } else {
+            wordsHTML = `<div class="text-xs text-indigo-900 font-sans tracking-wide">${trimmed}</div>`;
+          }
+
+          card.innerHTML = `
+            <div class="flex items-center gap-1 text-[10px] font-black uppercase tracking-wider text-indigo-600">
+              <i data-lucide="brain-circuit" class="w-3.5 h-3.5"></i>
+              <span>Worksheet Word Bank</span>
+            </div>
+            <div class="flex flex-wrap gap-2 pt-1">${wordsHTML}</div>
+          `;
+          body.appendChild(card);
+          itemCount++;
+          return;
+        }
+
+        // 3. Check if it's a numbered question
+        const questionMatch = trimmed.match(/^(\d+)[.)]\s*(.*)/s);
+        if (questionMatch) {
+          const qNum = questionMatch[1];
+          const qBody = questionMatch[2];
+          card.className = 'exercise-block question-item p-4.5 rounded-xl border border-indigo-100 bg-white shadow-sm text-slate-800 font-serif text-xs leading-relaxed space-y-3 relative page-break-inside-avoid';
+          
+          let optionLines = qBody.split(/\n/);
+          let questionTitle = optionLines[0];
+          let optionsHTML = '';
+          let isMultipleChoice = false;
+
+          optionLines.forEach(line => {
+            let optTrim = line.trim();
+            const optionMatch = optTrim.match(/^([A-Da-d])[\s).]*(.*)/);
+            if (optionMatch) {
+              isMultipleChoice = true;
+              const optLetter = optionMatch[1].toUpperCase();
+              const optText = optionMatch[2];
+              optionsHTML += `
+                <div class="flex items-center gap-2 px-2.5 py-1.5 rounded-lg border border-slate-100 hover:bg-slate-50 transition-all select-none">
+                  <span class="w-5 h-5 rounded-full border border-slate-300 text-[10px] font-bold text-slate-500 bg-slate-50 flex items-center justify-center">${optLetter}</span>
+                  <span class="text-[11px] text-slate-700">${optText}</span>
+                </div>
+              `;
+            }
+          });
+
+          if (isMultipleChoice) {
+            let formattedTitle = questionTitle.replace(/\*\*(.*?)\*\*/g, '<strong class="text-indigo-950 font-bold">$1</strong>');
+            card.innerHTML = `
+              <div class="flex items-start gap-2.5">
+                <span class="w-6 h-6 rounded-lg bg-indigo-600 text-white font-sans font-bold text-xs flex items-center justify-center shadow-sm">${qNum}</span>
+                <div class="flex-1">
+                  <h4 class="text-xs font-bold text-slate-900 mb-2 leading-snug">${formattedTitle}</h4>
+                  <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 pt-1">${optionsHTML}</div>
+                </div>
+              </div>
+            `;
+          } else {
+            let formattedBody = trimmed.replace(/\*\*(.*?)\*\*/g, '<strong class="text-indigo-950 font-bold">$1</strong>');
+            card.innerHTML = `
+              <div class="flex items-start gap-2.5">
+                <span class="w-6 h-6 rounded-lg bg-indigo-600 text-white font-sans font-bold text-xs flex items-center justify-center shadow-sm">${qNum}</span>
+                <div class="flex-1 space-y-2">
+                  <h4 class="text-xs font-bold text-slate-900 leading-snug">${formattedBody}</h4>
+                  <div class="space-y-2.5 pt-2">
+                    <div class="border-b border-dotted border-slate-400 h-4"></div>
+                    <div class="border-b border-dotted border-slate-400 h-4"></div>
+                    <div class="border-b border-dotted border-slate-400 h-4"></div>
+                  </div>
+                </div>
+              </div>
+            `;
+          }
+          body.appendChild(card);
+          itemCount++;
+        } else if (/^(#+\s*)?(grammar rules|grammar:|grammar instruction|grammar focus|rules & examples)/i.test(trimmed)) {
+          // 4. Grammar Instructional Block
+          card.className = 'p-5 rounded-2xl border-2 border-emerald-200 bg-emerald-50/50 shadow-sm text-slate-800 font-serif text-xs leading-relaxed space-y-3 relative page-break-inside-avoid';
+          let formattedText = trimmed.replace(/\*\*(.*?)\*\*/g, '<strong class="text-emerald-950 font-bold">$1</strong>');
+          card.innerHTML = `
+            <div class="flex items-center gap-1.5 text-[10px] font-bold text-emerald-700 uppercase tracking-widest">
+              <i data-lucide="spell-check" class="w-3.5 h-3.5"></i>
+              <span>Grammar Rules & Examples</span>
+            </div>
+            <div class="whitespace-pre-line border-l-4 border-emerald-500 pl-3.5 text-slate-700">${formattedText}</div>
+          `;
+          body.appendChild(card);
+          itemCount++;
+        } else {
+          // 5. Default Block
+          card.className = 'exercise-block p-4.5 rounded-xl border border-indigo-100 bg-indigo-50/20 text-slate-800 font-serif text-xs leading-relaxed space-y-2 relative page-break-inside-avoid';
+          let formattedText = trimmed.replace(/\*\*(.*?)\*\*/g, '<strong class="text-indigo-950 font-bold">$1</strong>');
+          card.innerHTML = `<div class="whitespace-pre-line">${formattedText}</div>`;
+          body.appendChild(card);
+          itemCount++;
+        }
+
+        // Automatically insert clean A4 Page Break divider after every 5 exercise blocks to ensure proper page breaks
+        if (itemCount % 5 === 0 && sIndex < sections.length - 1) {
+          const pb = document.createElement('div');
+          pb.className = 'page-break-divider my-6 no-print-divider';
+          pb.innerHTML = '<div class="page-break"></div>';
+          body.appendChild(pb);
+        }
+      });
+
+      // If we have an Answer Key, we render it at the bottom inside a premium toggleable accordion card!
+      if (answerKeyContent) {
+        const keyContainer = document.createElement('div');
+        keyContainer.id = "ws-teacher-answer-key-section";
+        keyContainer.className = 'p-5 mt-6 rounded-2xl border border-yellow-300 bg-amber-50/40 text-xs text-slate-800 space-y-3 shadow-inner page-break-inside-avoid relative no-print-answers';
+        
+        let formattedKey = answerKeyContent.replace(/\*\*(.*?)\*\*/g, '<strong class="text-amber-950 font-bold">$1</strong>');
+        keyContainer.innerHTML = `
+          <div class="flex items-center justify-between">
+            <div class="flex items-center gap-2">
+              <span class="w-6 h-6 rounded-lg bg-amber-500 text-white flex items-center justify-center">
+                <i data-lucide="check-square" class="w-3.5 h-3.5"></i>
+              </span>
+              <div>
+                <h4 class="text-xs font-bold text-amber-900 leading-tight">Teacher Answer Key & Guide</h4>
+                <p class="text-[10px] text-amber-700">Toggle this guide to show or hide in the final printable copy</p>
+              </div>
+            </div>
+            <button onclick="togglePrintAnswersState()" class="px-2.5 py-1 text-[10px] font-extrabold bg-amber-600 hover:bg-amber-700 text-white rounded-lg transition-all flex items-center gap-1 active:scale-95 shadow-sm">
+              <span id="answers-toggle-label">Hide Answers</span>
+            </button>
+          </div>
+          <div id="ws-answers-body" class="whitespace-pre-line pt-2 text-[11px] text-slate-700 border-t border-amber-200">${formattedKey}</div>
+        `;
+        body.appendChild(keyContainer);
+      }
+
+      lucide.createIcons();
+    }
+
+    function insertManualPageBreak() {
+      const body = document.getElementById('worksheet-body');
+      const pb = document.createElement('div');
+      pb.className = 'page-break-divider my-6 no-print-divider';
+      pb.innerHTML = '<div class="page-break"></div>';
+      body.appendChild(pb);
+      showToast('Page Break Inserted', 'Added an A4 page break boundary.', 'file-plus');
+    }
+
+    function handleImageUpload(event) {
+      const file = event.target.files[0];
+      if (!file) return;
+
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        const body = document.getElementById('worksheet-body');
+        const imgContainer = document.createElement('div');
+        imgContainer.className = 'w-full flex justify-center my-4 group relative';
+        
+        imgContainer.innerHTML = `
+          <img src="${e.target.result}" class="max-w-full sm:max-w-[80%] rounded-xl shadow-md border border-slate-200" alt="Uploaded Illustration">
+          <button onclick="this.parentElement.remove()" class="absolute -top-3 -right-3 bg-red-500 hover:bg-red-600 text-white rounded-full p-1.5 opacity-0 group-hover:opacity-100 transition-opacity shadow-sm" title="Remove Image">
+            <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6 6 18M6 6l12 12"/></svg>
+          </button>
+        `;
+        body.appendChild(imgContainer);
+        showToast('Image Added', 'Illustration inserted into worksheet.', 'image');
+      };
+      reader.readAsDataURL(file);
+      
+      // Reset input so the same file can be selected again if needed
+      event.target.value = '';
+    }
+
+    function renderAISynthesizedFallback(promptText) {
+      resetStandardHeader();
+      const cleanTitle = formatWorksheetTitle(promptText);
+      document.getElementById('ws-title').innerText = cleanTitle;
+      document.getElementById('ws-subtitle').innerText = 'Read the directions and answer each question with complete sentences.';
+      document.getElementById('ws-standard-text').innerText = 'CCSS.ELA-LITERACY • Core Language Arts Standards';
+
+      const body = document.getElementById('worksheet-body');
+      body.innerHTML = '';
+      body.className = 'space-y-4 animate-fade-in pt-1';
+
+      // Featured Illustration
+      const heroImage = document.createElement('div');
+      heroImage.className = 'w-full flex justify-center mb-4';
+      heroImage.innerHTML = `<img src="images/magical_storybook.jpg" class="w-full max-w-[500px] rounded-xl shadow-md border-2 border-slate-200" alt="Magical Storybook">`;
+      body.appendChild(heroImage);
+
+      // Normalize prompt to identify key topics
+      const promptLower = promptText.toLowerCase();
+
+      let title = "Vocabulary & Reading Comprehension";
+      let exercises = [];
+
+      if (promptLower.includes('egypt') || promptLower.includes('pharaoh') || promptLower.includes('pyramid') || promptLower.includes('nile')) {
+        title = "Ancient Egypt ELA Lesson";
+        exercises = [
+          {
+            type: "vocabulary",
+            question: "1. Match the definition with the correct vocabulary word from the context of Ancient Egypt: \"A ruler of ancient Egypt, often considered a living god.\"",
+            choicesLabel: "Student Answer:",
+            choicesPlaceholder: "Pharaoh (e.g. Pharaoh / Hieroglyphs / Mummy)",
+            answer: "Pharaoh"
+          },
+          {
+            type: "fill-in",
+            question: "2. Fill in the blank: \"The annual flooding of the ________ River provided rich soil, allowing agriculture to flourish in the desert.\"",
+            choicesLabel: "Student Choice:",
+            choicesPlaceholder: "Nile (e.g. Nile / Tigris / Euphrates)",
+            answer: "Nile"
+          },
+          {
+            type: "comprehension",
+            question: "3. Passage: \"To safeguard their legacy, Egyptians developed a complex writing system of pictorial symbols called hieroglyphs. Scribes spent years mastering these sacred carvings on papyrus scrolls.\"\n\nQuestion: What was the primary medium used by scribes for writing hieroglyphs in ancient Egypt? Explain using details from the passage.",
+            answer: "Scribes primarily wrote hieroglyphs on papyrus scrolls, after spending years mastering these sacred carvings."
+          }
+        ];
+      } else if (promptLower.includes('space') || promptLower.includes('planet') || promptLower.includes('universe') || promptLower.includes('star') || promptLower.includes('galaxy') || promptLower.includes('astronaut')) {
+        title = "Cosmic Space Travel & Astronomy";
+        exercises = [
+          {
+            type: "vocabulary",
+            question: "1. Complete the sentence with the correct vocabulary word: \"The extreme pull of ________ prevents light from escaping a black hole.\"",
+            choicesLabel: "Student Answer:",
+            choicesPlaceholder: "gravity (e.g. gravity / friction / inertia)",
+            answer: "gravity"
+          },
+          {
+            type: "fill-in",
+            question: "2. Fill in the blank: \"Neil Armstrong was the first ________ to walk on the moon during the Apollo 11 mission in 1969.\"",
+            choicesLabel: "Student Choice:",
+            choicesPlaceholder: "astronaut (e.g. astronaut / astronomer / astrologer)",
+            answer: "astronaut"
+          },
+          {
+            type: "comprehension",
+            question: "3. Passage: \"Our Solar System belongs to the Milky Way galaxy, which contains billions of stars, exoplanets, and nebulas. Light takes about eight minutes to travel from our central star, the Sun, to Earth.\"\n\nQuestion: How long does it take for sunlight to reach Earth? Support your answer with a detail from the text.",
+            answer: "It takes approximately eight minutes for light to travel from our central star, the Sun, to Earth."
+          }
+        ];
+      } else if (promptLower.includes('verb') || promptLower.includes('grammar') || promptLower.includes('tense') || promptLower.includes('sentence') || promptLower.includes('punctuation')) {
+        title = "Grammar & Sentence Mechanics";
+        exercises = [
+          {
+            type: "grammar",
+            question: "1. Correct the grammatical error in this sentence: \"She have gone to the library to research community helpers yesterday.\"",
+            choicesLabel: "Correct Sentence:",
+            choicesPlaceholder: "She went to the library... / She had gone...",
+            answer: "She went to the library to research community helpers yesterday."
+          },
+          {
+            type: "fill-in",
+            question: "2. Choose the correct pronoun: \"Although the project was difficult, ________ (him / he) completed it before the smartboard presentation.\"",
+            choicesLabel: "Student Choice:",
+            choicesPlaceholder: "he (e.g. he / him)",
+            answer: "he"
+          },
+          {
+            type: "grammar-analysis",
+            question: "3. Identify the principal verb and the auxiliary verb in this sentence: \"The classroom has adopted modern tablet worksheets for reading assignments.\"",
+            answer: "Auxiliary Verb: 'has'. Principal Verb: 'adopted'."
+          }
+        ];
+      } else if (promptLower.includes('vocabulary') || promptLower.includes('word') || promptLower.includes('synonym') || promptLower.includes('antonym')) {
+        title = "Advanced ELA Vocabulary Builder";
+        exercises = [
+          {
+            type: "vocabulary",
+            question: "1. Identify the synonym for 'Meticulous' from the choices below: \"The ELA editor reviewed the slides with meticulous attention to detail.\"",
+            choicesLabel: "Student Choice:",
+            choicesPlaceholder: "careful (e.g. careful / hasty / indifferent)",
+            answer: "careful"
+          },
+          {
+            type: "fill-in",
+            question: "2. Complete the sentence using appropriate context vocabulary: \"The principal gave a ________ argument that convinced the board to expand the digital curriculum.\"",
+            choicesLabel: "Student Answer:",
+            choicesPlaceholder: "compelling (e.g. compelling / flimsy)",
+            answer: "compelling"
+          },
+          {
+            type: "vocabulary-use",
+            question: "3. Define the ELA term 'Context Clues' and write a sentence demonstrating how to infer a word's meaning from its surroundings.",
+            answer: "Context clues are hints found within a sentence or passage that help a reader understand the meaning of unfamiliar words. Example: 'The tropical sun was sweltering, making us sweat profusely.'"
+          }
+        ];
+      } else if (promptLower.includes('adjective') || promptLower.includes('noun') || promptLower.includes('pronoun') || promptLower.includes('parts of speech')) {
+        title = "Parts of Speech & Word Classification";
+        exercises = [
+          {
+            type: "fill-in",
+            question: "1. Identify the adjectives in this sentence: \"The quiet, diligent student completed her ELA quiz ahead of schedule.\"",
+            choicesLabel: "Adjectives:",
+            choicesPlaceholder: "quiet, diligent (e.g. quiet / diligent / student)",
+            answer: "quiet, diligent"
+          },
+          {
+            type: "fill-in",
+            question: "2. Choose the correct objective pronoun to complete the sentence: \"The ELA teacher invited ________ (we / us) to co-author the new slide deck.\"",
+            choicesLabel: "Student Choice:",
+            choicesPlaceholder: "us (e.g. we / us)",
+            answer: "us"
+          },
+          {
+            type: "classification",
+            question: "3. Read this passage and classify the underlined words: \"The modern digital slideshow **instantly** improves student **engagement** in the classroom.\"",
+            answer: "instantly: Adverb. engagement: Noun."
+          }
+        ];
+      } else {
+        // General custom synthesis based on the user's prompt text
+        title = cleanTitle;
+        const formattedPrompt = cleanTitle;
+        exercises = [
+          {
+            type: "vocabulary",
+            question: `1. Define a core vocabulary word or concept essential to understanding "${formattedPrompt}":`,
+            choicesLabel: "Student Concept Focus:",
+            choicesPlaceholder: `Define key terms related to "${formattedPrompt}"`,
+            answer: `Key vocabulary associated with ${formattedPrompt} is essential for ELA comprehension.`
+          },
+          {
+            type: "fill-in",
+            question: `2. Fill in the blank with a term related to "${formattedPrompt}": "We must read closely to identify the author's primary theme regarding ________ in this ELA text."`,
+            choicesLabel: "Answer choice:",
+            choicesPlaceholder: `e.g., theme, perspective, context of ${formattedPrompt}`,
+            answer: "theme"
+          },
+          {
+            type: "comprehension",
+            question: `3. Short Passage: \"When studying ELA topics like ${formattedPrompt}, readers must combine literal comprehension with deep analytical reasoning. Analyzing structural choices, tone, and character dynamics allows students to unlock complex meanings beyond the text.\"\n\nQuestion: Based on the passage, what must readers combine to successfully analyze complex topics?`,
+            answer: "Readers must combine literal comprehension with deep analytical reasoning to unlock complex meanings."
+          }
+        ];
+      }
+
+      document.getElementById('ws-title').innerText = title;
+
+      // Render the exercises beautifully
+      exercises.forEach((ex, idx) => {
+        const card = document.createElement('div');
+        card.className = 'exercise-block question-item p-4 rounded-xl border border-indigo-200 bg-indigo-50/30 space-y-2 text-xs text-slate-900 font-serif relative';
+        card.contentEditable = "true";
+
+        let html = '';
+        if (ex.type === "vocabulary" || ex.type === "fill-in" || ex.type === "grammar") {
+          html = `
+            <div class="flex justify-between font-bold text-indigo-900 text-[11px] uppercase tracking-wider mb-1">
+              <span>English Language Practice</span>
+              <span class="bg-indigo-100 text-indigo-800 px-2 py-0.5 rounded">Exercise Item</span>
+            </div>
+            <p class="leading-relaxed pt-1 font-semibold">${ex.question}</p>
+            <div class="pt-1 flex items-center gap-2">
+              <span class="font-bold text-indigo-950">${ex.choicesLabel}</span>
+              <span contenteditable="true" class="border-b-2 border-slate-800 min-w-[160px] inline-block px-1 ${showAnswerKey ? 'text-rose-600 font-bold' : 'text-slate-400 font-medium'}">
+                ${showAnswerKey ? ex.answer : ex.choicesPlaceholder}
+              </span>
+            </div>
+          `;
+        } else {
+          html = `
+            <div class="flex justify-between font-bold text-indigo-900 text-[11px] uppercase tracking-wider mb-1">
+              <span>Reading & Analysis Focus</span>
+              <span class="bg-indigo-100 text-indigo-800 px-2 py-0.5 rounded">Comprehension</span>
+            </div>
+            <div class="whitespace-pre-line leading-relaxed pt-1">${ex.question}</div>
+            <div class="space-y-2 pt-1.5 border-t border-indigo-100/40 mt-1">
+              <div contenteditable="true" class="border-b border-slate-300 min-h-[24px] px-1 pb-1 ${showAnswerKey ? 'text-rose-600 font-medium italic' : 'text-slate-400'}">
+                ${showAnswerKey ? 'Sample Answer: ' + ex.answer : 'Student Response Area (Click to type...)'}
+              </div>
+              ${!showAnswerKey ? '<div class="border-b border-slate-300 h-4"></div>' : ''}
+            </div>
+          `;
+        }
+
+        card.innerHTML = html;
+        body.appendChild(card);
+      });
+    }
+
+    // Switch Dashboard Drawer Tabs (Create, Style, Tools) to Reduce Complexity
+    function switchDashboardTab(tabId) {
+      // Hide all contents
+      document.getElementById('tab-generators-content').classList.add('hidden');
+      document.getElementById('tab-design-content').classList.add('hidden');
+      document.getElementById('tab-tools-content').classList.add('hidden');
+      
+      // Show target content
+      document.getElementById('tab-' + tabId + '-content').classList.remove('hidden');
+      
+      // Reset all tab button styles
+      const tabs = ['generators', 'design', 'tools'];
+      tabs.forEach(t => {
+        const btn = document.getElementById('btn-tab-' + t);
+        if (btn) {
+          btn.className = "flex-1 py-1.5 rounded-lg text-[11px] font-bold flex items-center justify-center gap-1.5 transition-all text-slate-400 hover:text-slate-200";
+        }
+      });
+      
+      // Apply active style to selected tab button
+      const activeBtn = document.getElementById('btn-tab-' + tabId);
+      if (activeBtn) {
+        activeBtn.className = "flex-1 py-1.5 rounded-lg text-[11px] font-bold flex items-center justify-center gap-1.5 transition-all bg-indigo-600 text-white shadow-md shadow-indigo-600/20";
+      }
+    }
+
+    // Toggle Dashboard Drawer Sidebar
+    function toggleDashboard() {
+      const sidebar = document.getElementById('dashboard-sidebar');
+      const overlay = document.getElementById('sidebar-overlay');
+      const isClosed = sidebar.classList.contains('-translate-x-full');
+
+      const line1 = document.getElementById('h-line1');
+      const line2 = document.getElementById('h-line2');
+      const line3 = document.getElementById('h-line3');
+
+      if (isClosed) {
+        sidebar.classList.remove('-translate-x-full');
+        overlay.classList.remove('hidden');
+        if (line1 && line2 && line3) {
+          line1.classList.add('rotate-45', 'translate-y-1.5');
+          line2.classList.add('opacity-0');
+          line3.classList.add('-rotate-45', '-translate-y-1.5');
+        }
+      } else {
+        sidebar.classList.add('-translate-x-full');
+        overlay.classList.add('hidden');
+        if (line1 && line2 && line3) {
+          line1.classList.remove('rotate-45', 'translate-y-1.5');
+          line2.classList.remove('opacity-0');
+          line3.classList.remove('-rotate-45', '-translate-y-1.5');
+        }
+      }
+    }
+
+    // Toast Function
+    function showToast(title, message, iconName = 'check-circle-2') {
+      const toast = document.getElementById('toast-notification');
+      const titleEl = document.getElementById('toast-title');
+      const msgEl = document.getElementById('toast-msg');
+      
+      titleEl.innerText = title;
+      msgEl.innerText = message;
+      
+      toast.classList.remove('translate-y-20', 'opacity-0');
+      toast.classList.add('translate-y-0', 'opacity-100');
+
+      setTimeout(() => {
+        toast.classList.remove('translate-y-0', 'opacity-100');
+        toast.classList.add('translate-y-20', 'opacity-0');
+      }, 3000);
+    }
+
+    // Toggle Answer Key Mode
+    function toggleAnswerKey(enabled) {
+      showAnswerKey = enabled;
+      const banner = document.getElementById('answer-key-banner');
+      if (enabled) {
+        banner.classList.remove('hidden');
+        showToast('Answer Key Enabled', 'Showing filled-in teacher solutions in red.', 'key');
+      } else {
+        banner.classList.add('hidden');
+        showToast('Student Mode Enabled', 'Hiding solutions for clean student worksheet.', 'file-text');
+      }
+      regenerateCurrentMode();
+    }
+
+    // Teacher Header Input
+    function updateTeacherHeader(val) {
+      const el = document.getElementById('ws-teacher-display');
+      if (el) el.innerText = val || 'Mrs. Davis • English Dept.';
+    }
+
+    // App Theme Control
+    function changeAppTheme(themeName) {
+      document.body.setAttribute('data-app-theme', themeName);
+      
+      let themeTitle = "App Theme Applied";
+      if (themeName === 'midnight-neon') themeTitle = "Moonlight & Neon";
+      if (themeName === 'executive-navy') themeTitle = "Executive Navy";
+      if (themeName === 'digital-sanctuary') themeTitle = "Light Sanctuary";
+      if (themeName === 'earth-gold') themeTitle = "Earth & Gold";
+      if (themeName === 'minimalist-pearl') themeTitle = "Minimalist Pearl";
+      if (themeName === 'frosted-glass') themeTitle = "Frosted Glass";
+      
+      showToast(themeTitle, 'Interface theme updated successfully.', 'moon');
+      
+      // Save user preference
+      localStorage.setItem('ela_app_theme', themeName);
+    }
+    
+    // Load app theme on startup
+    document.addEventListener('DOMContentLoaded', () => {
+      const savedAppTheme = localStorage.getItem('ela_app_theme') || 'midnight-neon';
+      document.body.setAttribute('data-app-theme', savedAppTheme);
+      const appThemeSelect = document.getElementById('app-theme-select');
+      if (appThemeSelect) appThemeSelect.value = savedAppTheme;
+
+      // Restore paper dark mode preference
+      const savedPaperDark = localStorage.getItem('ela_paper_dark_mode') === 'true';
+      if (savedPaperDark) {
+        setPaperDarkModeState(true, false);
+      }
+    });
+
+    // Worksheet Paper Dark Mode Toggle (Low-Light Editing Comfort)
+    let isPaperDarkMode = false;
+
+    function togglePaperDarkMode() {
+      setPaperDarkModeState(!isPaperDarkMode, true);
+    }
+
+    function setPaperDarkModeState(enable, showNotification = true) {
+      isPaperDarkMode = enable;
+      const paper = document.getElementById('worksheet-paper');
+      const topBtn = document.getElementById('btn-paper-dark-top');
+      const topIcon = document.getElementById('paper-dark-top-icon');
+      const topLabel = document.getElementById('paper-dark-top-label');
+      const sideBtn = document.getElementById('btn-paper-dark-toggle');
+      const sideLabel = document.getElementById('paper-dark-toggle-label');
+      const sideIndicator = document.getElementById('paper-dark-indicator');
+
+      if (!paper) return;
+
+      if (isPaperDarkMode) {
+        paper.classList.add('paper-dark-mode');
+        localStorage.setItem('ela_paper_dark_mode', 'true');
+
+        if (topBtn) {
+          topBtn.classList.remove('bg-slate-900', 'border-slate-700', 'text-slate-300');
+          topBtn.classList.add('bg-indigo-600', 'border-indigo-500', 'text-white', 'shadow-indigo-500/20');
+        }
+        if (topIcon) {
+          topIcon.setAttribute('data-lucide', 'sun');
+          topIcon.classList.remove('text-indigo-400');
+          topIcon.classList.add('text-amber-300');
+        }
+        if (topLabel) topLabel.innerText = 'Light Paper';
+
+        if (sideBtn) {
+          sideBtn.classList.remove('bg-slate-800', 'text-slate-300');
+          sideBtn.classList.add('bg-indigo-600', 'text-white', 'border-indigo-500');
+        }
+        if (sideLabel) sideLabel.innerText = 'Active (Dark)';
+        if (sideIndicator) {
+          sideIndicator.classList.remove('bg-slate-800', 'text-slate-400', 'border-slate-700');
+          sideIndicator.classList.add('bg-indigo-950', 'text-amber-300', 'border-indigo-500/40');
+        }
+
+        if (showNotification) {
+          showToast('Paper Dark Mode', 'Worksheet switched to dark gray for low-light editing. Print output remains clean white.', 'moon');
+        }
+      } else {
+        paper.classList.remove('paper-dark-mode');
+        localStorage.setItem('ela_paper_dark_mode', 'false');
+
+        if (topBtn) {
+          topBtn.classList.add('bg-slate-900', 'border-slate-700', 'text-slate-300');
+          topBtn.classList.remove('bg-indigo-600', 'border-indigo-500', 'text-white', 'shadow-indigo-500/20');
+        }
+        if (topIcon) {
+          topIcon.setAttribute('data-lucide', 'moon');
+          topIcon.classList.add('text-indigo-400');
+          topIcon.classList.remove('text-amber-300');
+        }
+        if (topLabel) topLabel.innerText = 'Dark Paper';
+
+        if (sideBtn) {
+          sideBtn.classList.add('bg-slate-800', 'text-slate-300');
+          sideBtn.classList.remove('bg-indigo-600', 'text-white', 'border-indigo-500');
+        }
+        if (sideLabel) sideLabel.innerText = 'Enable';
+        if (sideIndicator) {
+          sideIndicator.classList.add('bg-slate-800', 'text-slate-400', 'border-slate-700');
+          sideIndicator.classList.remove('bg-indigo-950', 'text-amber-300', 'border-indigo-500/40');
+        }
+
+        if (showNotification) {
+          showToast('Paper Light Mode', 'Worksheet restored to standard white paper display.', 'sun');
+        }
+      }
+
+      // Update vector illustration strokes and colors
+      updateWorksheetIllustration(currentMode);
+      lucide.createIcons();
+    }
+
+    // Theme Control
+    
+    // THEME, PALETTE & BORDER CONTROLLER
+    let activeTheme = 'ela-book';
+    let slideAnimationMode = 'smooth-slide';
+
+    function openThemePaletteModal() {
+      try {
+        const modal = document.getElementById('theme-palette-modal');
+        if (modal) {
+          modal.classList.remove('hidden');
+          modal.classList.add('flex');
+          highlightActiveThemeCard(activeTheme);
+          if (typeof lucide !== 'undefined' && lucide.createIcons) {
+            lucide.createIcons();
+          }
+        }
+      } catch (err) {
+        console.error('Error opening theme modal:', err);
+      }
+    }
+
+    function closeThemePaletteModal() {
+      try {
+        const modal = document.getElementById('theme-palette-modal');
+        if (modal) {
+          modal.classList.add('hidden');
+          modal.classList.remove('flex');
+        }
+      } catch (err) {
+        console.error('Error closing theme modal:', err);
+      }
+    }
+
+    function highlightActiveThemeCard(themeName) {
+      try {
+        document.querySelectorAll('.theme-picker-card').forEach(card => {
+          card.classList.remove('border-indigo-400', 'ring-2', 'ring-indigo-400/50', 'bg-indigo-950/60');
+          card.classList.add('border-slate-700', 'bg-slate-800/60');
+        });
+        const activeCard = document.getElementById('theme-card-' + themeName);
+        if (activeCard) {
+          activeCard.classList.remove('border-slate-700', 'bg-slate-800/60');
+          activeCard.classList.add('border-indigo-400', 'ring-2', 'ring-indigo-400/50', 'bg-indigo-950/60');
+        }
+      } catch (err) {
+        console.warn('highlightActiveThemeCard warning:', err);
+      }
+    }
+
+    function selectThemeFromModal(themeName) {
+      try {
+        activeTheme = themeName;
+        applyTheme(themeName);
+        highlightActiveThemeCard(themeName);
+        
+        const themeLabels = {
+          'ela-book': '📖 ELA Textbook Style',
+          'classic-corporate': '👔 Classic Navy Style',
+          'midnight-tech': '🌙 Midnight Tech Style',
+          'nordic-pastel': '🍃 Nordic Sage Style',
+          'vibrant-gamifier': '🎮 Gamifier Pop Style',
+          'emerald-scholar': '🎓 Scholar Green Style',
+          'sunset-minimalist': '🌅 Sunset Warm Style',
+          'cyberpunk-edgy': '⚡ Cyber Neon Style',
+          'oceanic-trust': '🌊 Oceanic Blue Style'
+        };
+        
+        const subLabel = document.getElementById('theme-btn-sub-label');
+        if (subLabel) {
+          subLabel.innerText = themeLabels[themeName] || (themeName.charAt(0).toUpperCase() + themeName.slice(1));
+        }
+
+        const themeSelector = document.getElementById('theme-select');
+        if (themeSelector) themeSelector.value = themeName;
+        
+        // Also update slide theme automatically for presentation
+        const slideThemeMap = {
+          'ela-book': 'slide-theme-royal-ela',
+          'classic-corporate': 'slide-theme-clean',
+          'midnight-tech': 'slide-theme-midnight',
+          'nordic-pastel': 'slide-theme-warm',
+          'vibrant-gamifier': 'slide-theme-clean',
+          'emerald-scholar': 'slide-theme-emerald',
+          'sunset-academic': 'slide-theme-sunset',
+          'forest-scholastic': 'slide-theme-forest',
+          'nordic-minimalist': 'slide-theme-nordic',
+          'luxury-obsidian': 'slide-theme-luxury',
+          'playful-comic': 'slide-theme-playful',
+          'sunset-minimalist': 'slide-theme-warm',
+          'cyberpunk-edgy': 'slide-theme-cyberpunk',
+          'oceanic-trust': 'slide-theme-clean'
+        };
+        
+        const matchedSlideTheme = slideThemeMap[themeName] || 'slide-theme-clean';
+        applySlideTheme(matchedSlideTheme);
+
+        if (typeof lucide !== 'undefined' && lucide.createIcons) {
+          lucide.createIcons();
+        }
+      } catch (err) {
+        console.error('Error selecting theme:', err);
+      }
+    }
+
+    function applyTheme(themeName) {
+      try {
+        const paper = document.getElementById('worksheet-paper');
+        const allThemes = [
+          'theme-classic-corporate',
+          'theme-midnight-tech',
+          'theme-nordic-pastel',
+          'theme-vibrant-gamifier',
+          'theme-emerald-scholar',
+          'theme-sunset-minimalist',
+          'theme-cyberpunk-edgy',
+          'theme-oceanic-trust',
+          'theme-ela-book'
+        ];
+        
+        if (paper) {
+          allThemes.forEach(t => paper.classList.remove(t));
+          paper.classList.add('theme-' + themeName);
+        }
+        
+        // Handle textbook-specific layout elements
+        const standardIllustration = document.getElementById('ws-illustration-container');
+        const standardFooter = document.getElementById('standard-worksheet-footer');
+        
+        if (themeName === 'ela-book') {
+          if (standardIllustration) standardIllustration.classList.add('hidden');
+          if (standardFooter) standardFooter.classList.add('hidden');
+        } else {
+          if (standardIllustration) standardIllustration.classList.remove('hidden');
+          if (standardFooter) standardFooter.classList.remove('hidden');
+        }
+        
+        if (typeof updateWorksheetIllustration === 'function' && typeof currentMode !== 'undefined') {
+          updateWorksheetIllustration(currentMode);
+        }
+        
+        const formattedName = themeName.split('-').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ');
+        if (typeof showToast === 'function') {
+          showToast('Theme Applied', 'Switched to ' + formattedName + ' theme.', 'palette');
+        }
+      } catch (err) {
+        console.error('Error applying theme:', err);
+      }
+    }
+
+    function applySlideTheme(theme) {
+      try {
+        const box = document.getElementById('presentation-slide-box');
+        if (!box) return;
+        
+        const allSlideThemes = [
+          'slide-theme-clean',
+          'slide-theme-chalkboard',
+          'slide-theme-midnight',
+          'slide-theme-warm',
+          'slide-theme-royal-ela',
+          'slide-theme-cyberpunk',
+          'slide-theme-emerald',
+          'slide-theme-sunset',
+          'slide-theme-forest',
+          'slide-theme-nordic',
+          'slide-theme-luxury',
+          'slide-theme-playful'
+        ];
+        
+        allSlideThemes.forEach(t => box.classList.remove(t));
+        box.classList.add(theme);
+        currentSlideTheme = theme;
+      } catch (err) {
+        console.error('Error in applySlideTheme:', err);
+      }
+    }
+
+    // Border Control
+    // Border Control
+    function setBorder(borderType) {
+      currentBorder = borderType;
+      const paper = document.getElementById('worksheet-paper');
+      const artdeco = document.getElementById('artdeco-corners');
+
+      const allBorderStyles = [
+        'border-style-minimalist', 'border-style-geometric', 'border-style-artdeco', 
+        'border-style-playful', 'border-style-none', 'border-style-glow', 
+        'border-style-cyber', 'border-style-neon', 'border-style-aurora', 
+        'border-style-shimmer', 'border-style-rainbow', 'border-style-laser', 
+        'border-style-glass'
+      ];
+      allBorderStyles.forEach(b => paper.classList.remove(b));
+      paper.classList.add(`border-style-${borderType}`);
+
+      if (borderType === 'artdeco') {
+        artdeco.classList.remove('hidden');
+      } else {
+        artdeco.classList.add('hidden');
+      }
+
+      // Add special visual effects toast
+      const animBorders = ['glow', 'cyber', 'neon', 'aurora', 'shimmer', 'rainbow', 'laser', 'glass'];
+      const borderNames = {
+        glow: 'Glow Pulse',
+        cyber: 'Cyber Flow',
+        neon: 'Neon Glow',
+        aurora: 'Cosmic Aurora',
+        shimmer: 'Golden Shimmer',
+        rainbow: 'Rainbow Spin',
+        laser: 'Laser Wave',
+        glass: 'Frosted Glass Frame',
+        minimalist: 'Minimalist',
+        geometric: 'Geometric',
+        artdeco: 'Art Deco',
+        playful: 'Playful',
+        none: 'Clean Minimal'
+      };
+
+      const titleName = borderNames[borderType] || borderType.toUpperCase();
+      if (animBorders.includes(borderType)) {
+        showToast('Animated Border Active', `Activated ${titleName} animated frame!`, 'sparkles');
+      } else {
+        showToast('Border Updated', `Applied ${titleName} border frame.`, 'layout');
+      }
+    }
+
+    // Font Family
+    function applyFontFamily(fontClass) {
+      const paper = document.getElementById('worksheet-paper');
+      const fontClasses = [
+        'font-inter', 'font-sfpro', 'font-roboto', 'font-playfair',
+        'font-merriweather', 'font-lora', 'font-sourcesans', 'font-ptserif',
+        'font-sans', 'font-playful', 'font-serif', 'font-handwriting', 'font-mono'
+      ];
+      fontClasses.forEach(c => paper.classList.remove(c));
+      paper.classList.add(fontClass);
+      
+      const cleanFontName = fontClass.replace('font-', '').toUpperCase();
+      showToast('Font Applied', `Switched paper typography to ${cleanFontName}.`, 'type');
+    }
+
+    // Margins
+    function applyMargins(marginClass) {
+      const paper = document.getElementById('worksheet-paper');
+      paper.classList.remove('p-4', 'p-8', 'p-12');
+      paper.classList.add(marginClass);
+    }
+
+    // Toggle Worksheet Illustrations
+    function toggleIllustration(val) {
+      showIllustrations = (val === 'show');
+      const container = document.getElementById('ws-illustration-container');
+      if (container) {
+        if (showIllustrations) {
+          container.classList.remove('hidden');
+          updateWorksheetIllustration(currentMode);
+        } else {
+          container.classList.add('hidden');
+        }
+      }
+      showToast('Illustration Toggle', showIllustrations ? 'Illustrations enabled!' : 'Illustrations hidden (Ink Saver active).', 'image');
+    }
+
+    // Change Illustration Art Style
+    function changeIllustrationStyle(style) {
+      currentIllustrationStyle = style;
+      if (showIllustrations) {
+        updateWorksheetIllustration(currentMode);
+      }
+      showToast('Artwork Styled', `Set illustration style to ${style.replace('-', ' ').toUpperCase()}.`, 'palette');
+    }
+
+    // Get illustration SVG matching active mode and palette
+    function getEducationalIllustrationSVG(mode, style) {
+      let primaryColor = '#4f46e5';
+      let accentColor = '#f59e0b';
+      let bgColor = '#f0f4ff';
+      let strokeWidth = '2';
+      let showBgCircle = true;
+
+      // Detect current theme to match colors beautifully!
+      const paper = document.getElementById('worksheet-paper');
+      if (paper) {
+        if (paper.classList.contains('theme-midnight-tech')) {
+          primaryColor = '#6366f1';
+          accentColor = '#06b6d4';
+          bgColor = '#e0f2fe';
+        } else if (paper.classList.contains('theme-nordic-pastel')) {
+          primaryColor = '#0d9488';
+          accentColor = '#f43f5e';
+          bgColor = '#f0fdfa';
+        } else if (paper.classList.contains('theme-vibrant-gamifier')) {
+          primaryColor = '#7c3aed';
+          accentColor = '#ec4899';
+          bgColor = '#faf5ff';
+        } else if (paper.classList.contains('theme-emerald-scholar')) {
+          primaryColor = '#059669';
+          accentColor = '#d97706';
+          bgColor = '#ecfdf5';
+        } else if (paper.classList.contains('theme-sunset-minimalist')) {
+          primaryColor = '#ea580c';
+          accentColor = '#eab308';
+          bgColor = '#fff7ed';
+        } else if (paper.classList.contains('theme-cyberpunk-edgy')) {
+          primaryColor = '#ec4899';
+          accentColor = '#06b6d4';
+          bgColor = '#fdf2f8';
+        } else if (paper.classList.contains('theme-oceanic-trust')) {
+          primaryColor = '#0284c7';
+          accentColor = '#f59e0b';
+          bgColor = '#f0f9ff';
+        }
+      }
+
+      if (style === 'duotone') {
+        accentColor = primaryColor;
+        bgColor = '#f1f5f9';
+        showBgCircle = true;
+      } else if (style === 'line-art') {
+        primaryColor = '#1e293b';
+        accentColor = '#1e293b';
+        bgColor = '#ffffff';
+        showBgCircle = false;
+        strokeWidth = '2';
+      }
+
+      const styleAttrs = `
+        --ill-primary: ${primaryColor};
+        --ill-accent: ${accentColor};
+        --ill-bg: ${bgColor};
+        --ill-book-bg: #ffffff;
+        --ill-globe-bg: ${bgColor};
+        --ill-inkwell-bg: ${bgColor};
+        --ill-quill-bg: #ffffff;
+        --ill-owl-bg: #ffffff;
+        --ill-cap: #1e293b;
+        --ill-book1: #ffffff;
+        --ill-book2: #ffffff;
+        --ill-book3: #ffffff;
+        --ill-lamp: ${accentColor};
+        --ill-light: ${accentColor}44;
+        --ill-palette-bg: #ffffff;
+        --ill-pencil-body: #ffffff;
+      `;
+
+      const bgCircleHtml = showBgCircle ? `<circle cx="50" cy="50" r="45" fill="${bgColor}" opacity="0.6" />` : '';
+
+      switch (mode) {
+        case 'vocabulary':
+          return `
+            <svg viewBox="0 0 100 100" class="w-full h-full" style="${styleAttrs}">
+              ${bgCircleHtml}
+              <path d="M25 65 C35 60, 45 62, 50 66 C55 62, 65 60, 75 65 V35 C65 30, 55 32, 50 36 C45 32, 35 30, 25 35 Z" fill="var(--ill-book-bg)" stroke="${primaryColor}" stroke-width="${strokeWidth}" stroke-linecap="round" stroke-linejoin="round" />
+              <path d="M50 36 V66" stroke="${primaryColor}" stroke-width="${strokeWidth}" />
+              <circle cx="50" cy="30" r="14" fill="var(--ill-globe-bg)" stroke="${primaryColor}" stroke-width="${strokeWidth}" />
+              <path d="M36 30 H64" stroke="${primaryColor}" stroke-width="1.5" />
+              <path d="M50 16 V44" stroke="${primaryColor}" stroke-width="1.5" />
+              <path d="M50 30 C55 30, 59 25, 59 30 C59 35, 55 30, 50 30 C45 30, 41 25, 41 30 C41 35, 45 30, 50 30" stroke="${primaryColor}" stroke-width="1" fill="none" />
+              <polygon points="20,25 22,29 26,29 23,32 24,36 20,34 16,36 17,32 14,29 18,29" fill="${accentColor}" />
+              <polygon points="80,25 81.5,28 84.5,28 82,30 83,33 80,31.5 77,33 78,30 75.5,28 78.5,28" fill="${accentColor}" />
+            </svg>
+          `;
+        case 'grammar':
+          return `
+            <svg viewBox="0 0 100 100" class="w-full h-full" style="${styleAttrs}">
+              ${bgCircleHtml}
+              <path d="M28 25 H68 C73 25, 73 35, 68 35 H33 C28 35, 28 45, 33 45 H63 C68 45, 68 55, 63 55 H28 C23 55, 23 65, 28 65 H68" fill="none" stroke="${primaryColor}" stroke-width="${strokeWidth}" stroke-linecap="round" />
+              <path d="M58 65 H78 V77 H58 Z" fill="var(--ill-inkwell-bg)" stroke="${primaryColor}" stroke-width="${strokeWidth}" />
+              <path d="M63 65 V61 H73 V65" fill="none" stroke="${primaryColor}" stroke-width="${strokeWidth}" />
+              <path d="M35 75 C45 60, 68 40, 72 25 C68 32, 55 45, 45 50" fill="var(--ill-quill-bg)" stroke="${primaryColor}" stroke-width="${strokeWidth}" stroke-linecap="round" />
+              <line x1="45" y1="50" x2="35" y2="75" stroke="${primaryColor}" stroke-width="${strokeWidth}" stroke-linecap="round" />
+              <path d="M20 20 L22 25 L27 27 L22 29 L20 34 L18 29 L13 27 L18 25 Z" fill="${accentColor}" />
+            </svg>
+          `;
+        case 'proofreading':
+          return `
+            <svg viewBox="0 0 100 100" class="w-full h-full" style="${styleAttrs}">
+              ${bgCircleHtml}
+              <path d="M20 75 H80" stroke="${primaryColor}" stroke-width="3" stroke-linecap="round" />
+              <rect x="35" y="32" width="30" height="40" rx="15" fill="var(--ill-owl-bg)" stroke="${primaryColor}" stroke-width="${strokeWidth}" />
+              <circle cx="43" cy="45" r="7" fill="none" stroke="${primaryColor}" stroke-width="${strokeWidth}" />
+              <circle cx="43" cy="45" r="2" fill="${primaryColor}" />
+              <circle cx="57" cy="45" r="7" fill="none" stroke="${primaryColor}" stroke-width="${strokeWidth}" />
+              <circle cx="57" cy="45" r="2" fill="${primaryColor}" />
+              <path d="M50 45 H50.5" stroke="${primaryColor}" stroke-width="${strokeWidth}" />
+              <polygon points="50,50 48,54 52,54" fill="${accentColor}" stroke="${primaryColor}" stroke-width="1" />
+              <polygon points="50,16 68,22 50,28 32,22" fill="var(--ill-cap)" stroke="${primaryColor}" stroke-width="1.5" />
+              <rect x="45" y="24" width="10" height="8" fill="var(--ill-cap)" />
+              <path d="M60 22 V30 L62 31" fill="none" stroke="${accentColor}" stroke-width="1" />
+              <path d="M75 45 L78 48 L84 42" stroke="${accentColor}" stroke-width="2.5" fill="none" stroke-linecap="round" />
+            </svg>
+          `;
+        case 'reading':
+          return `
+            <svg viewBox="0 0 100 100" class="w-full h-full" style="${styleAttrs}">
+              ${bgCircleHtml}
+              <rect x="25" y="60" width="40" height="10" rx="2" fill="var(--ill-book1)" stroke="${primaryColor}" stroke-width="${strokeWidth}" />
+              <rect x="28" y="51" width="34" height="9" rx="2" fill="var(--ill-book2)" stroke="${primaryColor}" stroke-width="${strokeWidth}" />
+              <rect x="23" y="69" width="45" height="11" rx="2" fill="var(--ill-book3)" stroke="${primaryColor}" stroke-width="${strokeWidth}" />
+              <path d="M72 75 V45 C72 35, 60 30, 52 35" fill="none" stroke="${primaryColor}" stroke-width="2.5" stroke-linecap="round" />
+              <path d="M45 33 L55 38 L52 44 L42 39 Z" fill="var(--ill-lamp)" stroke="${primaryColor}" stroke-width="${strokeWidth}" />
+              <polygon points="43,41 20,70 55,70 51,44" fill="${accentColor}" opacity="0.25" />
+              <circle cx="80" cy="30" r="2" fill="${accentColor}" />
+              <circle cx="15" cy="45" r="3" fill="${accentColor}" />
+            </svg>
+          `;
+        case 'figurative':
+          return `
+            <svg viewBox="0 0 100 100" class="w-full h-full" style="${styleAttrs}">
+              ${bgCircleHtml}
+              <path d="M25 45 C25 25, 75 25, 75 50 C75 65, 65 75, 45 75 C35 75, 25 65, 25 45 Z" fill="var(--ill-palette-bg)" stroke="${primaryColor}" stroke-width="${strokeWidth}" />
+              <circle cx="38" cy="62" r="5" fill="${bgColor}" stroke="${primaryColor}" stroke-width="1.5" />
+              <circle cx="38" cy="40" r="4" fill="${primaryColor}" />
+              <circle cx="50" cy="35" r="4" fill="${accentColor}" />
+              <circle cx="62" cy="42" r="4" fill="${primaryColor}" />
+              <circle cx="65" cy="55" r="4" fill="${accentColor}" />
+              <path d="M25 75 L75 25" stroke="${primaryColor}" stroke-width="3" stroke-linecap="round" />
+              <path d="M71 29 L77 23 L79 25 L73 31 Z" fill="${accentColor}" />
+              <path d="M15 25 L17 28 L20 25 L17 22 Z" fill="${accentColor}" />
+              <path d="M80 65 L82 68 L85 65 L82 62 Z" fill="${accentColor}" />
+            </svg>
+          `;
+        case 'writing':
+          return `
+            <svg viewBox="0 0 100 100" class="w-full h-full" style="${styleAttrs}">
+              ${bgCircleHtml}
+              <g transform="rotate(-45 50 50)">
+                <rect x="44" y="25" width="12" height="40" rx="1" fill="var(--ill-pencil-body)" stroke="${primaryColor}" stroke-width="${strokeWidth}" />
+                <polygon points="44,25 50,12 56,25" fill="${accentColor}" stroke="${primaryColor}" stroke-width="${strokeWidth}" />
+                <rect x="44" y="57" width="12" height="8" fill="${primaryColor}" stroke="${primaryColor}" stroke-width="${strokeWidth}" />
+              </g>
+              <path d="M25 75 C35 70, 45 75, 55 60 C65 45, 75 40, 80 35" fill="none" stroke="${primaryColor}" stroke-dasharray="3 3" stroke-width="2" stroke-linecap="round" />
+              <path d="M20 65 C30 63, 40 60, 45 50" fill="none" stroke="${primaryColor}" stroke-dasharray="3 3" stroke-width="1.5" stroke-linecap="round" />
+              <polygon points="75,20 76.5,23 79.5,23 77,25 78,28 75,26.5 72,28 73,25 70.5,23 73.5,23" fill="${accentColor}" />
+            </svg>
+          `;
+        default:
+          return '';
+      }
+    }
+
+    // Update dynamic illustration content
+    function updateWorksheetIllustration(mode) {
+      const container = document.getElementById('ws-illustration-container');
+      if (!container) return;
+
+      if (!showIllustrations) {
+        container.classList.add('hidden');
+        return;
+      }
+
+      container.classList.remove('hidden');
+      const svgContent = getEducationalIllustrationSVG(mode, currentIllustrationStyle);
+      container.innerHTML = svgContent;
+    }
+
+// Worksheet illustrations update directly on theme/mode change
+
+    // Zoom Controls
+    function zoomPreview(delta) {
+      currentScale = Math.min(Math.max(0.6, currentScale + delta), 1.4);
+      document.getElementById('zoom-wrapper').style.transform = `scale(${currentScale})`;
+    }
+
+    function resetZoom() {
+      currentScale = 1.0;
+      document.getElementById('zoom-wrapper').style.transform = `scale(1.0)`;
+    }
+
+    // Reset Textbook Header to Standard Worksheet Header layout
+    function resetStandardHeader() {
+      const headerBox = document.getElementById('worksheet-header');
+      if (!headerBox) return;
+
+      // Force the premium ELA Book Theme automatically for all worksheets!
+      const paper = document.getElementById('worksheet-paper');
+      if (paper) {
+        const allThemes = [
+          'theme-classic-corporate', 'theme-midnight-tech', 'theme-nordic-pastel', 
+          'theme-vibrant-gamifier', 'theme-emerald-scholar', 'theme-sunset-minimalist', 
+          'theme-cyberpunk-edgy', 'theme-oceanic-trust', 'theme-ela-book'
+        ];
+        allThemes.forEach(t => paper.classList.remove(t));
+        paper.classList.add('theme-ela-book');
+        const themeSelect = document.getElementById('theme-select');
+        if (themeSelect) themeSelect.value = 'ela-book';
+      }
+
+      headerBox.className = "border-b-4 border-[#0e56b2] pb-6 mb-6 flex flex-col items-center justify-center relative select-none pt-2";
+      headerBox.innerHTML = `
+          <!-- Page info top corners -->
+          <div class="absolute top-0 left-0 text-[10px] font-bold text-[#0e56b2] bg-blue-50 px-2 py-0.5 rounded uppercase tracking-wider">Unit: English</div>
+          <div class="absolute top-0 right-0 text-[10px] font-bold text-slate-500 bg-slate-100 px-2 py-0.5 rounded uppercase tracking-wider flex items-center gap-1">
+            <span>Name:</span>
+            <span contenteditable="true" class="min-w-[100px] border-b border-slate-400 inline-block px-1 outline-none font-handwriting text-indigo-700"></span>
+          </div>
+
+          <div class="w-full flex items-center justify-between gap-4 max-w-xl mt-3">
+            <!-- Cartoon Boy Waving (Highly polished vector art) -->
+            <div class="w-16 h-16 sm:w-20 sm:h-20 flex-shrink-0 animate-bounce" style="animation-duration: 3s;">
+              <svg viewBox="0 0 100 100" class="w-full h-full">
+                <path d="M25 40 C25 20, 75 20, 75 40 C75 35, 60 25, 50 25 C40 25, 25 35, 25 40" fill="#2d1500" />
+                <path d="M20 40 C20 25, 45 15, 50 15 C55 15, 80 25, 80 40" fill="#1a0b00" />
+                <circle cx="28" cy="48" r="6" fill="#fbcfe8" />
+                <circle cx="28" cy="48" r="3" fill="#f472b6" />
+                <circle cx="72" cy="48" r="6" fill="#fbcfe8" />
+                <circle cx="72" cy="48" r="3" fill="#f472b6" />
+                <circle cx="50" cy="50" r="22" fill="#fed7aa" />
+                <circle cx="38" cy="56" r="3" fill="#f43f5e" opacity="0.4" />
+                <circle cx="62" cy="56" r="3" fill="#f43f5e" opacity="0.4" />
+                <circle cx="42" cy="48" r="3" fill="#1e293b" />
+                <circle cx="42" cy="48" r="1" fill="#ffffff" transform="translate(-1, -1)" />
+                <circle cx="58" cy="48" r="3" fill="#1e293b" />
+                <circle cx="58" cy="48" r="1" fill="#ffffff" transform="translate(-1, -1)" />
+                <path d="M44 58 Q50 64 56 58" stroke="#be123c" stroke-width="2.5" fill="none" stroke-linecap="round" />
+                <path d="M35 70 C35 70, 50 72, 65 70 L70 85 H30 Z" fill="#0284c7" />
+                <path d="M20 70 Q10 50 15 45 Q20 40 24 50" fill="#fed7aa" stroke="#0284c7" stroke-width="2" />
+                <circle cx="15" cy="43" r="5" fill="#fed7aa" />
+              </svg>
+            </div>
+
+            <!-- Central Title Banner -->
+            <div class="flex-1 flex flex-col items-center text-center">
+              <div id="ws-title" contenteditable="true" class="bg-[#0e56b2] outline-none text-white text-base sm:text-xl font-black px-4 sm:px-8 py-2 sm:py-3.5 rounded-2xl shadow-md tracking-wider uppercase leading-tight min-w-[250px]">
+                Worksheet
+              </div>
+              <div id="ws-subtitle" contenteditable="true" class="border-2 border-[#0e56b2] outline-none text-[#0e56b2] text-[9px] sm:text-[10px] font-black px-4 py-1 rounded-full mt-2 bg-white/90 shadow-sm uppercase tracking-wide">
+                English Language Arts
+              </div>
+            </div>
+
+            <!-- Cartoon Girl Waving -->
+            <div class="w-16 h-16 sm:w-20 sm:h-20 flex-shrink-0 animate-bounce" style="animation-duration: 3s; animation-delay: 0.5s;">
+              <svg viewBox="0 0 100 100" class="w-full h-full">
+                <circle cx="24" cy="35" r="10" fill="#b45309" />
+                <circle cx="76" cy="35" r="10" fill="#b45309" />
+                <path d="M25 40 C25 20, 75 20, 75 40" fill="#d97706" />
+                <circle cx="50" cy="48" r="22" fill="#fed7aa" />
+                <circle cx="38" cy="54" r="3.5" fill="#f43f5e" opacity="0.4" />
+                <circle cx="62" cy="54" r="3.5" fill="#f43f5e" opacity="0.4" />
+                <circle cx="42" cy="46" r="3" fill="#1e293b" />
+                <circle cx="58" cy="46" r="3" fill="#1e293b" />
+                <path d="M44 56 Q50 62 56 56" stroke="#be123c" stroke-width="2.5" fill="none" stroke-linecap="round" />
+                <path d="M30 35 L35 32" stroke="#f43f5e" stroke-width="3" stroke-linecap="round" />
+                <path d="M70 35 L65 32" stroke="#f43f5e" stroke-width="3" stroke-linecap="round" />
+                <path d="M35 68 C35 68, 50 70, 65 68 L70 85 H30 Z" fill="#ec4899" />
+                <path d="M80 68 Q90 48 85 43 Q80 38 76 48" fill="#fed7aa" stroke="#ec4899" stroke-width="2" />
+                <circle cx="85" cy="41" r="5" fill="#fed7aa" />
+              </svg>
+            </div>
+          </div>
+      `;
+      const teacherName = document.getElementById('teacher-name-input').value;
+      updateTeacherHeader(teacherName);
+    }
+
+    // Interactive Slideshow Presentation Engine
+    function setViewMode(mode) {
+      viewMode = mode;
+      const btnWorksheet = document.getElementById('btn-view-worksheet');
+      const btnPresentation = document.getElementById('btn-view-presentation');
+      const zoomWrapper = document.getElementById('zoom-wrapper');
+      const presentationContainer = document.getElementById('presentation-container');
+      
+      if (mode === 'worksheet') {
+        btnWorksheet.className = "px-4 py-2 rounded-lg text-xs font-bold flex items-center gap-2 transition-all bg-indigo-600 text-white shadow";
+        btnPresentation.className = "px-4 py-2 rounded-lg text-xs font-bold flex items-center gap-2 transition-all text-slate-400 hover:text-slate-200";
+        if (zoomWrapper) zoomWrapper.classList.remove('hidden');
+        if (presentationContainer) presentationContainer.classList.add('hidden');
+        
+        const previewBar = document.getElementById('preview-mode-bar');
+        if (previewBar) {
+          previewBar.classList.remove('max-w-6xl', 'max-w-full');
+          previewBar.classList.add('max-w-4xl');
+        }
+
+        const splitBtn = document.getElementById('btn-split-page');
+        if (splitBtn) splitBtn.classList.remove('hidden');
+      } else {
+        btnWorksheet.className = "px-4 py-2 rounded-lg text-xs font-bold flex items-center gap-2 transition-all text-slate-400 hover:text-slate-200";
+        btnPresentation.className = "px-4 py-2 rounded-lg text-xs font-bold flex items-center gap-2 transition-all bg-indigo-600 text-white shadow";
+        if (zoomWrapper) zoomWrapper.classList.add('hidden');
+        if (presentationContainer) presentationContainer.classList.remove('hidden');
+        
+        const previewBar = document.getElementById('preview-mode-bar');
+        if (previewBar) {
+          previewBar.classList.remove('max-w-4xl');
+          previewBar.classList.add(isTheaterMode ? 'max-w-full' : 'max-w-6xl');
+        }
+
+        const splitBtn = document.getElementById('btn-split-page');
+        if (splitBtn) splitBtn.classList.add('hidden');
+        
+        generatePresentationSlides();
+        currentSlideIndex = 0;
+        renderCurrentSlide();
+        setTimeout(init3DSwipeHandlers, 50);
+        if (typeof lucide !== 'undefined' && lucide.createIcons) { lucide.createIcons(); }
+        setTimeout(() => {
+          initSmartboardCanvas();
+          setSmartboardTool('laser');
+        }, 150);
+      }
+    }
+
+    function generatePresentationSlides() {
+      presentationSlides = [];
+      
+      const titleEl = document.getElementById('ws-title-display');
+      const titleText = titleEl ? titleEl.innerText : 'English Class Session';
+      
+      const teacherEl = document.getElementById('ws-teacher-display');
+      const teacherName = teacherEl ? teacherEl.innerText : 'Mr.Zaafouri Abdelmalek';
+
+      // Title Slide
+      presentationSlides.push({
+        layout: 'title',
+        title: titleText,
+        subtitle: `Presented by ${teacherName} • Interactive Smartboard Lesson`,
+        footer: 'Press Next to begin'
+      });
+
+      if (currentMode === 'showcase' || currentMode === 'textbook') {
+        const activeLesson = (typeof textbookLessons !== 'undefined' && textbookLessons[currentTextbookLessonIndex]) 
+          ? textbookLessons[currentTextbookLessonIndex] 
+          : null;
+
+        if (activeLesson) {
+          presentationSlides.push({
+            layout: 'bullets',
+            title: `${activeLesson.unitTag} — ${activeLesson.unitTitle}`,
+            subtitle: activeLesson.lessonTitle,
+            bullets: [
+              `🎯 Curriculum Objective: ${activeLesson.standardText}`,
+              `📖 Text Focus: Read "${activeLesson.storyTitle}" closely and identify key details.`,
+              `✨ ELA Skills: Reading comprehension, contextual vocabulary, and textual evidence.`
+            ]
+          });
+
+          presentationSlides.push({
+            layout: 'split',
+            title: `${activeLesson.storyTitle} (Shared Reading)`,
+            subtitle: "Follow along closely as we read the passage together",
+            leftContent: `
+              <div class="text-[11px] leading-relaxed space-y-2 text-slate-800 bg-slate-50 p-3 rounded-lg border border-slate-200 font-serif max-h-56 overflow-y-auto">
+                <p>${activeLesson.storyText}</p>
+              </div>
+            `,
+            rightContent: `
+              <div class="flex flex-col items-center justify-center h-full bg-blue-50/50 rounded-lg p-3 border border-blue-100 text-center space-y-2">
+                <span class="text-[10px] uppercase font-black text-[#0e56b2]">${activeLesson.unitTitle} • ${activeLesson.pageTag}</span>
+                <div class="w-24 h-24 rounded-xl overflow-hidden border-2 border-[#0e56b2] shadow-sm bg-white flex items-center justify-center">
+                  <img src="${activeLesson.imageSrc}" alt="${activeLesson.sceneLabel}" class="w-full h-full object-cover" onerror="this.style.display='none';">
+                </div>
+                <span class="text-[10px] text-slate-600 font-medium italic">"${activeLesson.caption}"</span>
+              </div>
+            `
+          });
+
+          let qListHtml = activeLesson.comprehension.slice(0, 3).map((item, idx) => `
+            <div class="bg-indigo-50/60 p-2.5 rounded-lg border border-indigo-100">
+              <span class="text-xs font-bold text-indigo-950">Q${idx + 1}. ${item.q}</span>
+            </div>
+          `).join('');
+
+          let ansListHtml = activeLesson.comprehension.slice(0, 3).map((item, idx) => `
+            <p>✔ Q${idx + 1}: ${item.a}</p>
+          `).join('');
+
+          // Adding Interactive Vocabulary Flashcards
+          if (activeLesson.findInText && activeLesson.findInText.length > 0) {
+            activeLesson.findInText.slice(0, 3).forEach((item, fIdx) => {
+              presentationSlides.push({
+                layout: 'flashcard',
+                title: 'Textbook Vocabulary Word ' + (fIdx + 1),
+                subtitle: 'Unit Vocabulary Focus',
+                definition: item.def,
+                term: item.val,
+                notes: 'Tap the flashcard to flip and reveal the key ELA term! Use text-to-speech to demonstrate pronunciation.'
+              });
+            });
+          }
+
+          
+
+          
+          
+
+          let tfRowsHtml = activeLesson.trueFalse.map((item, idx) => `
+            <tr>
+              <td class="p-2 text-slate-800">${idx + 1}. ${item.q}</td>
+              <td class="p-2 text-center text-slate-400 font-bold">[ True / False ]</td>
+            </tr>
+          `).join('');
+
+          let tfAnsHtml = activeLesson.trueFalse.map((item, idx) => `
+            <p>${item.ans ? '✔' : '✖'} Statement ${idx + 1}: ${item.ans ? 'True' : 'False'}</p>
+          `).join('');
+
+          
+        }
+      } else {
+        const modeTitle = currentMode.charAt(0).toUpperCase() + currentMode.slice(1);
+        
+        presentationSlides.push({
+          layout: 'bullets',
+          title: `${modeTitle} Learning Block`,
+          subtitle: 'Active Study Guide',
+          bullets: [
+            "👨‍🏫 Teacher Instructions: Match terminology correctly and fill out responses.",
+            "📚 Student Task: Read each sentence carefully and identify context clues.",
+            "💡 Classroom Smartboard Tip: Use interactive drawing tool to link terms!"
+          ]
+        });
+
+        const exercises = document.querySelectorAll('#worksheet-body .exercise-block, #worksheet-body .ws-card');
+        if (exercises.length > 0) {
+          exercises.forEach((ex, idx) => {
+            const heading = ex.querySelector('h3, h4')?.innerText || `Exercise Part ${idx + 1}`;
+            const questionsText = Array.from(ex.querySelectorAll('.question-item, li')).map(q => q.innerText).slice(0, 3);
+            
+            presentationSlides.push({
+              layout: 'bullets',
+              title: heading,
+              subtitle: `Active Whiteboard Challenge ${idx + 1}`,
+              bullets: questionsText.length > 0 ? questionsText : ["Analyze context clues for ELA development.", "Fill out respective answers on printed handouts."]
+            });
+          });
+        }
+      }
+
+      // Append any teacher custom-created slides
+      if (customUserSlides && customUserSlides.length > 0) {
+        presentationSlides = presentationSlides.concat(customUserSlides);
+      }
+    }
+
+    
+    function setSlideAnimationMode(mode) {
+      slideAnimationMode = mode;
+      renderCurrentSlide();
+      const modeNames = {
+        'smooth-slide': 'Smooth Slide Animation',
+        'zoom-pop': 'Zoom & Depth Animation',
+        'fluid-fade': 'Fluid Fade Animation',
+        'card-flip': '3D Card Flip Animation'
+      };
+      showToast('Slide Animation', 'Set to ' + (modeNames[mode] || mode), 'sparkles');
+    }
+
+    function renderCurrentSlide() {
+      const wrapper = document.getElementById('slide-content-wrapper');
+      if (!wrapper || presentationSlides.length === 0) return;
+      
+      const slide = presentationSlides[currentSlideIndex];
+      const counter = document.getElementById('slide-number-display');
+      if (counter) {
+        counter.innerText = `Slide ${currentSlideIndex + 1} of ${presentationSlides.length}`;
+      }
+      const countBadge = document.getElementById('slide-count-badge');
+      if (countBadge) {
+        countBadge.innerText = `Slide ${currentSlideIndex + 1} of ${presentationSlides.length}`;
+      }
+      
+      // Update progress bar
+      const progressBar = document.getElementById('slide-progress-fill');
+      if (progressBar) {
+        const pct = ((currentSlideIndex + 1) / presentationSlides.length) * 100;
+        progressBar.style.width = pct + '%';
+      }
+
+      // Determine Animation Class
+      let animClass = 'anim-slide-right';
+      if (slideAnimationMode === 'zoom-pop') animClass = 'anim-slide-zoom';
+      else if (slideAnimationMode === 'fluid-fade') animClass = 'anim-slide-fade';
+      else if (slideAnimationMode === 'card-flip') animClass = 'anim-slide-flip';
+
+      let html = '';
+
+      if (slide.layout === 'title') {
+        html = `
+          <div class="flex-1 flex flex-col justify-center items-center text-center py-8 ${animClass}">
+            <span class="px-3.5 py-1.5 bg-indigo-500/10 text-indigo-600 border border-indigo-500/20 text-xs font-black uppercase rounded-full tracking-wider mb-4 anim-badge-pop shadow-sm">
+              ✨ Presentation Mode
+            </span>
+            <h1 class="text-3xl sm:text-4xl font-black text-slate-900 font-sans tracking-tight mb-4 leading-tight anim-stagger-1 max-w-2xl bg-gradient-to-r from-slate-950 via-indigo-950 to-slate-900 bg-clip-text text-transparent">
+              ${slide.title}
+            </h1>
+            <p class="text-sm sm:text-base text-slate-600 font-medium max-w-lg anim-stagger-2 leading-relaxed">
+              ${slide.subtitle}
+            </p>
+            <div class="mt-6 flex items-center gap-2 anim-stagger-3">
+              <span class="w-2 h-2 rounded-full bg-emerald-500 animate-ping"></span>
+              <span class="text-xs font-bold text-slate-400 uppercase tracking-wider">Interactive Lesson Deck</span>
+            </div>
+          </div>
+        `;
+      } else if (slide.layout === 'bullets') {
+        const bulletList = slide.bullets.map((b, idx) => {
+          const staggerClass = `anim-stagger-${Math.min(idx + 1, 6)}`;
+          return `<li class="text-sm sm:text-base font-semibold leading-relaxed text-slate-800 flex items-start gap-3 ${staggerClass} p-3 rounded-xl bg-slate-50/80 border border-slate-100/80 shadow-sm slide-active-card hover:bg-indigo-50/40 transition-all">
+            <span class="w-6 h-6 rounded-lg bg-indigo-600 text-white flex items-center justify-center text-xs font-black flex-shrink-0 shadow-sm shadow-indigo-600/30">${idx + 1}</span>
+            <div class="pt-0.5">${b}</div>
+          </li>`;
+        }).join('');
+        
+        html = `
+          <div class="flex-1 flex flex-col justify-between py-2 ${animClass}">
+            <div>
+              <span class="text-[10px] uppercase font-black text-indigo-600 tracking-wider anim-badge-pop block mb-1">${slide.subtitle || 'Classroom Focus'}</span>
+              <h2 class="text-2xl font-black text-slate-900 mb-4 font-sans border-b pb-2.5 border-slate-200/80 anim-stagger-1 tracking-tight flex items-center justify-between">
+                <span>${slide.title}</span>
+                <span class="text-xs font-bold text-slate-400 bg-slate-100 px-2 py-0.5 rounded-full">${slide.bullets.length} Key Points</span>
+              </h2>
+            </div>
+            <ul class="space-y-3 flex-1 flex flex-col justify-center">
+              ${bulletList}
+            </ul>
+          </div>
+        `;
+      } else if (slide.layout === 'split') {
+        html = `
+          <div class="flex-1 flex flex-col justify-between py-2 ${animClass}">
+            <div>
+              <span class="text-[10px] uppercase font-black text-indigo-600 tracking-wider anim-badge-pop block mb-1">${slide.subtitle}</span>
+              <h2 class="text-2xl font-black text-slate-900 mb-4 font-sans border-b pb-2.5 border-slate-200/80 anim-stagger-1 tracking-tight">${slide.title}</h2>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-5 flex-1 items-stretch">
+              <div class="flex flex-col justify-center anim-stagger-2 bg-slate-50/90 p-5 rounded-2xl border border-slate-200/80 shadow-sm slide-active-card">${slide.leftContent}</div>
+              <div class="flex flex-col justify-center anim-stagger-3 bg-indigo-50/40 p-5 rounded-2xl border border-indigo-100 shadow-sm slide-active-card">${slide.rightContent}</div>
+            </div>
+          </div>
+        `;
+      } else if (slide.layout === 'activity') {
+        html = `
+          <div class="flex-1 flex flex-col justify-between py-2 ${animClass}">
+            <div>
+              <span class="text-[10px] uppercase font-black text-indigo-600 tracking-wider anim-badge-pop block mb-1">${slide.subtitle}</span>
+              <h2 class="text-2xl font-black text-slate-900 mb-4 font-sans border-b pb-2.5 border-slate-200/80 anim-stagger-1 tracking-tight">${slide.title}</h2>
+            </div>
+            <div class="flex-1 anim-stagger-2">
+              ${slide.activityHtml}
+              ${revealSlideAnswers && slide.answersRevealedHtml ? `<div class="anim-stagger-3 mt-4">${slide.answersRevealedHtml}</div>` : ''}
+            </div>
+          </div>
+        `;
+      } else if (slide.layout === 'flashcard') {
+        html = `
+          <div class="flex-1 flex flex-col justify-between py-2 ${animClass}">
+            <div>
+              <span class="text-[10px] uppercase font-black text-indigo-600 tracking-wider anim-badge-pop block mb-1">Interactive 3D Flashcard</span>
+              <h2 class="text-2xl font-black text-slate-900 mb-2 font-sans border-b pb-2.5 border-slate-200/80 anim-stagger-1 tracking-tight flex items-center justify-between">
+                <span>Vocabulary Focus</span>
+                <span class="text-xs font-bold text-indigo-500 bg-indigo-50 px-2.5 py-1 rounded-full">Tap Card to Flip</span>
+              </h2>
+            </div>
+            
+            <div class="flex-1 flex items-center justify-center py-4">
+              <!-- 3D Card Flip Container -->
+              <div class="w-full max-w-lg aspect-[5/3] cursor-pointer" style="perspective: 1000px;" onclick="this.querySelector('.flashcard-inner').classList.toggle('flipped'); playSynthesizedSound('swoosh');">
+                <div class="flashcard-inner relative w-full h-full transition-transform duration-700 ease-out transform-style-preserve-3d">
+                  
+                  <!-- Card Front (Definition / Prompt) -->
+                  <div class="absolute inset-0 bg-gradient-to-br from-slate-900 to-slate-950 text-white rounded-2xl border border-slate-800 p-6 flex flex-col justify-between backface-hidden shadow-xl">
+                    <div class="flex justify-between items-start">
+                      <span class="px-2 py-1 rounded bg-indigo-600/30 text-indigo-300 text-[9px] font-black tracking-widest uppercase">Question / Definition</span>
+                      <i data-lucide="help-circle" class="w-4 h-4 text-indigo-400"></i>
+                    </div>
+                    <div class="text-center py-4">
+                      <p class="text-xs text-slate-400 uppercase font-bold tracking-wider mb-2">Identify the word for:</p>
+                      <blockquote class="text-base sm:text-lg font-serif italic text-slate-100 leading-relaxed">
+                        "${slide.definition}"
+                      </blockquote>
+                    </div>
+                    <div class="text-center text-[10px] text-slate-500 font-bold uppercase tracking-widest">
+                      Tap anywhere to reveal term
+                    </div>
+                  </div>
+
+                  <!-- Card Back (Term, TTS Audio, Example) -->
+                  <div class="absolute inset-0 bg-white text-slate-900 rounded-2xl border-2 border-indigo-600 p-6 flex flex-col justify-between backface-hidden shadow-xl rotate-y-180">
+                    <div class="flex justify-between items-start">
+                      <span class="px-2.5 py-1 rounded bg-emerald-100 text-emerald-800 text-[9px] font-black tracking-widest uppercase">Key Term Found!</span>
+                      <button onclick="event.stopPropagation(); speakVocabWord('${slide.term}');" class="p-1.5 rounded-lg bg-indigo-50 hover:bg-indigo-100 text-indigo-600 transition-all active:scale-90 shadow-sm cursor-pointer" title="Pronounce Term">
+                        <i data-lucide="volume-2" class="w-4 h-4"></i>
+                      </button>
+                    </div>
+                    <div class="text-center py-2">
+                      <h3 class="text-3xl font-black text-slate-950 tracking-tight font-sans mb-1" data-morph-id="morph-term-${slide.term}">
+                        ${slide.term}
+                      </h3>
+                      <p class="text-[10px] text-slate-400 font-bold uppercase tracking-wider mb-3">Pronunciation Guide</p>
+                      <div class="inline-block bg-slate-50 border border-slate-100 px-3 py-1.5 rounded-xl">
+                        <span class="text-xs text-slate-700 italic font-medium">Contextual ELA Core Vocabulary</span>
+                      </div>
+                    </div>
+                    <div class="text-center text-[10px] text-slate-400 font-bold uppercase tracking-widest">
+                      Tap card again to flip back
+                    </div>
+                  </div>
+
+                </div>
+              </div>
+            </div>
+          </div>
+        `;
+      } else if (slide.layout === 'quiz') {
+        const letters = ['A', 'B', 'C', 'D'];
+        const optionCards = slide.options.map((opt, oIdx) => {
+          const letter = letters[oIdx];
+          return `
+            <button onclick="castClassroomVote(${currentSlideIndex}, '${letter}')" id="quiz-option-${letter}" class="quiz-option-card text-left p-3 rounded-xl border border-slate-200 bg-slate-50/50 hover:bg-indigo-50/30 hover:border-indigo-400 transition-all flex items-center gap-3 active:scale-[0.98] cursor-pointer w-full">
+              <span class="w-7 h-7 rounded-lg bg-indigo-600 text-white flex items-center justify-center text-xs font-black shadow-md shadow-indigo-600/20">${letter}</span>
+              <div class="flex-1 min-w-0">
+                <span class="text-xs font-bold text-slate-800 block truncate">${opt}</span>
+                <!-- Polling progress bar -->
+                <div class="w-full bg-slate-200 rounded-full h-1 mt-1.5 overflow-hidden">
+                  <div id="poll-bar-${letter}" class="bg-gradient-to-r from-indigo-500 to-indigo-600 h-full rounded-full transition-all duration-500 ease-out" style="width: 0%;"></div>
+                </div>
+                <div class="flex justify-between items-center mt-1">
+                  <span id="poll-tally-${letter}" class="text-[9px] text-slate-400 font-bold uppercase">0 votes (0%)</span>
+                  <span class="text-[9px] text-indigo-500 hover:underline font-black uppercase tracking-wider">+1 Clicker</span>
+                </div>
+              </div>
+            </button>
+          `;
+        }).join('');
+
+        const letterMap = { 0: 'A', 1: 'B', 2: 'C', 3: 'D' };
+        const correctLetter = letterMap[slide.correctAnswerIndex] || 'A';
+
+        html = `
+          <div class="flex-1 flex flex-col justify-between py-2 ${animClass}">
+            <div>
+              <span class="text-[10px] uppercase font-black text-indigo-600 tracking-wider anim-badge-pop block mb-1">Interactive Classroom Clicker Quiz</span>
+              <h2 class="text-2xl font-black text-slate-900 mb-3 font-sans border-b pb-2 border-slate-200/80 anim-stagger-1 tracking-tight">
+                ${slide.title}
+              </h2>
+            </div>
+
+            <!-- Quiz Questions Grid -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3.5 flex-1 items-center py-1">
+              ${optionCards}
+            </div>
+
+            <!-- Quiz Solution Reveal Panel -->
+            <div id="quiz-solution-box-${currentSlideIndex}" class="hidden mt-3.5 p-3.5 bg-emerald-50 border border-emerald-200 rounded-xl items-start gap-2.5 animate-fade-in">
+              <div class="w-7 h-7 rounded-full bg-emerald-100 text-emerald-700 flex items-center justify-center flex-shrink-0">
+                <i data-lucide="check-circle" class="w-4 h-4"></i>
+              </div>
+              <div class="space-y-0.5">
+                <h5 class="text-xs font-black text-emerald-950 uppercase tracking-wide">Excellent Class Consensus!</h5>
+                <p class="text-xs text-slate-700 leading-relaxed font-semibold">
+                  The correct answer is indeed <span class="px-1.5 py-0.5 rounded bg-emerald-200 text-emerald-800 font-black">${correctLetter}</span>. Great job exploring textual evidence!
+                </p>
+              </div>
+            </div>
+
+            <!-- Whiteboard Quiz Controls footer -->
+            <div class="mt-3.5 pt-2.5 border-t border-slate-100 flex items-center justify-between">
+              <span class="text-[9px] text-slate-400 font-bold uppercase tracking-wider">Tap +1 to tally student responses</span>
+              <div class="flex items-center gap-2">
+                <button onclick="revealQuizPollSolution(${currentSlideIndex}, '${correctLetter}')" class="px-3 py-1.5 bg-emerald-600 hover:bg-emerald-500 text-white rounded-lg text-xs font-bold shadow flex items-center gap-1 active:scale-95 transition-all cursor-pointer">
+                  <i data-lucide="eye" class="w-3.5 h-3.5"></i>
+                  <span>Reveal Solution</span>
+                </button>
+                <button onclick="resetQuizPoll(${currentSlideIndex})" class="px-2.5 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-600 rounded-lg text-xs font-bold flex items-center gap-1 active:scale-95 transition-all cursor-pointer">
+                  <i data-lucide="rotate-ccw" class="w-3.5 h-3.5"></i>
+                  <span>Reset Poll</span>
+                </button>
+              </div>
+            </div>
+          </div>
+        `;
+      } 
+      else if (slide.layout === 'custom') {
+        html = `
+          <div class="flex-1 flex flex-col justify-between py-2 ${animClass}">
+            <div>
+              <div class="flex items-center justify-between">
+                <span class="text-[10px] uppercase font-black text-indigo-600 tracking-wider anim-badge-pop">${slide.subtitle || 'Teacher Custom Slide'}</span>
+                <button onclick="removeCustomSlide(${slide.customId || 0})" class="text-[10px] text-rose-500 hover:text-rose-700 font-bold px-2.5 py-1 rounded-lg bg-rose-50 border border-rose-200 transition-all flex items-center gap-1 active:scale-95">
+                  <i data-lucide="trash-2" class="w-3 h-3"></i>
+                  <span>Delete</span>
+                </button>
+              </div>
+              <h2 class="text-2xl font-black text-slate-900 mt-1 mb-4 font-sans border-b pb-2.5 border-slate-200/80 anim-stagger-1 tracking-tight">${slide.title}</h2>
+            </div>
+            <div class="flex-1 flex flex-col justify-center anim-stagger-2 text-slate-800 text-sm sm:text-base leading-relaxed whitespace-pre-line bg-slate-50/80 p-6 rounded-2xl border border-slate-200 shadow-sm slide-active-card">
+              ${slide.content}
+            </div>
+          </div>
+        `;
+      }
+
+      wrapper.innerHTML = html;
+      if (typeof lucide !== 'undefined' && lucide.createIcons) { lucide.createIcons(); }
+
+      // Update Answer button UI
+      const btnAnswers = document.getElementById('btn-slide-answers');
+      const labelAnswers = document.getElementById('label-slide-answers');
+      if (btnAnswers && labelAnswers) {
+        if (revealSlideAnswers) {
+          btnAnswers.className = "py-1.5 px-3 bg-emerald-600 hover:bg-emerald-500 text-white font-bold rounded-lg text-xs flex items-center gap-1.5 transition-all shadow-md shadow-emerald-600/20";
+          labelAnswers.innerText = "Hide Answers";
+        } else {
+          btnAnswers.className = "py-1.5 px-3 bg-amber-600/20 hover:bg-amber-600 text-amber-300 hover:text-white font-bold rounded-lg text-xs flex items-center gap-1.5 transition-all";
+          labelAnswers.innerText = "Reveal Answers";
+        }
+      }
+
+      // Update dynamic presenter notes
+      const notesContent = document.getElementById('presenter-notes-content');
+      if (notesContent) {
+        let noteText = slide.notes || '';
+        if (!noteText) {
+          if (slide.layout === 'title') {
+            noteText = "Welcome students to today's English lesson. Explain the learning objectives and ask a warm-up question.";
+          } else if (slide.layout === 'bullets') {
+            noteText = `Discuss: "${slide.title}". Read points sequentially and invite student examples.`;
+          } else if (slide.layout === 'split') {
+            noteText = "Compare the concepts side-by-side. Ask students to identify key distinctions.";
+          } else if (slide.layout === 'activity') {
+            noteText = "Interactive challenge! Ask students to answer, then tap 'Reveal Answers' to check.";
+          } else if (slide.layout === 'custom') {
+            noteText = `Custom slide: "${slide.title}". Review together.`;
+          } else {
+            noteText = `Focus: "${slide.title}". Review vocabulary and grammar notes.`;
+          }
+        }
+        notesContent.innerText = noteText;
+      }
+
+      // Update the Slide Filmstrip Dock
+      renderSlideFilmstrip();
+      lucide.createIcons();
+    }
+
+    function init3DSwipeHandlers() {
+      const viewport = document.getElementById('slide-3d-viewport');
+      const slideBox = document.getElementById('presentation-slide-box');
+      if (!viewport || !slideBox) return;
+
+      // Mouse drag handlers
+      viewport.addEventListener('mousedown', startSlideDrag);
+      window.addEventListener('mousemove', moveSlideDrag);
+      window.addEventListener('mouseup', endSlideDrag);
+
+      // Touch swipe handlers
+      viewport.addEventListener('touchstart', startSlideTouch, { passive: true });
+      viewport.addEventListener('touchmove', moveSlideTouch, { passive: false });
+      viewport.addEventListener('touchend', endSlideTouch);
+
+      // Mouse move spotlight tracking
+      viewport.addEventListener('mousemove', (e) => {
+        if (spotlightActive) {
+          const mask = document.getElementById('smartboard-spotlight-mask');
+          if (mask) {
+            const rect = viewport.getBoundingClientRect();
+            const x = e.clientX - rect.left;
+            const y = e.clientY - rect.top;
+            mask.style.background = `radial-gradient(circle 100px at ${x}px ${y}px, transparent 100%, rgba(15, 23, 42, 0.85) 100%)`;
+          }
+        }
+      });
+
+      // Touch spotlight tracking
+      viewport.addEventListener('touchmove', (e) => {
+        if (spotlightActive && e.touches.length > 0) {
+          const mask = document.getElementById('smartboard-spotlight-mask');
+          if (mask) {
+            const rect = viewport.getBoundingClientRect();
+            const x = e.touches[0].clientX - rect.left;
+            const y = e.touches[0].clientY - rect.top;
+            mask.style.background = `radial-gradient(circle 100px at ${x}px ${y}px, transparent 100%, rgba(15, 23, 42, 0.85) 100%)`;
+          }
+        }
+      }, { passive: false });
+    }
+
+    function startSlideDrag(e) {
+      if (e.target.closest('button') || e.target.closest('select') || e.target.closest('input')) return;
+      isDraggingSlide = true;
+      slideStartX = e.clientX;
+      slideCurrentX = e.clientX;
+      
+      const slideBox = document.getElementById('presentation-slide-box');
+      if (slideBox) {
+        slideBox.classList.remove('slide-idle-floating');
+        slideBox.style.transition = 'none';
+      }
+    }
+
+    function moveSlideDrag(e) {
+      if (!isDraggingSlide) return;
+      slideCurrentX = e.clientX;
+      update3DDragPhysics();
+    }
+
+    function endSlideDrag(e) {
+      if (!isDraggingSlide) return;
+      isDraggingSlide = false;
+      resolveSlideSwipe();
+    }
+
+    function startSlideTouch(e) {
+      if (e.target.closest('button') || e.target.closest('select') || e.target.closest('input')) return;
+      isDraggingSlide = true;
+      slideStartX = e.touches[0].clientX;
+      slideCurrentX = e.touches[0].clientX;
+      
+      const slideBox = document.getElementById('presentation-slide-box');
+      if (slideBox) {
+        slideBox.classList.remove('slide-idle-floating');
+        slideBox.style.transition = 'none';
+      }
+    }
+
+    function moveSlideTouch(e) {
+      if (!isDraggingSlide) return;
+      slideCurrentX = e.touches[0].clientX;
+      e.preventDefault();
+      update3DDragPhysics();
+    }
+
+    function endSlideTouch(e) {
+      if (!isDraggingSlide) return;
+      isDraggingSlide = false;
+      resolveSlideSwipe();
+    }
+
+    function update3DDragPhysics() {
+      const slideBox = document.getElementById('presentation-slide-box');
+      const stackMid = document.getElementById('slide-stack-mid');
+      const stackDeep = document.getElementById('slide-stack-deep');
+      const viewport = document.getElementById('slide-3d-viewport');
+      const glareOverlay = document.getElementById('slide-glare-overlay');
+      if (!slideBox || !viewport) return;
+
+      const viewportWidth = viewport.clientWidth || 800;
+      const deltaX = slideCurrentX - slideStartX;
+      const percentage = Math.min(Math.max(deltaX / viewportWidth, -1), 1);
+
+      // Advanced 3D Matrix transform rules (translation + yaw rotation + pitch tilt + depth extrusion)
+      const transX = deltaX * 1.08;
+      const rotateY = percentage * 48; 
+      const rotateZ = percentage * -9; 
+      const rotateX = Math.abs(percentage) * -4;
+      const translateZ = -Math.abs(percentage) * 190; 
+
+      slideBox.style.transform = `translate3d(${transX}px, 0px, ${translateZ}px) rotateY(${rotateY}deg) rotateZ(${rotateZ}deg) rotateX(${rotateX}deg)`;
+
+      // Dynamic Holographic Glare Sheen intensity
+      if (glareOverlay) {
+        const glareOpacity = Math.min(Math.abs(percentage) * 1.3, 0.75);
+        glareOverlay.style.opacity = glareOpacity;
+        const glareX = 50 + (percentage * 50);
+        glareOverlay.style.background = `radial-gradient(circle at ${glareX}% 50%, rgba(255,255,255,0.3) 0%, rgba(255,255,255,0.05) 50%, transparent 80%)`;
+      }
+
+      // Responsive 3D background stacks responding smoothly in depth
+      if (stackMid) {
+        const stackX = -percentage * 24;
+        const stackZ = -60 + (Math.abs(percentage) * 55);
+        const stackRotateY = -percentage * 14;
+        const scale = 0.98 + (Math.abs(percentage) * 0.025);
+        stackMid.style.transform = `translate3d(${stackX}px, 8px, ${stackZ}px) rotateY(${stackRotateY}deg) scale(${scale})`;
+      }
+      if (stackDeep) {
+        const stackX = -percentage * 42;
+        const stackZ = -120 + (Math.abs(percentage) * 85);
+        const stackRotateY = -percentage * 22;
+        const scale = 0.95 + (Math.abs(percentage) * 0.038);
+        stackDeep.style.transform = `translate3d(${stackX}px, 16px, ${stackZ}px) rotateY(${stackRotateY}deg) scale(${scale})`;
+      }
+    }
+
+    function resolveSlideSwipe() {
+      const slideBox = document.getElementById('presentation-slide-box');
+      const stackMid = document.getElementById('slide-stack-mid');
+      const stackDeep = document.getElementById('slide-stack-deep');
+      const viewport = document.getElementById('slide-3d-viewport');
+      const glareOverlay = document.getElementById('slide-glare-overlay');
+      if (!slideBox || !viewport) return;
+
+      const deltaX = slideCurrentX - slideStartX;
+      const threshold = (viewport.clientWidth || 800) * 0.18; 
+
+      // Restore silky spring transitions
+      slideBox.style.transition = 'all 0.45s cubic-bezier(0.19, 1, 0.22, 1)';
+      if (stackMid) stackMid.style.transition = 'all 0.45s cubic-bezier(0.19, 1, 0.22, 1)';
+      if (stackDeep) stackDeep.style.transition = 'all 0.45s cubic-bezier(0.19, 1, 0.22, 1)';
+      if (glareOverlay) glareOverlay.style.opacity = '0';
+
+      if (deltaX < -threshold) {
+        if (currentSlideIndex < presentationSlides.length - 1) {
+          slideBox.style.transform = 'translate3d(-130%, -40px, -320px) rotateY(-82deg) rotateZ(-22deg)';
+          slideBox.style.opacity = '0';
+          setTimeout(() => {
+            currentSlideIndex++;
+            renderCurrentSlide();
+            slideBox.style.transition = 'none';
+            slideBox.style.transform = 'translate3d(130%, 40px, -320px) rotateY(82deg) rotateZ(22deg)';
+            slideBox.style.opacity = '0';
+            slideBox.offsetHeight; // Force reflow
+            slideBox.style.transition = 'all 0.48s cubic-bezier(0.175, 0.885, 0.32, 1.15)';
+            slideBox.style.transform = 'translate3d(0, 0, 0) rotateY(0) rotateZ(0) rotateX(0)';
+            slideBox.style.opacity = '1';
+            resetStackElements();
+            setTimeout(() => slideBox.classList.add('slide-idle-floating'), 500);
+          }, 240);
+        } else {
+          bounceSlideBack();
+        }
+      } else if (deltaX > threshold) {
+        if (currentSlideIndex > 0) {
+          slideBox.style.transform = 'translate3d(130%, -40px, -320px) rotateY(82deg) rotateZ(22deg)';
+          slideBox.style.opacity = '0';
+          setTimeout(() => {
+            currentSlideIndex--;
+            renderCurrentSlide();
+            slideBox.style.transition = 'none';
+            slideBox.style.transform = 'translate3d(-130%, 40px, -320px) rotateY(-82deg) rotateZ(-22deg)';
+            slideBox.style.opacity = '0';
+            slideBox.offsetHeight; // Force reflow
+            slideBox.style.transition = 'all 0.48s cubic-bezier(0.175, 0.885, 0.32, 1.15)';
+            slideBox.style.transform = 'translate3d(0, 0, 0) rotateY(0) rotateZ(0) rotateX(0)';
+            slideBox.style.opacity = '1';
+            resetStackElements();
+            setTimeout(() => slideBox.classList.add('slide-idle-floating'), 500);
+          }, 240);
+        } else {
+          bounceSlideBack();
+        }
+      } else {
+        bounceSlideBack();
+      }
+    }
+
+    function bounceSlideBack() {
+      const slideBox = document.getElementById('presentation-slide-box');
+      if (slideBox) {
+        slideBox.style.transform = 'translate3d(0, 0, 0) rotateY(0) rotateZ(0) rotateX(0)';
+        slideBox.style.opacity = '1';
+        setTimeout(() => slideBox.classList.add('slide-idle-floating'), 460);
+      }
+      resetStackElements();
+    }
+
+    function resetStackElements() {
+      const stackMid = document.getElementById('slide-stack-mid');
+      const stackDeep = document.getElementById('slide-stack-deep');
+      if (stackMid) {
+        stackMid.style.transform = 'translate3d(0, 8px, -60px) rotateY(0deg) scale(0.98)';
+      }
+      if (stackDeep) {
+        stackDeep.style.transform = 'translate3d(0, 16px, -120px) rotateY(0deg) scale(0.95)';
+      }
+    }
+
+    
+    /* === POWERPOINT CLASSROOM ENHANCEMENTS & SMARTBOARD CONTROLLERS === */
+    let classroomSoundsEnabled = true;
+
+    function playSynthesizedSound(type) {
+      if (!classroomSoundsEnabled) return;
+      try {
+        const AudioContext = window.AudioContext || window.webkitAudioContext;
+        if (!AudioContext) return;
+        const ctx = new AudioContext();
+        
+        if (type === 'ding') {
+          const now = ctx.currentTime;
+          const osc1 = ctx.createOscillator();
+          const osc2 = ctx.createOscillator();
+          const gain = ctx.createGain();
+          
+          osc1.type = 'sine';
+          osc1.frequency.setValueAtTime(880, now);
+          osc1.frequency.exponentialRampToValueAtTime(1320, now + 0.1);
+          
+          osc2.type = 'triangle';
+          osc2.frequency.setValueAtTime(440, now);
+          osc2.frequency.exponentialRampToValueAtTime(880, now + 0.15);
+          
+          gain.gain.setValueAtTime(0.15, now);
+          gain.gain.exponentialRampToValueAtTime(0.001, now + 0.6);
+          
+          osc1.connect(gain);
+          osc2.connect(gain);
+          gain.connect(ctx.destination);
+          
+          osc1.start(now);
+          osc2.start(now);
+          osc1.stop(now + 0.65);
+          osc2.stop(now + 0.65);
+        } else if (type === 'gong') {
+          const now = ctx.currentTime;
+          const osc = ctx.createOscillator();
+          const gain = ctx.createGain();
+          
+          osc.type = 'sine';
+          osc.frequency.setValueAtTime(180, now);
+          osc.frequency.linearRampToValueAtTime(140, now + 1.2);
+          
+          gain.gain.setValueAtTime(0.3, now);
+          gain.gain.exponentialRampToValueAtTime(0.001, now + 1.5);
+          
+          osc.connect(gain);
+          gain.connect(ctx.destination);
+          
+          osc.start(now);
+          osc.stop(now + 1.6);
+        } else if (type === 'swoosh') {
+          const now = ctx.currentTime;
+          const bufferSize = ctx.sampleRate * 0.4;
+          const buffer = ctx.createBuffer(1, bufferSize, ctx.sampleRate);
+          const data = buffer.getChannelData(0);
+          for (let i = 0; i < bufferSize; i++) {
+            data[i] = Math.random() * 2 - 1;
+          }
+          
+          const noise = ctx.createBufferSource();
+          noise.buffer = buffer;
+          
+          const filter = ctx.createBiquadFilter();
+          filter.type = 'bandpass';
+          filter.Q.value = 8.0;
+          filter.frequency.setValueAtTime(300, now);
+          filter.frequency.exponentialRampToValueAtTime(4000, now + 0.25);
+          filter.frequency.exponentialRampToValueAtTime(500, now + 0.4);
+          
+          const gain = ctx.createGain();
+          gain.gain.setValueAtTime(0.001, now);
+          gain.gain.linearRampToValueAtTime(0.12, now + 0.15);
+          gain.gain.exponentialRampToValueAtTime(0.001, now + 0.4);
+          
+          noise.connect(filter);
+          filter.connect(gain);
+          gain.connect(ctx.destination);
+          
+          noise.start(now);
+          noise.stop(now + 0.45);
+        } else if (type === 'fanfare') {
+          const notes = [523.25, 659.25, 783.99, 1046.50];
+          const now = ctx.currentTime;
+          notes.forEach((freq, idx) => {
+            const osc = ctx.createOscillator();
+            const gain = ctx.createGain();
+            osc.type = 'sine';
+            osc.frequency.value = freq;
+            gain.gain.setValueAtTime(0.08, now + idx * 0.08);
+            gain.gain.exponentialRampToValueAtTime(0.001, now + idx * 0.08 + 0.3);
+            
+            osc.connect(gain);
+            gain.connect(ctx.destination);
+            osc.start(now + idx * 0.08);
+            osc.stop(now + idx * 0.08 + 0.35);
+          });
+        }
+      } catch(e) {
+        console.warn("Synthesizer audio context failure:", e);
+      }
+    }
+
+    let currentSmartboardTool = 'laser';
+    let currentSmartboardColor = '#ff0844';
+    let isSmartboardDrawing = false;
+    let smartboardStrokes = [];
+    let currentSmartboardStroke = [];
+    let slideCanvasInitialized = false;
+
+    function initSmartboardCanvas() {
+      const canvas = document.getElementById('slide-draw-canvas');
+      if (!canvas) return;
+      
+      const resizeCanvas = () => {
+        const rect = canvas.getBoundingClientRect();
+        const dpr = window.devicePixelRatio || 1;
+        canvas.width = rect.width * dpr;
+        canvas.height = rect.height * dpr;
+        const ctx = canvas.getContext('2d');
+        ctx.scale(dpr, dpr);
+        redrawSmartboardAnnotations();
+      };
+      
+      const getCoordinates = (e) => {
+        const rect = canvas.getBoundingClientRect();
+        let clientX = e.clientX;
+        let clientY = e.clientY;
+        if (e.touches && e.touches.length > 0) {
+          clientX = e.touches[0].clientX;
+          clientY = e.touches[0].clientY;
+        } else if (e.changedTouches && e.changedTouches.length > 0) {
+          clientX = e.changedTouches[0].clientX;
+          clientY = e.changedTouches[0].clientY;
+        }
+        return {
+          x: clientX - rect.left,
+          y: clientY - rect.top
+        };
+      };
+      
+      const startDrawing = (e) => {
+        if (currentSmartboardTool === 'none' || currentSmartboardTool === 'laser') return;
+        isSmartboardDrawing = true;
+        const coords = getCoordinates(e);
+        currentSmartboardStroke = [{
+          x: coords.x,
+          y: coords.y,
+          tool: currentSmartboardTool,
+          color: currentSmartboardColor,
+          width: currentSmartboardTool === 'highlighter' ? 24 : 3
+        }];
+      };
+      
+      const draw = (e) => {
+        const coords = getCoordinates(e);
+        
+        if (currentSmartboardTool === 'laser') {
+          const dot = document.getElementById('slide-laser-dot');
+          if (dot) {
+            dot.style.display = 'block';
+            dot.style.left = coords.x + 'px';
+            dot.style.top = coords.y + 'px';
+          }
+        }
+        
+        if (!isSmartboardDrawing) return;
+        currentSmartboardStroke.push({
+          x: coords.x,
+          y: coords.y
+        });
+        
+        const ctx = canvas.getContext('2d');
+        ctx.lineCap = 'round';
+        ctx.lineJoin = 'round';
+        
+        if (currentSmartboardTool === 'highlighter') {
+          ctx.strokeStyle = currentSmartboardColor === '#facc15' ? 'rgba(250, 204, 21, 0.4)' : 'rgba(0, 242, 254, 0.4)';
+          ctx.lineWidth = 24;
+        } else {
+          ctx.strokeStyle = currentSmartboardColor;
+          ctx.lineWidth = 3;
+        }
+        
+        const p1 = currentSmartboardStroke[currentSmartboardStroke.length - 2];
+        const p2 = currentSmartboardStroke[currentSmartboardStroke.length - 1];
+        if (p1 && p2) {
+          ctx.beginPath();
+          ctx.moveTo(p1.x, p1.y);
+          ctx.lineTo(p2.x, p2.y);
+          ctx.stroke();
+        }
+      };
+      
+      const endDrawing = () => {
+        if (isSmartboardDrawing) {
+          smartboardStrokes.push(currentSmartboardStroke);
+          currentSmartboardStroke = [];
+          isSmartboardDrawing = false;
+        }
+      };
+      
+      canvas.addEventListener('mousedown', startDrawing);
+      canvas.addEventListener('mousemove', draw);
+      canvas.addEventListener('mouseup', endDrawing);
+      canvas.addEventListener('mouseleave', () => {
+        endDrawing();
+        const dot = document.getElementById('slide-laser-dot');
+        if (dot) dot.style.display = 'none';
+      });
+      
+      canvas.addEventListener('touchstart', startDrawing);
+      canvas.addEventListener('touchmove', draw);
+      canvas.addEventListener('touchend', endDrawing);
+      
+      resizeCanvas();
+      window.addEventListener('resize', resizeCanvas);
+      slideCanvasInitialized = true;
+    }
+
+    function setSmartboardTool(tool) {
+      currentSmartboardTool = tool;
+      const canvas = document.getElementById('slide-draw-canvas');
+      if (!canvas) return;
+      
+      canvas.classList.remove('drawing-active', 'laser-active');
+      if (tool === 'pen' || tool === 'highlighter') {
+        canvas.classList.add('drawing-active');
+      } else if (tool === 'laser') {
+        canvas.classList.add('laser-active');
+      }
+      
+      document.querySelectorAll('.ppt-tool-btn').forEach(btn => btn.classList.remove('active'));
+      const activeBtn = document.getElementById('btn-tool-' + tool);
+      if (activeBtn) activeBtn.classList.add('active');
+      
+      const dot = document.getElementById('slide-laser-dot');
+      if (dot) dot.style.display = (tool === 'laser') ? 'block' : 'none';
+    }
+
+    function setSmartboardColor(color) {
+      currentSmartboardColor = color;
+      showToast('Annotation Color', 'Updated writing tool palette selection.', 'palette');
+    }
+
+    function undoSmartboardStroke() {
+      if (smartboardStrokes.length > 0) {
+        smartboardStrokes.pop();
+        redrawSmartboardAnnotations();
+        showToast('Undo Stroke', 'Reverted the last drawn line.', 'undo');
+      }
+    }
+
+    function clearSmartboardAnnotations() {
+      smartboardStrokes = [];
+      const canvas = document.getElementById('slide-draw-canvas');
+      if (canvas) {
+        const ctx = canvas.getContext('2d');
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+      }
+    }
+
+    function redrawSmartboardAnnotations() {
+      const canvas = document.getElementById('slide-draw-canvas');
+      if (!canvas) return;
+      const ctx = canvas.getContext('2d');
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      
+      ctx.lineCap = 'round';
+      ctx.lineJoin = 'round';
+      
+      smartboardStrokes.forEach(stroke => {
+        if (stroke.length < 2) return;
+        const meta = stroke[0];
+        
+        if (meta.tool === 'highlighter') {
+          ctx.strokeStyle = meta.color === '#facc15' ? 'rgba(250, 204, 21, 0.4)' : 'rgba(0, 242, 254, 0.4)';
+          ctx.lineWidth = meta.width || 24;
+        } else {
+          ctx.strokeStyle = meta.color;
+          ctx.lineWidth = meta.width || 3;
+        }
+        
+        ctx.beginPath();
+        ctx.moveTo(meta.x, meta.y);
+        for (let i = 1; i < stroke.length; i++) {
+          ctx.lineTo(stroke[i].x, stroke[i].y);
+        }
+        ctx.stroke();
+      });
+    }
+
+    let pptTimerInterval = null;
+    let pptTimerSecondsLeft = 120;
+    let isPptTimerRunning = false;
+
+    function formatPptTime(sec) {
+      const m = Math.floor(sec / 60).toString().padStart(2, '0');
+      const s = (sec % 60).toString().padStart(2, '0');
+      return m + ':' + s;
+    }
+
+    function togglePptTimer() {
+      if (isPptTimerRunning) {
+        clearInterval(pptTimerInterval);
+        isPptTimerRunning = false;
+        const playIcon = document.getElementById('icon-ppt-timer-play');
+        if (playIcon) playIcon.setAttribute('data-lucide', 'play');
+        lucide.createIcons();
+        showToast('Timer Paused', 'Classroom countdown has been paused.', 'pause');
+      } else {
+        isPptTimerRunning = true;
+        const playIcon = document.getElementById('icon-ppt-timer-play');
+        if (playIcon) playIcon.setAttribute('data-lucide', 'pause');
+        lucide.createIcons();
+        showToast('Timer Started', 'Classroom countdown began!', 'play');
+        
+        pptTimerInterval = setInterval(() => {
+          if (pptTimerSecondsLeft > 0) {
+            pptTimerSecondsLeft--;
+            document.getElementById('ppt-timer-display').innerText = formatPptTime(pptTimerSecondsLeft);
+            
+            if (pptTimerSecondsLeft > 0 && pptTimerSecondsLeft <= 5) {
+              playSynthesizedSound('swoosh');
+            }
+            
+            if (pptTimerSecondsLeft === 0) {
+              clearInterval(pptTimerInterval);
+              isPptTimerRunning = false;
+              playSynthesizedSound('gong');
+              document.getElementById('ppt-timer-display').classList.add('animate-ping', 'text-rose-500');
+              setTimeout(() => {
+                document.getElementById('ppt-timer-display').classList.remove('animate-ping', 'text-rose-500');
+              }, 3000);
+              showToast('Time is Up!', 'Classroom activity period completed!', 'alarm-clock');
+              if (playIcon) playIcon.setAttribute('data-lucide', 'play');
+              lucide.createIcons();
+            }
+          }
+        }, 1000);
+      }
+    }
+
+    function setPptTimerPreset(sec) {
+      clearInterval(pptTimerInterval);
+      isPptTimerRunning = false;
+      pptTimerSecondsLeft = sec;
+      document.getElementById('ppt-timer-display').innerText = formatPptTime(sec);
+      const playIcon = document.getElementById('icon-ppt-timer-play');
+      if (playIcon) playIcon.setAttribute('data-lucide', 'play');
+      lucide.createIcons();
+      showToast('Timer Preset', 'Set countdown duration to ' + formatPptTime(sec), 'clock');
+    }
+
+    function addPptTimerTime(sec) {
+      pptTimerSecondsLeft += sec;
+      document.getElementById('ppt-timer-display').innerText = formatPptTime(pptTimerSecondsLeft);
+      showToast('Time Boosted', 'Added +' + sec + 's to countdown.', 'plus-circle');
+    }
+
+    function resetPptTimer() {
+      clearInterval(pptTimerInterval);
+      isPptTimerRunning = false;
+      pptTimerSecondsLeft = 120;
+      document.getElementById('ppt-timer-display').innerText = formatPptTime(120);
+      const playIcon = document.getElementById('icon-ppt-timer-play');
+      if (playIcon) playIcon.setAttribute('data-lucide', 'play');
+      lucide.createIcons();
+    }
+
+    let pptAutoPlayInterval = null;
+    let isPptAutoPlaying = false;
+
+    function togglePptAutoPlay() {
+      const autoPlayBtn = document.getElementById('btn-ppt-autoplay');
+      const autoPlayIcon = document.getElementById('icon-ppt-autoplay');
+      const speedSelect = document.getElementById('ppt-autoplay-speed');
+      const speed = speedSelect ? parseInt(speedSelect.value) : 5000;
+      
+      if (isPptAutoPlaying) {
+        clearInterval(pptAutoPlayInterval);
+        isPptAutoPlaying = false;
+        autoPlayBtn.classList.remove('border-amber-500', 'bg-amber-950/40');
+        if (autoPlayIcon) autoPlayIcon.setAttribute('data-lucide', 'play-circle');
+        lucide.createIcons();
+        showToast('Auto-Play Stopped', 'Slideshow automated progression disabled.', 'play-circle');
+      } else {
+        isPptAutoPlaying = true;
+        autoPlayBtn.classList.add('border-amber-500', 'bg-amber-950/40');
+        if (autoPlayIcon) autoPlayIcon.setAttribute('data-lucide', 'pause-circle');
+        lucide.createIcons();
+        showToast('Auto-Play Active', 'Automated slide advancement every ' + (speed/1000) + 's.', 'sparkles');
+        
+        pptAutoPlayInterval = setInterval(() => {
+          if (currentSlideIndex < presentationSlides.length - 1) {
+            nextSlide();
+          } else {
+            currentSlideIndex = 0;
+            renderCurrentSlide();
+            playSynthesizedSound('fanfare');
+          }
+        }, speed);
+      }
+    }
+
+    function toggleClassroomSound() {
+      classroomSoundsEnabled = !classroomSoundsEnabled;
+      const soundIcon = document.getElementById('icon-classroom-sound');
+      if (soundIcon) {
+        soundIcon.setAttribute('data-lucide', classroomSoundsEnabled ? 'volume-2' : 'volume-x');
+      }
+      lucide.createIcons();
+      showToast(
+        classroomSoundsEnabled ? 'Sounds Enabled' : 'Sounds Muted', 
+        classroomSoundsEnabled ? 'Audio cues active.' : 'Audio synthesis silenced.',
+        classroomSoundsEnabled ? 'volume-2' : 'volume-x'
+      );
+    }
+
+    function speakVocabWord(word) {
+      if (!word) return;
+      try {
+        const synth = window.speechSynthesis;
+        if (synth) {
+          synth.cancel();
+          const utterance = new SpeechSynthesisUtterance(word);
+          utterance.lang = 'en-US';
+          utterance.rate = 0.85;
+          synth.speak(utterance);
+          showToast('Audio Pronunciation', 'Speaking term: "' + word + '"', 'volume-2');
+        }
+      } catch(e) {
+        console.warn("Speech Synthesis unsupported:", e);
+      }
+    }
+
+    const activeQuizVotes = {};
+
+    function castClassroomVote(slideIdx, option) {
+      const voteKey = slideIdx + '_' + option;
+      activeQuizVotes[voteKey] = (activeQuizVotes[voteKey] || 0) + 1;
+      playSynthesizedSound('swoosh');
+      updateQuizPollUI(slideIdx);
+    }
+
+    function updateQuizPollUI(slideIdx) {
+      const tallyA = activeQuizVotes[slideIdx + '_A'] || 0;
+      const tallyB = activeQuizVotes[slideIdx + '_B'] || 0;
+      const tallyC = activeQuizVotes[slideIdx + '_C'] || 0;
+      const tallyD = activeQuizVotes[slideIdx + '_D'] || 0;
+      
+      const total = tallyA + tallyB + tallyC + tallyD || 1;
+      
+      const pctA = Math.round((tallyA / total) * 100);
+      const pctB = Math.round((tallyB / total) * 100);
+      const pctC = Math.round((tallyC / total) * 100);
+      const pctD = Math.round((tallyD / total) * 100);
+      
+      const elA = document.getElementById('poll-tally-A');
+      const elB = document.getElementById('poll-tally-B');
+      const elC = document.getElementById('poll-tally-C');
+      const elD = document.getElementById('poll-tally-D');
+      
+      if (elA) elA.innerText = tallyA + ' votes (' + pctA + '%)';
+      if (elB) elB.innerText = tallyB + ' votes (' + pctB + '%)';
+      if (elC) elC.innerText = tallyC + ' votes (' + pctC + '%)';
+      if (elD) elD.innerText = tallyD + ' votes (' + pctD + '%)';
+      
+      const barA = document.getElementById('poll-bar-A');
+      const barB = document.getElementById('poll-bar-B');
+      const barC = document.getElementById('poll-bar-C');
+      const barD = document.getElementById('poll-bar-D');
+      
+      if (barA) barA.style.width = pctA + '%';
+      if (barB) barB.style.width = pctB + '%';
+      if (barC) barC.style.width = pctC + '%';
+      if (barD) barD.style.width = pctD + '%';
+    }
+
+    function revealQuizPollSolution(slideIdx, correctOpt, explanation) {
+      playSynthesizedSound('ding');
+      const solutionBox = document.getElementById('quiz-solution-box-' + slideIdx);
+      if (solutionBox) {
+        solutionBox.classList.remove('hidden');
+        solutionBox.classList.add('flex');
+      }
+      
+      document.querySelectorAll('.quiz-option-card').forEach(card => {
+        card.classList.remove('border-emerald-500', 'bg-emerald-50/50');
+      });
+      
+      const correctCard = document.getElementById('quiz-option-' + correctOpt);
+      if (correctCard) {
+        correctCard.classList.add('border-emerald-500', 'bg-emerald-50/50', 'ring-2', 'ring-emerald-400/50');
+      }
+      showToast('Correct Answer Revealed!', 'Correct Option: ' + correctOpt, 'check-circle');
+    }
+
+    function resetQuizPoll(slideIdx) {
+      activeQuizVotes[slideIdx + '_A'] = 0;
+      activeQuizVotes[slideIdx + '_B'] = 0;
+      activeQuizVotes[slideIdx + '_C'] = 0;
+      activeQuizVotes[slideIdx + '_D'] = 0;
+      
+      updateQuizPollUI(slideIdx);
+      
+      const solutionBox = document.getElementById('quiz-solution-box-' + slideIdx);
+      if (solutionBox) {
+        solutionBox.classList.add('hidden');
+      }
+      
+      document.querySelectorAll('.quiz-option-card').forEach(card => {
+        card.classList.remove('border-emerald-500', 'bg-emerald-50/50', 'ring-2', 'ring-emerald-400/50');
+      });
+    }
+
+    function triggerMorphTransition(oldIdx, newIdx) {
+      const slideBox = document.getElementById('presentation-slide-box');
+      if (!slideBox) return;
+      
+      const morphElements = slideBox.querySelectorAll('[data-morph-id]');
+      const snapshot = {};
+      
+      morphElements.forEach(el => {
+        const id = el.getAttribute('data-morph-id');
+        const rect = el.getBoundingClientRect();
+        const style = window.getComputedStyle(el);
+        snapshot[id] = {
+          html: el.innerHTML,
+          rect: rect,
+          fontSize: style.fontSize,
+          color: style.color,
+          fontWeight: style.fontWeight
+        };
+      });
+      
+      renderCurrentSlide();
+      
+      const targetElements = slideBox.querySelectorAll('[data-morph-id]');
+      targetElements.forEach(targetEl => {
+        const id = targetEl.getAttribute('data-morph-id');
+        if (snapshot[id]) {
+          const source = snapshot[id];
+          const targetRect = targetEl.getBoundingClientRect();
+          
+          const clone = document.createElement('div');
+          clone.innerHTML = source.html;
+          clone.style.position = 'fixed';
+          clone.style.left = source.rect.left + 'px';
+          clone.style.top = source.rect.top + 'px';
+          clone.style.width = source.rect.width + 'px';
+          clone.style.height = source.rect.height + 'px';
+          clone.style.fontSize = source.fontSize;
+          clone.style.color = source.color;
+          clone.style.fontWeight = source.fontWeight;
+          clone.style.zIndex = '9999';
+          clone.style.pointerEvents = 'none';
+          clone.style.transition = 'all 0.62s cubic-bezier(0.16, 1, 0.3, 1)';
+          
+          document.body.appendChild(clone);
+          targetEl.style.opacity = '0';
+          
+          requestAnimationFrame(() => {
+            clone.style.left = targetRect.left + 'px';
+            clone.style.top = targetRect.top + 'px';
+            clone.style.width = targetRect.width + 'px';
+            clone.style.height = targetRect.height + 'px';
+            
+            const targetStyle = window.getComputedStyle(targetEl);
+            clone.style.fontSize = targetStyle.fontSize;
+            clone.style.color = targetStyle.color;
+            
+            setTimeout(() => {
+              targetEl.style.opacity = '1';
+              clone.remove();
+            }, 630);
+          });
+        }
+      });
+    }
+
+
+function prevSlide() {
+      if (currentSlideIndex > 0) {
+        clearSmartboardAnnotations();
+        playSynthesizedSound('swoosh');
+        
+        const slideBox = document.getElementById('presentation-slide-box');
+        
+        if (slideAnimationMode === 'morph') {
+          triggerMorphTransition(currentSlideIndex, currentSlideIndex - 1);
+          currentSlideIndex--;
+          renderCurrentSlide();
+          resetStackElements();
+          return;
+        }
+        
+        if (slideBox) {
+          slideBox.classList.remove('slide-idle-floating');
+          slideBox.style.transition = 'all 0.45s cubic-bezier(0.19, 1, 0.22, 1)';
+          
+          if (slideAnimationMode === '3d-cube') {
+            slideBox.style.transform = 'rotateY(90deg) translate3d(50%, 0, -200px)';
+          } else if (slideAnimationMode === 'elastic-spring') {
+            slideBox.style.transform = 'scale(0.3) rotate(-10deg)';
+          } else {
+            slideBox.style.transform = 'translate3d(130%, -40px, -320px) rotateY(82deg) rotateZ(22deg)';
+          }
+          slideBox.style.opacity = '0';
+        }
+        
+        setTimeout(() => {
+          currentSlideIndex--;
+          renderCurrentSlide();
+          if (slideBox) {
+            slideBox.style.transition = 'none';
+            if (slideAnimationMode === '3d-cube') {
+              slideBox.style.transform = 'rotateY(-90deg) translate3d(-50%, 0, -200px)';
+            } else if (slideAnimationMode === 'elastic-spring') {
+              slideBox.style.transform = 'scale(0.3) rotate(10deg)';
+            } else {
+              slideBox.style.transform = 'translate3d(-130%, 40px, -320px) rotateY(-82deg) rotateZ(-22deg)';
+            }
+            slideBox.style.opacity = '0';
+            slideBox.offsetHeight; // trigger reflow
+            
+            if (slideAnimationMode === 'elastic-spring') {
+              slideBox.style.transition = 'all 0.65s cubic-bezier(0.68, -0.6, 0.32, 1.6)';
+            } else {
+              slideBox.style.transition = 'all 0.48s cubic-bezier(0.175, 0.885, 0.32, 1.15)';
+            }
+            slideBox.style.transform = 'translate3d(0, 0, 0) rotateY(0) rotateZ(0) rotateX(0)';
+            slideBox.style.opacity = '1';
+            setTimeout(() => slideBox.classList.add('slide-idle-floating'), 500);
+          }
+          resetStackElements();
+        }, 240);
+      }
+    }
+
+    function nextSlide() {
+      if (currentSlideIndex < presentationSlides.length - 1) {
+        clearSmartboardAnnotations();
+        playSynthesizedSound('swoosh');
+        
+        const slideBox = document.getElementById('presentation-slide-box');
+        
+        if (slideAnimationMode === 'morph') {
+          triggerMorphTransition(currentSlideIndex, currentSlideIndex + 1);
+          currentSlideIndex++;
+          renderCurrentSlide();
+          resetStackElements();
+          return;
+        }
+        
+        if (slideBox) {
+          slideBox.classList.remove('slide-idle-floating');
+          slideBox.style.transition = 'all 0.45s cubic-bezier(0.19, 1, 0.22, 1)';
+          
+          if (slideAnimationMode === '3d-cube') {
+            slideBox.style.transform = 'rotateY(-90deg) translate3d(-50%, 0, -200px)';
+          } else if (slideAnimationMode === 'elastic-spring') {
+            slideBox.style.transform = 'scale(0.3) rotate(10deg)';
+          } else {
+            slideBox.style.transform = 'translate3d(-130%, -40px, -320px) rotateY(-82deg) rotateZ(-22deg)';
+          }
+          slideBox.style.opacity = '0';
+        }
+        
+        setTimeout(() => {
+          currentSlideIndex++;
+          renderCurrentSlide();
+          if (slideBox) {
+            slideBox.style.transition = 'none';
+            if (slideAnimationMode === '3d-cube') {
+              slideBox.style.transform = 'rotateY(90deg) translate3d(50%, 0, -200px)';
+            } else if (slideAnimationMode === 'elastic-spring') {
+              slideBox.style.transform = 'scale(0.3) rotate(-10deg)';
+            } else {
+              slideBox.style.transform = 'translate3d(130%, 40px, -320px) rotateY(82deg) rotateZ(22deg)';
+            }
+            slideBox.style.opacity = '0';
+            slideBox.offsetHeight; // trigger reflow
+            
+            if (slideAnimationMode === 'elastic-spring') {
+              slideBox.style.transition = 'all 0.65s cubic-bezier(0.68, -0.6, 0.32, 1.6)';
+            } else {
+              slideBox.style.transition = 'all 0.48s cubic-bezier(0.175, 0.885, 0.32, 1.15)';
+            }
+            slideBox.style.transform = 'translate3d(0, 0, 0) rotateY(0) rotateZ(0) rotateX(0)';
+            slideBox.style.opacity = '1';
+            setTimeout(() => slideBox.classList.add('slide-idle-floating'), 500);
+          }
+          resetStackElements();
+        }, 240);
+      }
+    }
+
+    function toggleSlideAnswers() {
+      revealSlideAnswers = !revealSlideAnswers;
+      renderCurrentSlide();
+    }
+    
+
+    
+    function printSlides() {
+      document.body.classList.add('print-slideshow-active');
+      window.print();
+      setTimeout(() => {
+        document.body.classList.remove('print-slideshow-active');
+      }, 1000);
+    }
+
+    // Theater / Full Width Mode Toggle
+    function toggleTheaterMode() {
+      isTheaterMode = !isTheaterMode;
+      const container = document.getElementById('presentation-container');
+      const previewBar = document.getElementById('preview-mode-bar');
+      const theaterLabel = document.getElementById('theater-mode-label');
+      const theaterIcon = document.getElementById('theater-mode-icon');
+      
+      if (container) {
+        if (isTheaterMode) {
+          container.classList.add('theater-mode');
+          if (previewBar) {
+            previewBar.classList.remove('max-w-6xl');
+            previewBar.classList.add('max-w-full');
+          }
+          if (theaterLabel) theaterLabel.innerText = "Standard";
+          if (theaterIcon) theaterIcon.setAttribute('data-lucide', 'minimize');
+          showToast('Theater Mode Enabled', 'Presentation expanded to full container width.', 'maximize');
+        } else {
+          container.classList.remove('theater-mode');
+          if (previewBar) {
+            previewBar.classList.remove('max-w-full');
+            previewBar.classList.add('max-w-6xl');
+          }
+          if (theaterLabel) theaterLabel.innerText = "Wide Mode";
+          if (theaterIcon) theaterIcon.setAttribute('data-lucide', 'maximize');
+          showToast('Standard Mode', 'Presentation restored to standard widescreen.', 'minimize');
+        }
+        lucide.createIcons();
+      }
+    }
+
+    // Presentation Sizing & Aspect Ratio Mode
+    function setPresentationAspect(aspect) {
+      const viewport = document.getElementById('slide-3d-viewport');
+      if (!viewport) return;
+
+      viewport.classList.remove('aspect-[16/9]', 'aspect-[16/10]', 'aspect-[21/9]');
+      if (aspect === 'aspect-16-10') {
+        viewport.classList.add('aspect-[16/10]');
+        showToast('Aspect Ratio', 'Switched to 16:10 Cinema Widescreen.', 'monitor');
+      } else if (aspect === 'aspect-21-9') {
+        viewport.classList.add('aspect-[21/9]');
+        showToast('Aspect Ratio', 'Switched to 21:9 Ultra-Wide Format.', 'tv');
+      } else {
+        viewport.classList.add('aspect-[16/9]');
+        showToast('Aspect Ratio', 'Restored to Standard 16:9 Presentation Format.', 'presentation');
+      }
+    }
+
+    // True Fullscreen Projector Mode Toggle
+    function togglePresentationFullscreen() {
+      const container = document.getElementById('presentation-container');
+      const icon = document.getElementById('fullscreen-icon');
+      if (!container) return;
+
+      if (!document.fullscreenElement) {
+        if (container.requestFullscreen) {
+          container.requestFullscreen();
+        } else if (container.webkitRequestFullscreen) {
+          container.webkitRequestFullscreen();
+        } else if (container.msRequestFullscreen) {
+          container.msRequestFullscreen();
+        }
+        container.classList.add('fullscreen-active');
+        if (icon) icon.setAttribute('data-lucide', 'minimize');
+        showToast('Projector Mode', 'Entered full screen classroom projector view.', 'expand');
+      } else {
+        if (document.exitFullscreen) {
+          document.exitFullscreen();
+        } else if (document.webkitExitFullscreen) {
+          document.webkitExitFullscreen();
+        }
+        container.classList.remove('fullscreen-active');
+        if (icon) icon.setAttribute('data-lucide', 'expand');
+        showToast('Windowed View', 'Exited fullscreen projector.', 'shrink');
+      }
+      lucide.createIcons();
+    }
+
+    // Slide Deck Filmstrip Rendering & Navigation
+    function renderSlideFilmstrip() {
+      const track = document.getElementById('slide-filmstrip-track');
+      const totalCount = document.getElementById('filmstrip-total-count');
+      if (!track) return;
+
+      if (totalCount) {
+        totalCount.innerText = presentationSlides.length;
+      }
+
+      let html = presentationSlides.map((s, idx) => {
+        const isActive = idx === currentSlideIndex;
+        let snippet = s.title || `Slide ${idx + 1}`;
+        if (snippet.length > 28) snippet = snippet.substring(0, 26) + '...';
+
+        let badgeType = s.layout || 'standard';
+        return `
+          <div onclick="jumpToSlide(${idx})" class="slide-filmstrip-item ${isActive ? 'active' : ''} group" title="Jump to Slide ${idx + 1}: ${escapeHtml(s.title || '')}">
+            <div class="flex items-center justify-between text-[9px] font-bold text-slate-400 mb-0.5">
+              <span class="px-1.5 py-0.2 rounded bg-indigo-950/80 text-indigo-300 border border-indigo-500/30">#${idx + 1}</span>
+              <span class="uppercase tracking-tighter text-[8px] ${isActive ? 'text-indigo-300 font-extrabold' : 'text-slate-500'}">${badgeType}</span>
+            </div>
+            <div class="text-[10px] font-semibold text-slate-200 line-clamp-1 leading-tight group-hover:text-white transition-colors">
+              ${escapeHtml(snippet)}
+            </div>
+            <div class="text-[8px] text-slate-500 line-clamp-1 mt-0.5">
+              ${escapeHtml(s.subtitle || 'Lesson Content')}
+            </div>
+          </div>
+        `;
+      }).join('');
+
+      // Add Slide Button Card at end of filmstrip
+      html += `
+        <div onclick="openCustomSlideModal()" class="slide-filmstrip-item flex flex-col items-center justify-center text-center cursor-pointer border-dashed border-indigo-400/40 hover:border-indigo-400 hover:bg-indigo-600/20 text-indigo-300 transition-all p-2 min-w-[90px]" title="Add New Slide">
+          <i data-lucide="plus-circle" class="w-4 h-4 mb-0.5"></i>
+          <span class="text-[9px] font-bold">Add Slide</span>
+        </div>
+      `;
+
+      track.innerHTML = html;
+      lucide.createIcons();
+
+      // Scroll active thumbnail into view smoothly
+      const activeThumb = track.querySelector('.slide-filmstrip-item.active');
+      if (activeThumb) {
+        activeThumb.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
+      }
+    }
+
+    function jumpToSlide(index) {
+      if (index >= 0 && index < presentationSlides.length) {
+        currentSlideIndex = index;
+        const slideBox = document.getElementById('presentation-slide-box');
+        if (slideBox) {
+          slideBox.classList.remove('slide-idle-floating');
+          slideBox.style.transition = 'all 0.35s cubic-bezier(0.19, 1, 0.22, 1)';
+          slideBox.style.transform = 'translate3d(0, 0, 0) scale(0.96)';
+          setTimeout(() => {
+            renderCurrentSlide();
+            slideBox.style.transform = 'translate3d(0, 0, 0) scale(1)';
+            setTimeout(() => slideBox.classList.add('slide-idle-floating'), 400);
+          }, 150);
+        } else {
+          renderCurrentSlide();
+        }
+      }
+    }
+
+    function duplicateCurrentSlide() {
+      if (presentationSlides.length === 0) return;
+      const current = presentationSlides[currentSlideIndex];
+      const clone = JSON.parse(JSON.stringify(current));
+      clone.title = (clone.title || 'Slide') + ' (Copy)';
+      clone.customId = Date.now();
+      
+      presentationSlides.splice(currentSlideIndex + 1, 0, clone);
+      currentSlideIndex++;
+      renderCurrentSlide();
+      showToast('Slide Duplicated', 'Cloned slide added right next to current slide.', 'copy');
+    }
+
+    function deleteCurrentSlide() {
+      if (presentationSlides.length <= 1) {
+        showToast('Cannot Delete', 'Deck must have at least one presentation slide.', 'alert-circle');
+        return;
+      }
+      presentationSlides.splice(currentSlideIndex, 1);
+      if (currentSlideIndex >= presentationSlides.length) {
+        currentSlideIndex = presentationSlides.length - 1;
+      }
+      renderCurrentSlide();
+      showToast('Slide Deleted', 'Removed slide from deck.', 'trash-2');
+    }
+
+    // Export Self-Contained PowerPoint / Smartboard Presentation Deck (.html)
+    function exportPowerPointDeck() {
+      const slidesJson = JSON.stringify(presentationSlides, null, 2);
+      const titleEl = document.getElementById('ws-title');
+      const deckTitle = titleEl ? titleEl.innerText : 'English Presentation Slideshow';
+
+      const exportHTML = `<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>${escapeHtml(deckTitle)} • PowerPoint Presentation</title>
+  <script src="https://cdn.tailwindcss.com"><\/script>
+  <script src="https://unpkg.com/lucide@latest"><\/script>
+  <style>
+    body { background: #090d16; color: #f8fafc; font-family: system-ui, -apple-system, sans-serif; }
+    .slide-card { aspect-ratio: 16/9; max-width: 1100px; width: 100%; margin: 0 auto; box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.7); }
+    @media print {
+      body { background: white; color: black; }
+      .no-print { display: none !important; }
+      .slide-card { page-break-after: always; box-shadow: none; border: 1px solid #ccc; width: 100%; aspect-ratio: auto; min-height: 90vh; }
+    }
+  </style>
+</head>
+<body class="min-h-screen flex flex-col justify-between p-4 sm:p-8">
+  <header class="no-print max-w-6xl w-full mx-auto flex items-center justify-between pb-4 border-b border-slate-800">
+    <div>
+      <h1 class="text-lg font-black text-white">${escapeHtml(deckTitle)}</h1>
+      <p class="text-xs text-indigo-300">Mr.Zaafouri Abdelmalek • ELA Studio Classroom Deck</p>
+    </div>
+    <div class="flex items-center gap-2">
+      <button onclick="window.print()" class="px-3 py-1.5 bg-indigo-600 hover:bg-indigo-500 text-white rounded-lg text-xs font-bold flex items-center gap-1.5">
+        <span>Print Handouts</span>
+      </button>
+      <button onclick="toggleFullscreen()" class="px-3 py-1.5 bg-slate-800 hover:bg-slate-700 text-white rounded-lg text-xs font-bold">
+        Fullscreen (F)
+      </button>
+    </div>
+  </header>
+
+  <main class="flex-1 flex items-center justify-center my-6">
+    <div id="slide-viewer" class="slide-card bg-white text-slate-900 rounded-2xl p-8 sm:p-12 flex flex-col justify-between border border-slate-200">
+      <!-- Injected by script -->
+    </div>
+  </main>
+
+  <footer class="no-print max-w-6xl w-full mx-auto flex items-center justify-between pt-4 border-t border-slate-800 text-xs text-slate-400">
+    <div class="flex items-center gap-2">
+      <button onclick="prev()" class="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-white rounded-xl font-bold">◀ Previous</button>
+      <button onclick="next()" class="px-4 py-2 bg-indigo-600 hover:bg-indigo-500 text-white rounded-xl font-bold">Next ▶</button>
+    </div>
+    <span id="counter" class="font-bold text-slate-200">Slide 1 of 1</span>
+    <span class="text-[11px] text-slate-500">Use Left/Right Arrow Keys or Space</span>
+  </footer>
+
+  <script>
+    const slides = ${slidesJson};
+    let current = 0;
+
+    function render() {
+      const s = slides[current];
+      const viewer = document.getElementById('slide-viewer');
+      const counter = document.getElementById('counter');
+      counter.innerText = \`Slide \${current + 1} of \${slides.length}\`;
+
+      let content = '';
+      if (s.layout === 'title') {
+        content = \`
+          <div class="flex-1 flex flex-col items-center justify-center text-center">
+            <span class="px-3 py-1 bg-indigo-100 text-indigo-700 text-xs font-black uppercase rounded-full tracking-wider mb-4">ELA Lesson Deck</span>
+            <h1 class="text-4xl font-black text-slate-950 mb-3">\${s.title}</h1>
+            <p class="text-base text-slate-600 font-medium max-w-xl">\${s.subtitle || ''}</p>
+          </div>
+        \`;
+      } else if (s.layout === 'bullets') {
+        const bulletsHtml = (s.bullets || []).map(b => \`<li class="text-lg font-medium text-slate-800 flex items-start gap-3"><span class="text-indigo-600 font-bold">•</span><div>\${b}</div></li>\`).join('');
+        content = \`
+          <div class="flex-1 flex flex-col justify-between">
+            <div class="border-b border-slate-100 pb-3 mb-6">
+              <span class="text-xs uppercase font-bold text-indigo-600">\${s.subtitle || 'Classroom Focus'}</span>
+              <h2 class="text-2xl font-black text-slate-900">\${s.title}</h2>
+            </div>
+            <ul class="space-y-4 flex-1">\${bulletsHtml}</ul>
+          </div>
+        \`;
+      } else {
+        content = \`
+          <div class="flex-1 flex flex-col justify-between">
+            <div class="border-b border-slate-100 pb-3 mb-4">
+              <span class="text-xs uppercase font-bold text-indigo-600">\${s.subtitle || 'Classroom Practice'}</span>
+              <h2 class="text-2xl font-black text-slate-900">\${s.title}</h2>
+            </div>
+            <div class="flex-1 text-slate-800 text-base leading-relaxed bg-slate-50 p-6 rounded-xl border border-slate-200">
+              \${s.content || s.activityHtml || 'Interactive ELA discussion points.'}
+            </div>
+          </div>
+        \`;
+      }
+
+      viewer.innerHTML = \`
+        \${content}
+        <div class="border-t border-slate-100 pt-3 flex justify-between items-center text-xs text-slate-400">
+          <span>📺 Mr.Zaafouri Abdelmalek • ELA Smartboard Presentation</span>
+          <span class="font-bold">Slide \${current + 1} of \${slides.length}</span>
+        </div>
+      \`;
+    }
+
+    function prev() { if (current > 0) { current--; render(); } }
+    function next() { if (current < slides.length - 1) { current++; render(); } }
+    function toggleFullscreen() {
+      if (!document.fullscreenElement) document.documentElement.requestFullscreen();
+      else document.exitFullscreen();
+    }
+
+    window.addEventListener('keydown', (e) => {
+      if (e.key === 'ArrowRight' || e.key === ' ') { next(); e.preventDefault(); }
+      else if (e.key === 'ArrowLeft') { prev(); e.preventDefault(); }
+      else if (e.key === 'Escape') {
+        closeThemePaletteModal();
+        closeAIPresentationModal();
+        closeGlassTutorModal();
+      }
+      else if (e.key === 'f' || e.key === 'F') { toggleFullscreen(); }
+    });
+
+    render();
+  <\/script>
+
+  <!-- UNIFIED THEME & PALETTE MODAL (Saves Dashboard Space) -->
+  <div id="theme-palette-modal" onclick="if(event.target === this) closeThemePaletteModal()" class="fixed inset-0 z-[100] bg-slate-950/85 backdrop-blur-md hidden items-center justify-center p-3 sm:p-4 transition-all duration-300 no-print">
+    <div class="bg-slate-900 border border-indigo-500/30 rounded-2xl w-full max-w-xl shadow-2xl p-5 sm:p-6 relative max-h-[90vh] overflow-y-auto ring-1 ring-white/10 custom-scrollbar animate-fade-in" onclick="event.stopPropagation()">
+      
+      <!-- Header -->
+      <div class="flex items-center justify-between pb-4 border-b border-slate-800">
+        <div class="flex items-center gap-2.5">
+          <div class="w-9 h-9 rounded-xl bg-gradient-to-tr from-indigo-500 to-purple-600 flex items-center justify-center text-white shadow-md">
+            <i data-lucide="palette" class="w-5 h-5"></i>
+          </div>
+          <div>
+            <h3 class="text-sm sm:text-base font-bold text-white tracking-wide">Worksheet & Slide Theme Studio</h3>
+            <p class="text-[11px] text-slate-400">Select color palette, borders, typography, and paper dark mode</p>
+          </div>
+        </div>
+        <button onclick="closeThemePaletteModal()" class="p-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-400 hover:text-white transition-all cursor-pointer">
+          <i data-lucide="x" class="w-4 h-4"></i>
+        </button>
+      </div>
+
+      <div class="space-y-5 pt-4">
+        <!-- 1. Visual Themes Grid -->
+        <div>
+          <label class="text-xs font-bold text-slate-200 block mb-2.5 flex items-center justify-between">
+            <span>Color Palette & Themes</span>
+            <span class="text-[10px] text-indigo-400 font-semibold">9 Curated Styles</span>
+          </label>
+          <div class="grid grid-cols-2 sm:grid-cols-3 gap-2.5">
+            <!-- Theme Card 1 -->
+            <button onclick="selectThemeFromModal('ela-book')" id="theme-card-ela-book" class="theme-picker-card p-3 rounded-xl border border-indigo-500/40 bg-indigo-950/40 text-left hover:border-indigo-400 transition-all flex flex-col gap-2 relative group cursor-pointer">
+              <div class="flex items-center justify-between">
+                <span class="text-xs font-bold text-white">📖 ELA Book</span>
+                <span class="w-2 h-2 rounded-full bg-indigo-400"></span>
+              </div>
+              <div class="flex gap-1">
+                <span class="w-4 h-4 rounded-full bg-indigo-600"></span>
+                <span class="w-4 h-4 rounded-full bg-amber-500"></span>
+                <span class="w-4 h-4 rounded-full bg-emerald-500"></span>
+              </div>
+            </button>
+
+            <!-- Theme Card 2 -->
+            <button onclick="selectThemeFromModal('classic-corporate')" id="theme-card-classic-corporate" class="theme-picker-card p-3 rounded-xl border border-slate-700 bg-slate-800/60 text-left hover:border-indigo-400 transition-all flex flex-col gap-2 relative group cursor-pointer">
+              <div class="flex items-center justify-between">
+                <span class="text-xs font-bold text-slate-200">👔 Classic Navy</span>
+              </div>
+              <div class="flex gap-1">
+                <span class="w-4 h-4 rounded-full bg-slate-700"></span>
+                <span class="w-4 h-4 rounded-full bg-blue-600"></span>
+                <span class="w-4 h-4 rounded-full bg-slate-300"></span>
+              </div>
+            </button>
+
+            <!-- Theme Card 3 -->
+            <button onclick="selectThemeFromModal('midnight-tech')" id="theme-card-midnight-tech" class="theme-picker-card p-3 rounded-xl border border-slate-700 bg-slate-800/60 text-left hover:border-indigo-400 transition-all flex flex-col gap-2 relative group cursor-pointer">
+              <div class="flex items-center justify-between">
+                <span class="text-xs font-bold text-slate-200">🌙 Midnight Tech</span>
+              </div>
+              <div class="flex gap-1">
+                <span class="w-4 h-4 rounded-full bg-purple-900"></span>
+                <span class="w-4 h-4 rounded-full bg-indigo-500"></span>
+                <span class="w-4 h-4 rounded-full bg-sky-400"></span>
+              </div>
+            </button>
+
+            <!-- Theme Card 4 -->
+            <button onclick="selectThemeFromModal('nordic-pastel')" id="theme-card-nordic-pastel" class="theme-picker-card p-3 rounded-xl border border-slate-700 bg-slate-800/60 text-left hover:border-indigo-400 transition-all flex flex-col gap-2 relative group cursor-pointer">
+              <div class="flex items-center justify-between">
+                <span class="text-xs font-bold text-slate-200">🍃 Nordic Sage</span>
+              </div>
+              <div class="flex gap-1">
+                <span class="w-4 h-4 rounded-full bg-teal-700"></span>
+                <span class="w-4 h-4 rounded-full bg-emerald-300"></span>
+                <span class="w-4 h-4 rounded-full bg-lime-200"></span>
+              </div>
+            </button>
+
+            <!-- Theme Card 5 -->
+            <button onclick="selectThemeFromModal('vibrant-gamifier')" id="theme-card-vibrant-gamifier" class="theme-picker-card p-3 rounded-xl border border-slate-700 bg-slate-800/60 text-left hover:border-indigo-400 transition-all flex flex-col gap-2 relative group cursor-pointer">
+              <div class="flex items-center justify-between">
+                <span class="text-xs font-bold text-slate-200">🎮 Gamifier Pop</span>
+              </div>
+              <div class="flex gap-1">
+                <span class="w-4 h-4 rounded-full bg-fuchsia-600"></span>
+                <span class="w-4 h-4 rounded-full bg-yellow-400"></span>
+                <span class="w-4 h-4 rounded-full bg-cyan-400"></span>
+              </div>
+            </button>
+
+            <!-- Theme Card 6 -->
+            <button onclick="selectThemeFromModal('emerald-scholar')" id="theme-card-emerald-scholar" class="theme-picker-card p-3 rounded-xl border border-slate-700 bg-slate-800/60 text-left hover:border-indigo-400 transition-all flex flex-col gap-2 relative group cursor-pointer">
+              <div class="flex items-center justify-between">
+                <span class="text-xs font-bold text-slate-200">🎓 Scholar Green</span>
+              </div>
+              <div class="flex gap-1">
+                <span class="w-4 h-4 rounded-full bg-emerald-800"></span>
+                <span class="w-4 h-4 rounded-full bg-amber-400"></span>
+                <span class="w-4 h-4 rounded-full bg-slate-200"></span>
+              </div>
+            </button>
+
+            <!-- Theme Card 7 -->
+            <button onclick="selectThemeFromModal('sunset-minimalist')" id="theme-card-sunset-minimalist" class="theme-picker-card p-3 rounded-xl border border-slate-700 bg-slate-800/60 text-left hover:border-indigo-400 transition-all flex flex-col gap-2 relative group cursor-pointer">
+              <div class="flex items-center justify-between">
+                <span class="text-xs font-bold text-slate-200">🌅 Sunset Warm</span>
+              </div>
+              <div class="flex gap-1">
+                <span class="w-4 h-4 rounded-full bg-orange-600"></span>
+                <span class="w-4 h-4 rounded-full bg-amber-400"></span>
+                <span class="w-4 h-4 rounded-full bg-rose-400"></span>
+              </div>
+            </button>
+
+            <!-- Theme Card 8 -->
+            <button onclick="selectThemeFromModal('cyberpunk-edgy')" id="theme-card-cyberpunk-edgy" class="theme-picker-card p-3 rounded-xl border border-slate-700 bg-slate-800/60 text-left hover:border-indigo-400 transition-all flex flex-col gap-2 relative group cursor-pointer">
+              <div class="flex items-center justify-between">
+                <span class="text-xs font-bold text-slate-200">⚡ Cyber Neon</span>
+              </div>
+              <div class="flex gap-1">
+                <span class="w-4 h-4 rounded-full bg-violet-600"></span>
+                <span class="w-4 h-4 rounded-full bg-pink-500"></span>
+                <span class="w-4 h-4 rounded-full bg-cyan-400"></span>
+              </div>
+            </button>
+
+            <!-- Theme Card 9 -->
+            <button onclick="selectThemeFromModal('oceanic-trust')" id="theme-card-oceanic-trust" class="theme-picker-card p-3 rounded-xl border border-slate-700 bg-slate-800/60 text-left hover:border-indigo-400 transition-all flex flex-col gap-2 relative group cursor-pointer">
+              <div class="flex items-center justify-between">
+                <span class="text-xs font-bold text-slate-200">🌊 Oceanic Blue</span>
+              </div>
+              <div class="flex gap-1">
+                <span class="w-4 h-4 rounded-full bg-blue-800"></span>
+                <span class="w-4 h-4 rounded-full bg-sky-400"></span>
+                <span class="w-4 h-4 rounded-full bg-teal-300"></span>
+              </div>
+            </button>
+          </div>
+        </div>
+
+        <!-- 2. Borders & Dark Paper Row -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2 border-t border-slate-800">
+          <div>
+            <label class="text-xs font-bold text-slate-200 block mb-2">Border Style</label>
+            <div class="grid grid-cols-2 gap-1.5">
+              <button onclick="setBorder('frosted')" class="p-2 rounded-lg bg-slate-800 border border-slate-700 hover:border-indigo-500 text-[11px] text-slate-200 font-medium text-left cursor-pointer">❄️ Frosted Glass</button>
+              <button onclick="setBorder('minimalist')" class="p-2 rounded-lg bg-slate-800 border border-slate-700 hover:border-indigo-500 text-[11px] text-slate-200 font-medium text-left cursor-pointer">📏 Minimalist</button>
+              <button onclick="setBorder('geometric')" class="p-2 rounded-lg bg-slate-800 border border-slate-700 hover:border-indigo-500 text-[11px] text-slate-200 font-medium text-left cursor-pointer">📐 Geometric</button>
+              <button onclick="setBorder('artdeco')" class="p-2 rounded-lg bg-slate-800 border border-slate-700 hover:border-indigo-500 text-[11px] text-slate-200 font-medium text-left cursor-pointer">🏛️ Art Deco</button>
+              <button onclick="setBorder('playful')" class="p-2 rounded-lg bg-slate-800 border border-slate-700 hover:border-indigo-500 text-[11px] text-slate-200 font-medium text-left cursor-pointer">🎈 Playful</button>
+              <button onclick="setBorder('none')" class="p-2 rounded-lg bg-slate-800 border border-slate-700 hover:border-indigo-500 text-[11px] text-slate-200 font-medium text-left cursor-pointer">⬜ Clean None</button>
+            </div>
+          </div>
+
+          <div class="space-y-3">
+            <div>
+              <label class="text-xs font-bold text-slate-200 block mb-2">Worksheet Typography</label>
+              <select id="modal-font-select" onchange="applyFontFamily(this.value)" class="w-full bg-slate-800 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-indigo-500 font-medium cursor-pointer">
+                <option value="font-merriweather" selected>📚 Merriweather (Classic Book)</option>
+                <option value="font-inter">✨ Inter (Modern Sans)</option>
+                <option value="font-sfpro"> SF Pro (System Clean)</option>
+                <option value="font-playfair">📰 Playfair Display (Editorial)</option>
+                <option value="font-lora">📖 Lora (Literary Serif)</option>
+                <option value="font-sourcesans">📄 Source Sans Pro (Legible)</option>
+                <option value="font-ptserif">🎓 PT Serif (Academic)</option>
+                <option value="font-playful">🎈 Fredoka (Playful)</option>
+              </select>
+            </div>
+
+            <!-- Paper Dark Mode -->
+            <div class="p-3 rounded-xl bg-slate-800/80 border border-slate-700 flex items-center justify-between">
+              <div>
+                <span class="text-xs font-bold text-slate-200 block">Paper Low-Light Mode</span>
+                <span class="text-[10px] text-slate-400">Dark background on screen, white for print</span>
+              </div>
+              <button onclick="togglePaperDarkMode()" class="px-3 py-1.5 text-xs font-bold rounded-lg bg-indigo-600 hover:bg-indigo-500 text-white border border-indigo-400/30 transition-all cursor-pointer">
+                <span id="modal-paper-dark-label">Toggle Dark</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="mt-6 pt-3 border-t border-slate-800 flex justify-end">
+        <button onclick="closeThemePaletteModal()" class="px-5 py-2 bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-bold rounded-xl shadow-lg shadow-indigo-600/30 transition-all cursor-pointer">
+          Done
+        </button>
+      </div>
+    </div>
+  </div>
+      </div>
+
+      <div class="mt-6 pt-3 border-t border-slate-800 flex justify-end">
+        <button onclick="closeThemePaletteModal()" class="px-5 py-2 bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-bold rounded-xl shadow-lg shadow-indigo-600/30 transition-all">
+          Done
+        </button>
+      </div>
+    </div>
+  </div>
+
+</body>
+</html>`;
+
+      const blob = new Blob([exportHTML], { type: 'text/html' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `${deckTitle.replace(/[^a-zA-Z0-9]/g, '_').toLowerCase()}_presentation.html`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+
+      showToast('Deck Exported!', 'PowerPoint presentation HTML file downloaded successfully.', 'download');
+    }
+
+    // AI PRESENTATION & SLIDE DECK STUDIO CONTROLS
+    let generatedAIDeckSlides = [];
+
+    function openAIPresentationModal() {
+      const modal = document.getElementById('ai-presentation-generator-modal');
+      if (modal) {
+        modal.classList.remove('hidden');
+        modal.classList.add('flex');
+        const topicInput = document.getElementById('ai-slide-modal-topic');
+        const sidebarTopic = document.getElementById('ai-slide-quick-topic');
+        if (topicInput) {
+          if (sidebarTopic && sidebarTopic.value.trim()) {
+            topicInput.value = sidebarTopic.value.trim();
+          }
+          topicInput.focus();
+        }
+        lucide.createIcons();
+      }
+    }
+
+    function closeAIPresentationModal() {
+      const modal = document.getElementById('ai-presentation-generator-modal');
+      if (modal) {
+        modal.classList.add('hidden');
+        modal.classList.remove('flex');
+      }
+    }
+
+    function useQuickSlideTopic(topic) {
+      const input = document.getElementById('ai-slide-modal-topic');
+      if (input) {
+        input.value = topic;
+        generateAIPresentationDeck();
+      }
+    }
+
+    function generateAIPresentationQuick() {
+      const sidebarTopic = document.getElementById('ai-slide-quick-topic');
+      const topic = sidebarTopic ? sidebarTopic.value.trim() : '';
+      if (!topic) {
+        openAIPresentationModal();
+        return;
+      }
+      openAIPresentationModal();
+      const modalInput = document.getElementById('ai-slide-modal-topic');
+      if (modalInput) modalInput.value = topic;
+      generateAIPresentationDeck();
+    }
+
+    async function generateAIPresentationDeck() {
+      const topicInput = document.getElementById('ai-slide-modal-topic');
+      const topic = topicInput ? topicInput.value.trim() : '';
+      if (!topic) {
+        showToast('Topic Required', 'Please enter an English lesson topic or concept.', 'alert-triangle');
+        return;
+      }
+
+      const countSelect = document.getElementById('ai-slide-count-select');
+      const slideCount = countSelect ? parseInt(countSelect.value, 10) : 5;
+
+      const levelSelect = document.getElementById('ai-slide-level-select');
+      const targetLevel = levelSelect ? levelSelect.value : 'middle-school';
+
+      const styleSelect = document.getElementById('ai-slide-style-select');
+      const deckStyle = styleSelect ? styleSelect.value : 'classroom-interactive';
+
+      const themeSelect = document.getElementById('ai-slide-theme-select');
+      const slideTheme = themeSelect ? themeSelect.value : 'slide-theme-clean';
+
+      const btn = document.getElementById('ai-slide-gen-btn');
+      const previewArea = document.getElementById('ai-slide-preview-area');
+      const previewList = document.getElementById('ai-slide-preview-list');
+      const emptyState = document.getElementById('ai-slide-preview-empty');
+
+      if (btn) {
+        btn.disabled = true;
+        btn.innerHTML = `<i data-lucide="loader-2" class="w-4 h-4 animate-spin"></i><span>Synthesizing Slides...</span>`;
+        lucide.createIcons();
+      }
+
+      try {
+        const apiKey = userApiKey || localStorage.getItem('gemini_api_key') || '';
+        let slides = [];
+
+        if (apiKey) {
+          try {
+            const prompt = `You are a world-class English Language Arts (ELA) and ESL curriculum designer.
+Create a complete, pedagogical, interactive ${slideCount}-slide classroom presentation deck for English teachers on the topic: "${topic}".
+Target Level: ${targetLevel}.
+Deck Style: ${deckStyle}.
+
+Return ONLY a valid JSON array of objects with no surrounding markdown formatting or backticks.
+Schema for each slide object:
+[
+  {
+    "layout": "title" | "bullets" | "split" | "activity",
+    "title": "Clear Slide Title",
+    "subtitle": "Category or Subtitle",
+    "bullets": ["Bullet 1", "Bullet 2", "Bullet 3"] (if layout is bullets),
+    "leftContent": "HTML string for left pane" (if layout is split),
+    "rightContent": "HTML string for right pane" (if layout is split),
+    "activityHtml": "HTML string for classroom quiz or practice" (if layout is activity),
+    "answersRevealedHtml": "HTML string for answer key" (if layout is activity),
+    "notes": "Teacher speaking points and lecture guidance"
+  }
+]`;
+
+            const endpoint = `https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash:generateContent?key=${apiKey}`;
+            const response = await fetch(endpoint, {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({
+                contents: [{ parts: [{ text: prompt }] }],
+                generationConfig: {
+                  responseMimeType: "application/json"
+                }
+              })
+            });
+
+            if (response.ok) {
+              const data = await response.json();
+              const textResult = data.candidates?.[0]?.content?.parts?.[0]?.text;
+              if (textResult) {
+                const parsed = JSON.parse(textResult);
+                if (Array.isArray(parsed) && parsed.length > 0) {
+                  slides = parsed;
+                }
+              }
+            }
+          } catch (e) {
+            console.warn('Gemini presentation generation error, falling back to smart ELA engine:', e);
+          }
+        }
+
+        // If no API key or API call failed, use our comprehensive ELA synthesis engine
+        if (!slides || slides.length === 0) {
+          slides = synthesizeELASlideDeck(topic, slideCount, targetLevel, deckStyle, slideTheme);
+        }
+
+        generatedAIDeckSlides = slides;
+
+        // Render Slide Deck Preview in Modal
+        if (emptyState) emptyState.classList.add('hidden');
+        if (previewArea) previewArea.classList.remove('hidden');
+
+        if (previewList) {
+          previewList.innerHTML = slides.map((s, idx) => `
+            <div class="p-3.5 rounded-xl bg-slate-950/80 border border-indigo-500/25 space-y-2 hover:border-indigo-400 transition-all">
+              <div class="flex items-center justify-between">
+                <div class="flex items-center gap-2">
+                  <span class="w-6 h-6 rounded-lg bg-indigo-600/30 border border-indigo-500/40 text-indigo-300 font-bold flex items-center justify-center text-xs">
+                    ${idx + 1}
+                  </span>
+                  <span class="text-xs font-bold text-white">${escapeHtml(s.title || 'Slide ' + (idx + 1))}</span>
+                </div>
+                <span class="px-2 py-0.5 rounded text-[9px] font-bold uppercase bg-slate-800 text-slate-300 border border-slate-700">
+                  ${s.layout || 'bullets'}
+                </span>
+              </div>
+              <p class="text-[11px] text-indigo-200">${escapeHtml(s.subtitle || '')}</p>
+              ${s.bullets ? `
+                <ul class="space-y-1 text-[11px] text-slate-300 pl-2">
+                  ${s.bullets.slice(0, 3).map(b => `<li class="flex items-start gap-1.5"><span class="text-indigo-400">•</span><span>${escapeHtml(b)}</span></li>`).join('')}
+                </ul>
+              ` : ''}
+              ${s.notes ? `
+                <div class="p-2 rounded bg-indigo-950/40 border border-indigo-500/20 text-[10px] text-slate-300 italic flex items-start gap-1.5">
+                  <i data-lucide="message-square-quote" class="w-3 h-3 text-indigo-400 mt-0.5 flex-shrink-0"></i>
+                  <span>Teacher Notes: ${escapeHtml(s.notes)}</span>
+                </div>
+              ` : ''}
+            </div>
+          `).join('');
+          lucide.createIcons();
+        }
+
+        showToast('Deck Synthesized!', `Generated ${slides.length} custom presentation slides.`, 'sparkles');
+
+      } catch (err) {
+        showToast('Generation Error', 'Could not synthesize slide deck.', 'alert-circle');
+      } finally {
+        if (btn) {
+          btn.disabled = false;
+          btn.innerHTML = `<i data-lucide="sparkles" class="w-4 h-4 text-sky-200"></i><span>Synthesize Slide Deck</span>`;
+          lucide.createIcons();
+        }
+      }
+    }
+
+    function synthesizeELASlideDeck(topic, slideCount, targetLevel, deckStyle, slideTheme) {
+      const lower = topic.toLowerCase();
+      const cleanTitle = topic.charAt(0).toUpperCase() + topic.slice(1);
+      const slides = [];
+
+      // 1. Title Slide
+      slides.push({
+        layout: 'title',
+        title: cleanTitle,
+        subtitle: `Mastering English Language Arts • Level: ${targetLevel.replace('-', ' ').toUpperCase()}`,
+        notes: `Introduce today's lesson on "${cleanTitle}". State learning targets clearly and set an encouraging, interactive tone for student participation.`
+      });
+
+      // 2. Learning Objectives & Key Concepts
+      slides.push({
+        layout: 'bullets',
+        title: `🎯 Learning Objectives: ${cleanTitle}`,
+        subtitle: 'Curriculum Standards & Goals',
+        bullets: [
+          `Define and analyze the core rules and structural conventions of ${cleanTitle}.`,
+          `Identify context clues and apply accurate vocabulary in classroom sentence practice.`,
+          `Synthesize textual evidence and evaluate literary and grammatical choices in writing.`
+        ],
+        notes: `Have student volunteers read each objective aloud. Ask: 'Why is mastering this concept essential for effective English communication?'`
+      });
+
+      // 3. Concept Deep Dive / Grammar & Literary Mechanics
+      if (lower.includes('past') || lower.includes('perfect') || lower.includes('tense') || lower.includes('verb')) {
+        slides.push({
+          layout: 'bullets',
+          title: "Timeline & Structural Formula",
+          subtitle: "Past Perfect: [had + Past Participle]",
+          bullets: [
+            "Action 1 (Earlier in the past): 'The train had departed...'",
+            "Action 2 (Later in the past): '...before we arrived at the station.'",
+            "Key Signal Markers: before, by the time, already, after, until then.",
+            "Common Mistake: Do NOT use two past perfect verbs in the same clause."
+          ],
+          notes: "Draw a simple timeline on the whiteboard. Place Action 1 to the far left and Action 2 to the right to illustrate sequential past events."
+        });
+      } else if (lower.includes('metaphor') || lower.includes('simile') || lower.includes('figurative')) {
+        slides.push({
+          layout: 'bullets',
+          title: "Figurative Language Breakdown",
+          subtitle: "Simile vs. Metaphor vs. Personification",
+          bullets: [
+            "Simile: Direct comparison using 'like' or 'as' ('Her heart is like an open book').",
+            "Metaphor: States that one concept IS another ('Her heart is an open book').",
+            "Personification: Giving human traits to non-human entities ('The wind whispered secrets').",
+            "Impact: Evokes visceral imagery and elevates sensory descriptions in narrative prose."
+          ],
+          notes: "Ask students to transform a plain sentence (e.g. 'The rain fell') into a powerful figurative statement."
+        });
+      } else {
+        slides.push({
+          layout: 'bullets',
+          title: `Core Principles: ${cleanTitle}`,
+          subtitle: "Essential Vocabulary & Rules",
+          bullets: [
+            `Principle 1: Understand the foundational terminology underpinning ${cleanTitle}.`,
+            `Principle 2: Observe how context alters meaning and emotional tone.`,
+            `Principle 3: Practice constructive peer feedback when analyzing student examples.`
+          ],
+          notes: `Walk through these core principles step by step. Highlight key terms in bold.`
+        });
+      }
+
+      // 4. Interactive Classroom Quiz / Activity Slide
+      slides.push({
+        layout: 'activity',
+        title: `Interactive Challenge: ${cleanTitle}`,
+        subtitle: "Classroom Whiteboard Engagement",
+        activityHtml: `
+          <div class="space-y-3 font-sans text-xs">
+            <div class="bg-indigo-50/70 p-3 rounded-xl border border-indigo-100">
+              <span class="font-bold text-indigo-950">Q1. Which sentence correctly demonstrates the target rule for ${cleanTitle}?</span>
+              <div class="grid grid-cols-2 gap-2 mt-2">
+                <span class="p-2 bg-white rounded-lg border border-slate-200 font-medium">A) Example sentence exhibiting correct syntax</span>
+                <span class="p-2 bg-white rounded-lg border border-slate-200 font-medium">B) Example containing common grammatical error</span>
+              </div>
+            </div>
+            <div class="bg-indigo-50/70 p-3 rounded-xl border border-indigo-100">
+              <span class="font-bold text-indigo-950">Q2. Complete with context clues: "The author utilized this structure to emphasize ________."</span>
+            </div>
+          </div>
+        `,
+        answersRevealedHtml: `
+          <div class="mt-4 p-3 bg-emerald-50 border border-emerald-200 rounded-lg space-y-1 text-xs text-emerald-850 font-medium animate-fade-in">
+            <h5 class="font-extrabold uppercase text-[10px] text-emerald-800">★ Solutions Guide ★</h5>
+            <p>✔ Q1: Choice A represents the correct standard ELA convention.</p>
+            <p>✔ Q2: The author utilizes structure to emphasize thematic contrast and narrative depth.</p>
+          </div>
+        `,
+        notes: "Invite two students to the board to circle the correct answers. Discuss why Choice B was a distractor."
+      });
+
+      // 5. Wrap Up & Student Reflection Slide
+      slides.push({
+        layout: 'bullets',
+        title: "Lesson Summary & Exit Ticket",
+        subtitle: "Consolidating Classroom Mastery",
+        bullets: [
+          `Key Takeaway: Remember the central rules and strategies we practiced today.`,
+          `Exit Ticket Challenge: Write one original sentence applying ${cleanTitle} in your notebook.`,
+          `Homework Extension: Complete the corresponding digital worksheet exercises.`
+        ],
+        notes: "Give students 3 minutes of silent reflection to write their exit ticket responses before dismissal."
+      });
+
+      return slides.slice(0, Math.max(3, slideCount));
+    }
+
+    function applyAISlidesToPresentation(mode = 'replace') {
+      if (generatedAIDeckSlides.length === 0) {
+        showToast('No Slides Generated', 'Please click "Synthesize Slide Deck" first.', 'alert-circle');
+        return;
+      }
+
+      const themeSelect = document.getElementById('ai-slide-theme-select');
+      const selectedTheme = themeSelect ? themeSelect.value : 'slide-theme-clean';
+
+      if (mode === 'replace') {
+        presentationSlides = [...generatedAIDeckSlides];
+        customUserSlides = [];
+      } else {
+        presentationSlides = presentationSlides.concat(generatedAIDeckSlides);
+      }
+
+      currentSlideIndex = 0;
+      applySlideTheme(selectedTheme);
+      
+      const themeSelector = document.getElementById('slide-theme-select');
+      if (themeSelector) themeSelector.value = selectedTheme;
+
+      closeAIPresentationModal();
+      setViewMode('presentation');
+      renderCurrentSlide();
+
+      showToast('Slides Applied!', `Loaded ${generatedAIDeckSlides.length} AI slides into classroom presentation.`, 'presentation');
+    }
+
+    function openCustomSlideModal() {
+      const modal = document.getElementById('custom-slide-modal');
+      if (modal) {
+        modal.classList.remove('hidden');
+        modal.classList.add('flex');
+        const titleInput = document.getElementById('custom-slide-title');
+        if (titleInput) {
+          titleInput.value = '';
+          titleInput.focus();
+        }
+        const subtitleInput = document.getElementById('custom-slide-subtitle');
+        if (subtitleInput) subtitleInput.value = '';
+        const contentInput = document.getElementById('custom-slide-content');
+        if (contentInput) contentInput.value = '';
+      }
+    }
+
+    function closeCustomSlideModal() {
+      const modal = document.getElementById('custom-slide-modal');
+      if (modal) {
+        modal.classList.add('hidden');
+        modal.classList.remove('flex');
+      }
+    }
+
+    function saveCustomSlide() {
+      const titleInput = document.getElementById('custom-slide-title');
+      const subtitleInput = document.getElementById('custom-slide-subtitle');
+      const contentInput = document.getElementById('custom-slide-content');
+
+      const title = titleInput ? titleInput.value.trim() : '';
+      const subtitle = subtitleInput ? subtitleInput.value.trim() : '';
+      const content = contentInput ? contentInput.value.trim() : '';
+
+      if (!title) {
+        showToast('Title Required', 'Please enter a title for your custom presentation slide.', 'alert-triangle');
+        return;
+      }
+
+      const newSlide = {
+        layout: 'custom',
+        customId: Date.now(),
+        title: title,
+        subtitle: subtitle || 'Teacher Slide',
+        content: content || 'Interactive discussion notes and practice items for the class.'
+      };
+
+      customUserSlides.push(newSlide);
+      generatePresentationSlides();
+      // Jump to newly created slide
+      currentSlideIndex = presentationSlides.length - 1;
+      renderCurrentSlide();
+      closeCustomSlideModal();
+      showToast('Slide Created', `New slide "${title}" added to your presentation.`, 'check-circle');
+    }
+
+    function removeCustomSlide(customId) {
+      if (!customId) return;
+      customUserSlides = customUserSlides.filter(s => s.customId !== customId);
+      generatePresentationSlides();
+      if (currentSlideIndex >= presentationSlides.length) {
+        currentSlideIndex = Math.max(0, presentationSlides.length - 1);
+      }
+      renderCurrentSlide();
+      showToast('Slide Removed', 'Custom slide has been deleted.', 'trash-2');
+    }
+
+    // Presenter Speaking Notes Toggle
+    function togglePresenterNotes() {
+      const notesPanel = document.getElementById('presenter-notes-panel');
+      const notesChevron = document.getElementById('notes-chevron');
+      const notesBadge = document.getElementById('notes-badge');
+      if (!notesPanel || !notesChevron) return;
+
+      const isCollapsed = notesPanel.classList.contains('max-h-[44px]');
+      if (isCollapsed) {
+        notesPanel.classList.remove('max-h-[44px]');
+        notesPanel.classList.add('max-h-[300px]');
+        notesChevron.style.transform = 'rotate(180deg)';
+        if (notesBadge) notesBadge.innerText = 'Expanded';
+      } else {
+        notesPanel.classList.add('max-h-[44px]');
+        notesPanel.classList.remove('max-h-[300px]');
+        notesChevron.style.transform = 'rotate(0deg)';
+        if (notesBadge) notesBadge.innerText = 'Lecture Guide';
+      }
+    }
+
+    // Smartboard Spotlight Mask Controls
+    let spotlightActive = false;
+    // Premium Typography Switcher
+    let currentSlideFont = 'slide-font-sans';
+    function changeSlideFont(fontClass) {
+      const box = document.getElementById('presentation-slide-box');
+      if (!box) return;
+      const allFonts = ['slide-font-sans', 'slide-font-serif', 'slide-font-playful', 'slide-font-mono'];
+      allFonts.forEach(f => box.classList.remove(f));
+      box.classList.add(fontClass);
+      currentSlideFont = fontClass;
+      showToast('Typography Style', 'Set slide typography pairing to ' + fontClass.replace('slide-font-', '').toUpperCase(), 'sparkles');
+    }
+
+    // 60fps Canvas-Based Confetti & Audio Fanfare Celebration Engine
+    let celebrationAnimationId = null;
+    function triggerConfettiCelebration() {
+      playSynthesizedSound('fanfare');
+      
+      const canvas = document.getElementById('celebration-canvas');
+      if (!canvas) return;
+      
+      const ctx = canvas.getContext('2d');
+      const rect = canvas.getBoundingClientRect();
+      canvas.width = rect.width;
+      canvas.height = rect.height;
+      
+      let particles = [];
+      const colors = ['#f43f5e', '#3b82f6', '#10b981', '#eab308', '#a855f7', '#6366f1', '#f97316', '#06b6d4'];
+      
+      // Generate 100 colorful physical confetti pieces
+      for (let i = 0; i < 100; i++) {
+        particles.push({
+          x: Math.random() * canvas.width,
+          y: canvas.height + Math.random() * 20,
+          vx: (Math.random() - 0.5) * 10,
+          vy: -12 - Math.random() * 10,
+          radius: 3.5 + Math.random() * 4.5,
+          color: colors[Math.floor(Math.random() * colors.length)],
+          rotation: Math.random() * 360,
+          rotationSpeed: (Math.random() - 0.5) * 12,
+          opacity: 1,
+          gravity: 0.28,
+          friction: 0.985
+        });
+      }
+      
+      if (celebrationAnimationId) {
+        cancelAnimationFrame(celebrationAnimationId);
+      }
+      
+      function renderLoop() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        let active = false;
+        
+        particles.forEach(p => {
+          // Physics
+          p.vy += p.gravity;
+          p.vx *= p.friction;
+          p.vy *= p.friction;
+          p.x += p.vx;
+          p.y += p.vy;
+          p.rotation += p.rotationSpeed;
+          
+          if (p.y > canvas.height - 10 && p.vy > 0) {
+            // bounce gently on bottom
+            p.vy = -p.vy * 0.35;
+          }
+          
+          // Fade out as they settle
+          if (p.vy > 2) {
+            p.opacity -= 0.009;
+          }
+          
+          if (p.opacity > 0) {
+            active = true;
+            ctx.save();
+            ctx.translate(p.x, p.y);
+            ctx.rotate(p.rotation * Math.PI / 180);
+            ctx.fillStyle = p.color;
+            ctx.globalAlpha = p.opacity;
+            
+            // Draw rectangle confetti piece
+            ctx.fillRect(-p.radius, -p.radius * 0.65, p.radius * 2, p.radius * 1.3);
+            ctx.restore();
+          }
+        });
+        
+        if (active) {
+          celebrationAnimationId = requestAnimationFrame(renderLoop);
+        } else {
+          ctx.clearRect(0, 0, canvas.width, canvas.height);
+        }
+      }
+      
+      renderLoop();
+    }
+
+    function toggleSpotlight() {
+      spotlightActive = !spotlightActive;
+      const mask = document.getElementById('smartboard-spotlight-mask');
+      const btn = document.getElementById('btn-slide-spotlight');
+      const viewport = document.getElementById('slide-3d-viewport');
+      if (!mask) return;
+
+      if (spotlightActive) {
+        mask.classList.remove('opacity-0');
+        mask.classList.add('opacity-100');
+        if (btn) {
+          btn.className = "py-1.5 px-3 bg-amber-600 text-white font-bold rounded-lg text-xs flex items-center gap-1.5 transition-all";
+        }
+        showToast('Spotlight Activated', 'Move mouse or touch screen to slide flashlight over key details.', 'flashlight');
+        
+        // Initial gradient focus at the center
+        mask.style.background = `radial-gradient(circle 100px at 50% 50%, transparent 100%, rgba(15, 23, 42, 0.85) 100%)`;
+      } else {
+        mask.classList.add('opacity-0');
+        mask.classList.remove('opacity-100');
+        if (btn) {
+          btn.className = "py-1.5 px-3 bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white font-bold rounded-lg text-xs flex items-center gap-1.5 transition-all";
+        }
+      }
+    }
+
+    // 3D Interactive Vocabulary Flashcard controls
+    let vocabFlashcardsActive = false;
+    let activeVocabIndex = 0;
+    let vocabList = [];
+
+    function toggleVocabFlashcards() {
+      vocabFlashcardsActive = !vocabFlashcardsActive;
+      const overlay = document.getElementById('slide-flashcards-overlay');
+      const btn = document.getElementById('btn-slide-flashcards');
+      if (!overlay) return;
+
+      if (vocabFlashcardsActive) {
+        // Load words based on teacher grade-level selector
+        const gradeLevel = document.getElementById('grade-level-select')?.value || 'intermediate';
+        vocabList = vocabData[gradeLevel] || vocabData.intermediate;
+        activeVocabIndex = 0;
+        
+        overlay.classList.remove('hidden');
+        overlay.classList.add('flex');
+        if (btn) {
+          btn.className = "py-1.5 px-3 bg-emerald-600 text-white font-bold rounded-lg text-xs flex items-center gap-1.5 transition-all";
+        }
+        
+        renderVocabCard();
+        showToast('3D Vocab Deck', 'Interactive cards initialized. Click card to flip, use arrow buttons to navigate.', 'layers');
+      } else {
+        overlay.classList.add('hidden');
+        overlay.classList.remove('flex');
+        if (btn) {
+          btn.className = "py-1.5 px-3 bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white font-bold rounded-lg text-xs flex items-center gap-1.5 transition-all";
+        }
+      }
+    }
+
+    function flipVocabCard() {
+      const inner = document.getElementById('vocab-card-inner');
+      if (!inner) return;
+      const isFlipped = inner.style.transform === 'rotateY(180deg)';
+      inner.style.transform = isFlipped ? 'rotateY(0deg)' : 'rotateY(180deg)';
+    }
+
+    function renderVocabCard() {
+      if (vocabList.length === 0) return;
+      const currentWord = vocabList[activeVocabIndex];
+      
+      const frontWord = document.getElementById('vocab-card-front-word');
+      const backDef = document.getElementById('vocab-card-back-definition');
+      const cardCount = document.getElementById('vocab-card-count');
+      const partOfSpeech = document.getElementById('vocab-card-part-of-speech');
+      const inner = document.getElementById('vocab-card-inner');
+
+      // Reset flip state
+      if (inner) inner.style.transform = 'rotateY(0deg)';
+
+      if (frontWordFront = frontWord) frontWordFront.innerText = currentWord.word;
+      if (backDefBack = backDef) backDefBack.innerText = currentWord.meaning;
+      if (cardCountCount = cardCount) cardCountCount.innerText = `Word ${activeVocabIndex + 1} of ${vocabList.length}`;
+      
+      if (partOfSpeech) {
+        const word = currentWord.word.toLowerCase();
+        let pos = "Noun";
+        if (word.endsWith('ent') || word.endsWith('ous') || word.endsWith('ic') || word.endsWith('ble')) pos = "Adjective";
+        else if (word.endsWith('ly')) pos = "Adverb";
+        else if (word.endsWith('ate') || word.endsWith('ere') || word.endsWith('ver')) pos = "Verb";
+        partOfSpeech.innerText = `Parts of Speech: ${pos}`;
+      }
+    }
+
+    function nextVocabCard() {
+      if (activeVocabIndex < vocabList.length - 1) {
+        activeVocabIndex++;
+        renderVocabCard();
+      } else {
+        showToast('End of Deck', 'You reached the end of the vocabulary card list.', 'info');
+      }
+    }
+
+    function prevVocabCard() {
+      if (activeVocabIndex > 0) {
+        activeVocabIndex--;
+        renderVocabCard();
+      }
+    }
+
+    function regenerateCurrentMode() {
+      if (currentMode === 'vocabulary') generateVocabularyWorksheet();
+      else if (currentMode === 'grammar') generateGrammarWorksheet();
+      else if (currentMode === 'proofreading') generateProofreadingWorksheet();
+      else if (currentMode === 'reading') generateReadingWorksheet();
+      else if (currentMode === 'figurative') generateFigurativeLanguageWorksheet();
+      else if (currentMode === 'writing') generateWritingWorksheet();
+      else if (currentMode === 'textbook') generateTextbookShowcase();
+    }
+
+    // VOCABULARY & WORD MATCH GENERATOR
+    function generateVocabularyWorksheet() {
+      resetStandardHeader();
+      currentMode = 'vocabulary';
+      document.getElementById('active-mode-badge').innerText = 'Vocabulary';
+
+      document.getElementById('ws-title').innerText = 'English Vocabulary & Context Clues';
+      document.getElementById('ws-subtitle').innerText = 'Review the word bank, then match each target vocabulary word to its correct context or definition.';
+      document.getElementById('ws-standard-text').innerText = 'CCSS.ELA-LITERACY.L.5.4 • Determine or clarify the meaning of unknown words using context clues and word definitions.';
+
+      const grade = document.getElementById('grade-level-select').value;
+      const count = parseInt(document.getElementById('item-count-select').value, 10);
+      const items = (vocabData[grade] || vocabData['intermediate']).slice(0, count);
+
+      const body = document.getElementById('worksheet-body');
+      body.innerHTML = '';
+      body.className = 'space-y-5 animate-fade-in';
+
+      // Word Bank Box
+      const wordBank = document.createElement('div');
+      wordBank.className = 'p-3.5 rounded-xl border-2 border-indigo-200 bg-indigo-50/50 space-y-2';
+      wordBank.innerHTML = `
+        <div class="flex items-center gap-2 text-indigo-900 font-bold text-xs uppercase tracking-wider">
+          <i data-lucide="box" class="w-4 h-4 text-indigo-600"></i> Vocabulary Word Bank
+        </div>
+        <div class="flex flex-wrap gap-2 pt-1" contenteditable="true">
+          ${items.map(i => `<span class="px-2.5 py-1 bg-white border border-indigo-200 rounded-lg text-xs font-semibold text-indigo-950 shadow-sm">${i.word}</span>`).join('')}
+        </div>
+      `;
+      body.appendChild(wordBank);
+
+      // Question Items
+      const questionsContainer = document.createElement('div');
+      questionsContainer.className = 'space-y-3.5 pt-1';
+
+      items.forEach((item, index) => {
+        const qBox = document.createElement('div');
+        qBox.className = 'p-3 rounded-lg border border-slate-200 bg-slate-50/40 space-y-2 text-xs leading-relaxed';
+        qBox.innerHTML = `
+          <div class="flex items-start justify-between gap-2">
+            <span class="font-bold text-slate-800">${index + 1}.</span>
+            <div class="flex-1 text-slate-800" contenteditable="true">
+              Definition: <span class="italic text-slate-700">"${item.meaning}"</span>
+            </div>
+            <span class="text-[10px] text-slate-400 font-mono">1 pt</span>
+          </div>
+          <div class="flex items-center gap-2 pt-1 text-slate-700">
+            <span class="font-medium text-indigo-900">Answer Word:</span>
+            <span class="border-b-2 border-slate-800 min-w-[180px] inline-block px-2 ${showAnswerKey ? 'text-red-600 font-bold' : 'text-transparent'}" contenteditable="true">
+              ${showAnswerKey ? item.word : '___________'}
+            </span>
+          </div>
+        `;
+        questionsContainer.appendChild(qBox);
+      });
+
+      body.appendChild(questionsContainer);
+      lucide.createIcons();
+      showToast('Vocabulary Generated', `Loaded ${items.length} vocabulary questions.`);
+    }
+
+    // GRAMMAR & SYNTAX GENERATOR
+    function generateGrammarWorksheet() {
+      resetStandardHeader();
+      currentMode = 'grammar';
+      document.getElementById('active-mode-badge').innerText = 'Grammar';
+
+      document.getElementById('ws-title').innerText = 'English Grammar & Usage Practice';
+      document.getElementById('ws-subtitle').innerText = 'Select the correct word form in parentheses to complete each grammatically correct sentence.';
+      document.getElementById('ws-standard-text').innerText = 'CCSS.ELA-LITERACY.L.5.1 • Demonstrate command of the conventions of standard English grammar and usage when writing or speaking.';
+
+      const count = parseInt(document.getElementById('item-count-select').value, 10);
+      const items = grammarData.slice(0, count);
+
+      const body = document.getElementById('worksheet-body');
+      body.innerHTML = '';
+      body.className = 'space-y-3.5 animate-fade-in pt-1';
+
+      items.forEach((item, index) => {
+        const qBox = document.createElement('div');
+        qBox.className = 'p-3.5 rounded-xl border border-slate-200 bg-slate-50/40 flex flex-col gap-1.5 text-xs text-slate-800';
+        qBox.innerHTML = `
+          <div class="flex justify-between items-center text-slate-400 text-[10px] uppercase font-semibold">
+            <span>Question ${index + 1}</span>
+            <span class="px-2 py-0.5 bg-indigo-50 text-indigo-700 rounded border border-indigo-200">${item.concept}</span>
+          </div>
+          <p class="text-xs font-medium leading-relaxed text-slate-900 pt-0.5" contenteditable="true">
+            ${index + 1}. ${item.sentence}
+          </p>
+          <div class="flex items-center gap-2 pt-1 border-t border-slate-200/80 text-slate-600">
+            <span>Correct choice:</span>
+            <span contenteditable="true" class="border-b-2 border-slate-700 min-w-[140px] px-2 ${showAnswerKey ? 'text-red-600 font-bold' : 'text-transparent'}">
+              ${showAnswerKey ? item.target : '__________'}
+            </span>
+          </div>
+        `;
+        body.appendChild(qBox);
+      });
+
+      lucide.createIcons();
+      showToast('Grammar Generated', `Created ${items.length} grammar exercises.`);
+    }
+
+    // PUNCTUATION & PROOFREADING GENERATOR
+    function generateProofreadingWorksheet() {
+      resetStandardHeader();
+      currentMode = 'proofreading';
+      document.getElementById('active-mode-badge').innerText = 'Punctuation';
+
+      document.getElementById('ws-title').innerText = 'Editing & Proofreading Drills';
+      document.getElementById('ws-subtitle').innerText = 'Rewrite each incorrect sentence below, correcting capitalization, punctuation, and spelling errors.';
+      document.getElementById('ws-standard-text').innerText = 'CCSS.ELA-LITERACY.L.6.2 • Demonstrate command of the conventions of standard English capitalization, punctuation, and spelling.';
+
+      const count = parseInt(document.getElementById('item-count-select').value, 10);
+      const items = proofreadingData.slice(0, count);
+
+      const body = document.getElementById('worksheet-body');
+      body.innerHTML = '';
+      body.className = 'space-y-4 animate-fade-in pt-1';
+
+      items.forEach((item, index) => {
+        const qBox = document.createElement('div');
+        qBox.className = 'p-3.5 rounded-xl border border-slate-200 bg-slate-50/40 space-y-2 text-xs text-slate-800';
+        qBox.innerHTML = `
+          <div class="flex justify-between items-center text-[10px] text-slate-500 font-semibold uppercase">
+            <span>Sentence ${index + 1}</span>
+            <span class="bg-pink-50 text-pink-700 px-2 py-0.5 rounded border border-pink-200">${item.rule}</span>
+          </div>
+          <p class="text-xs font-medium text-slate-900 bg-amber-50/60 p-2 rounded border border-amber-200/60" contenteditable="true">
+            "${item.incorrect}"
+          </p>
+          <div class="pt-1">
+            <span class="text-[11px] font-semibold text-slate-700 block mb-1">Corrected Sentence:</span>
+            <div contenteditable="true" class="border-b-2 border-slate-700 min-h-[28px] py-0.5 px-1 ${showAnswerKey ? 'text-red-600 font-semibold' : 'text-slate-800'}">
+              ${showAnswerKey ? item.correct : ''}
+            </div>
+          </div>
+        `;
+        body.appendChild(qBox);
+      });
+
+      lucide.createIcons();
+      showToast('Punctuation Drills Generated', `Loaded ${items.length} proofreading sentences.`);
+    }
+
+    // READING COMPREHENSION GENERATOR
+    function generateReadingWorksheet() {
+      resetStandardHeader();
+      currentMode = 'reading';
+      document.getElementById('active-mode-badge').innerText = 'Reading';
+
+      document.getElementById('ws-title').innerText = 'Reading Comprehension & Evidence';
+      document.getElementById('ws-subtitle').innerText = 'Read the passage carefully, then answer the comprehension questions using text evidence.';
+      document.getElementById('ws-standard-text').innerText = 'CCSS.ELA-LITERACY.RL.5.1 • Quote accurately from a text when explaining what the text says explicitly and when drawing inferences.';
+
+      const story = readingStories[Math.floor(Math.random() * readingStories.length)];
+
+      const body = document.getElementById('worksheet-body');
+      body.innerHTML = '';
+      body.className = 'space-y-5 animate-fade-in pt-1';
+
+      // Featured Illustration
+      const heroImage = document.createElement('div');
+      heroImage.className = 'w-full flex justify-center mb-4';
+      heroImage.innerHTML = `<img src="images/cozy_reading.jpg" class="w-full max-w-[500px] rounded-xl shadow-md border-2 border-slate-200" alt="Cozy Reading Nook">`;
+      body.appendChild(heroImage);
+
+      // Reading Passage Box
+      const storyBox = document.createElement('div');
+      storyBox.className = 'p-4 rounded-xl border-2 border-slate-300 bg-amber-50/30 text-slate-900 space-y-2 shadow-sm';
+      storyBox.innerHTML = `
+        <h3 contenteditable="true" class="text-base font-bold text-slate-900 border-b border-amber-200 pb-1">${story.title}</h3>
+        <p contenteditable="true" class="text-xs leading-relaxed text-slate-800 pt-1 font-serif">${story.passage}</p>
+      `;
+      body.appendChild(storyBox);
+
+      // Questions Box
+      const qContainer = document.createElement('div');
+      qContainer.className = 'space-y-4 pt-1';
+
+      story.questions.forEach((item, idx) => {
+        const qBlock = document.createElement('div');
+        qBlock.className = 'space-y-1.5 text-xs text-slate-800';
+        qBlock.innerHTML = `
+          <p contenteditable="true" class="font-bold text-slate-900">${idx + 1}. ${item.q}</p>
+          <div class="space-y-2 pt-1">
+            <div contenteditable="true" class="border-b border-slate-300 min-h-[24px] px-1 ${showAnswerKey ? 'text-red-600 font-medium' : ''}">
+              ${showAnswerKey ? 'Sample Answer: ' + item.a : ''}
+            </div>
+            <div class="border-b border-slate-300 h-5"></div>
+          </div>
+        `;
+        qContainer.appendChild(qBlock);
+      });
+
+      body.appendChild(qContainer);
+      lucide.createIcons();
+      showToast('Reading Generated', 'Loaded reading passage and text-evidence questions.');
+    }
+
+    // FIGURATIVE LANGUAGE GENERATOR
+    function generateFigurativeLanguageWorksheet() {
+      resetStandardHeader();
+      currentMode = 'figurative';
+      document.getElementById('active-mode-badge').innerText = 'Figurative';
+
+      document.getElementById('ws-title').innerText = 'Literary Devices & Figurative Language';
+      document.getElementById('ws-subtitle').innerText = 'Identify whether each sentence contains a Simile, Metaphor, Personification, Alliteration, or Hyperbole.';
+      document.getElementById('ws-standard-text').innerText = 'CCSS.ELA-LITERACY.RL.6.4 • Determine the meaning of words and phrases as they are used in a text, including figurative and connotative meanings.';
+
+      const count = parseInt(document.getElementById('item-count-select').value, 10);
+      const items = figurativeData.slice(0, count);
+
+      const body = document.getElementById('worksheet-body');
+      body.innerHTML = '';
+      body.className = 'space-y-3.5 animate-fade-in pt-1';
+
+      items.forEach((item, index) => {
+        const qBox = document.createElement('div');
+        qBox.className = 'p-3.5 rounded-xl border border-slate-200 bg-slate-50/40 space-y-2 text-xs text-slate-800';
+        qBox.innerHTML = `
+          <div class="flex justify-between items-center text-[10px] text-slate-500 font-semibold">
+            <span>Item ${index + 1}</span>
+            <span class="bg-cyan-50 text-cyan-800 px-2 py-0.5 rounded border border-cyan-200">Identify Device</span>
+          </div>
+          <p class="text-xs font-semibold text-slate-900 italic bg-white p-2 rounded border border-slate-200" contenteditable="true">
+            "${item.example}"
+          </p>
+          <div class="flex flex-wrap items-center gap-4 pt-1 text-slate-700">
+            <div>
+              <span class="font-bold text-slate-800">Literary Device:</span>
+              <span contenteditable="true" class="border-b-2 border-slate-800 min-w-[120px] inline-block px-1 ${showAnswerKey ? 'text-red-600 font-bold' : 'text-transparent'}">
+                ${showAnswerKey ? item.type : '___________'}
+              </span>
+            </div>
+            <div class="flex-1">
+              <span class="font-bold text-slate-800">Why/Explanation:</span>
+              <span contenteditable="true" class="border-b-2 border-slate-400 min-w-[180px] inline-block px-1 ${showAnswerKey ? 'text-red-600 font-normal' : 'text-transparent'}">
+                ${showAnswerKey ? item.answer : ''}
+              </span>
+            </div>
+          </div>
+        `;
+        body.appendChild(qBox);
+      });
+
+      lucide.createIcons();
+      showToast('Figurative Devices Generated', `Created ${items.length} literary device questions.`);
+    }
+
+    // WRITING & ESSAY GENERATOR
+    function generateWritingWorksheet() {
+      resetStandardHeader();
+      currentMode = 'writing';
+      document.getElementById('active-mode-badge').innerText = 'Writing';
+
+      document.getElementById('ws-title').innerText = 'Guided English Essay & Writing Prompt';
+      document.getElementById('ws-subtitle').innerText = 'Write a structured multi-paragraph response using vivid adjectives, strong verb choices, and clear topic sentences.';
+      document.getElementById('ws-standard-text').innerText = 'CCSS.ELA-LITERACY.W.5.2 • Write informative/explanatory texts to examine a topic and convey ideas clearly.';
+
+      const body = document.getElementById('worksheet-body');
+      body.innerHTML = '';
+      body.className = 'space-y-5 animate-fade-in pt-1';
+
+      // Featured Illustration
+      const heroImage = document.createElement('div');
+      heroImage.className = 'w-full flex justify-center mb-4';
+      heroImage.innerHTML = `<img src="images/creative_writing.jpg" class="w-full max-w-[500px] rounded-xl shadow-md border-2 border-slate-200" alt="Creative Writing">`;
+      body.appendChild(heroImage);
+
+      // Writing Prompt Box
+      const promptBox = document.createElement('div');
+      promptBox.className = 'p-4 rounded-xl border-2 border-amber-300 bg-amber-50/50 text-slate-800 text-xs font-medium leading-relaxed shadow-sm space-y-1';
+      promptBox.innerHTML = `
+        <div class="flex items-center gap-2 text-amber-900 font-bold text-xs uppercase tracking-wider">
+          <i data-lucide="edit-3" class="w-4 h-4"></i> English Writing Prompt
+        </div>
+        <p contenteditable="true" class="outline-none text-xs text-slate-900 pt-1">
+          Imagine you discovered a hidden room behind a bookshelf in your school library. Write a creative story describing what was inside, using at least 3 descriptive adjectives, 2 action verbs, and proper paragraph structure.
+        </p>
+      `;
+      body.appendChild(promptBox);
+
+      // Essay Outline Structure Box
+      const outlineBox = document.createElement('div');
+      outlineBox.className = 'p-3.5 rounded-xl border border-indigo-200 bg-indigo-50/40 text-xs space-y-2';
+      outlineBox.innerHTML = `
+        <span class="font-bold text-indigo-900 uppercase text-[10px] tracking-wider block">Essay Planning Guide:</span>
+        <div class="grid grid-cols-3 gap-2 text-[11px] text-slate-700">
+          <div class="p-2 bg-white rounded border border-indigo-100">
+            <span class="font-bold text-indigo-800 block">1. Introduction:</span>
+            <span>Hook & Thesis Statement</span>
+          </div>
+          <div class="p-2 bg-white rounded border border-indigo-100">
+            <span class="font-bold text-indigo-800 block">2. Body Paragraph:</span>
+            <span>Sensory details & action</span>
+          </div>
+          <div class="p-2 bg-white rounded border border-indigo-100">
+            <span class="font-bold text-indigo-800 block">3. Conclusion:</span>
+            <span>Reflective closing thought</span>
+          </div>
+        </div>
+      `;
+      body.appendChild(outlineBox);
+
+      // Handwriting Lines
+      const linesContainer = document.createElement('div');
+      linesContainer.className = 'space-y-4 pt-1';
+
+      for (let i = 1; i <= 6; i++) {
+        const lineBlock = document.createElement('div');
+        lineBlock.className = 'relative w-full h-12 border-b-2 border-slate-700 flex flex-col justify-between py-1 group';
+        lineBlock.innerHTML = `
+          <div class="w-full border-t border-slate-300"></div>
+          <div class="w-full border-t-2 border-dashed border-indigo-300/80"></div>
+          <div contenteditable="true" class="absolute inset-x-2 top-0.5 text-lg font-handwriting text-slate-400 outline-none">
+            ${i === 1 ? 'Start writing your story here...' : ''}
+          </div>
+        `;
+        linesContainer.appendChild(lineBlock);
+      }
+
+      body.appendChild(linesContainer);
+      lucide.createIcons();
+      showToast('Writing Generated', 'Created guided writing and essay outline worksheet.');
+    }
+
+        // HIGH-FIDELITY ELA TEXTBOOK LESSONS DATA (Preserves royal blue #0e56b2, mascots, structure & design)
+    let currentTextbookLessonIndex = 0;
+
+    const textbookLessons = [
+      {
+        id: "reading-magic",
+        unitTag: "Literacy & Exploration",
+        unitTitle: "ADVENTURE",
+        lessonTitle: "Lesson 1 • The Secret of the Old Library",
+        pageTag: "Page 1/3",
+        standardText: "CCSS.ELA-LITERACY.RL.5.1 • Quote accurately from a text when explaining what the text says explicitly.",
+        pageNumber: "42",
+        sceneLabel: "Town Heritage Library Scene",
+        caption: "Leo discovering ancient illustrated folios in the quiet reading rotunda",
+        imageSrc: "images/magical_storybook.jpg",
+        storyTitle: "The Secret of the Old Library",
+        storyText: `Leo pushed open the creaky oak door of the town's oldest library. Beams of warm afternoon sunlight streamed through tall stained-glass windows, illuminating rows of floor-to-ceiling bookshelves. Unlike ordinary rooms, this peaceful sanctuary was filled with the sweet scent of aged parchment and cedar wood.<br><br>In the sunlit corner sat <b>Mrs. Jenkins</b>, the town's beloved head librarian. She adjusted her silver spectacles and smiled warmly. "Welcome, young explorer," she said. "Every book resting on these shelves holds an extraordinary journey waiting for an inquisitive mind." When Leo gently opened a weathered leather volume, luminous illustrations seemed to glow, inviting him into a marvelous world of constellations, ancient castles, and hidden treasures.`,
+        comprehension: [
+          { q: "Where did Leo go at the beginning of the story?", a: "Leo went to the town's oldest library." },
+          { q: "What was streaming through the tall stained-glass windows?", a: "Beams of warm afternoon sunlight were streaming through the windows." },
+          { q: "Who was sitting in the quiet corner of the library?", a: "Mrs. Jenkins, the town's beloved head librarian, was sitting in the corner." },
+          { q: "How did Mrs. Jenkins describe the books to Leo?", a: "She said every book holds an extraordinary journey waiting for an inquisitive mind." },
+          { q: "What happened when Leo opened the weathered leather volume?", a: "Luminous illustrations seemed to glow, inviting him into a world of wonders." }
+        ],
+        vocabChoices: [
+          {
+            q: "A person who visits and studies a library is an _______",
+            opts: ["explorer", "airplane", "umbrella"],
+            ans: 0
+          },
+          {
+            q: "An old book made of worn leather can be described as _______",
+            opts: ["weathered", "noisy", "plastic"],
+            ans: 0
+          },
+          {
+            q: "Someone with a curious, questioning mind is _______",
+            opts: ["asleep", "inquisitive", "frozen"],
+            ans: 1
+          },
+          {
+            q: "The colorful pictures inside a storybook are called _______",
+            opts: ["blankets", "illustrations", "hammers"],
+            ans: 1
+          }
+        ],
+        trueFalse: [
+          { q: "Leo entered the town's oldest library.", ans: true },
+          { q: "Mrs. Jenkins was angry and told Leo to leave.", ans: false },
+          { q: "Warm sunlight streamed through the stained-glass windows.", ans: true },
+          { q: "Leo found an old book with luminous illustrations.", ans: true }
+        ],
+        findInText: [
+          { def: "having a curious and seeking mind", val: "inquisitive" },
+          { def: "giving off warm, glowing light", val: "luminous" },
+          { def: "seasoned or altered by age and time", val: "weathered" },
+          { def: "extraordinary or rare voyage", val: "journey" }
+        ]
+      },
+      {
+        id: "rainforest-wonders",
+        unitTag: "Our Living Earth",
+        unitTitle: "OUR PLANET",
+        lessonTitle: "Lesson 2 • Guardians of the Rainforest",
+        pageTag: "Page 2/3",
+        standardText: "CCSS.ELA-LITERACY.RI.5.2 • Determine main ideas of an informational text and explain supporting details.",
+        pageNumber: "68",
+        sceneLabel: "Amazon Ecological Canopy Scene",
+        caption: "Dr. Elena and student wildlife rangers observing biodiversity high in the canopy",
+        imageSrc: "images/cozy_reading.jpg",
+        storyTitle: "Guardians of the Rainforest",
+        storyText: `The Amazon Rainforest is often called the green lungs of our planet because its vast emerald canopy generates vital oxygen for living creatures worldwide. High above the forest floor, vibrant scarlet macaws glide between towering mahogany branches while spider monkeys swing gracefully across tangled vines.<br><br>On the forest trail below, <b>Dr. Elena</b> leads an enthusiastic group of young wildlife rangers. "Every single organism, from the humble leafcutter ant to the solitary jaguar, maintains a delicate balance in this ecosystem," explains Dr. Elena. Working alongside local communities, the rangers catalog rare botanical species, protect freshwater riverbanks, and plant native saplings to ensure future generations inherit a flourishing natural world.`,
+        comprehension: [
+          { q: "Why is the Amazon Rainforest called the green lungs of our planet?", a: "Because its vast emerald canopy generates vital oxygen for creatures worldwide." },
+          { q: "Which birds glide between the towering mahogany trees?", a: "Vibrant scarlet macaws glide between the trees." },
+          { q: "What does Dr. Elena teach her youth wildlife rangers?", a: "She teaches that every organism maintains a delicate balance in the ecosystem." },
+          { q: "Name two animals that inhabit the rainforest according to the passage.", a: "Spider monkeys and scarlet macaws (or leafcutter ants and jaguars)." },
+          { q: "What actions do the rangers take to safeguard the forest?", a: "They catalog botanical species, protect riverbanks, and plant native saplings." }
+        ],
+        vocabChoices: [
+          {
+            q: "A community of plants and animals interacting together is an _______",
+            opts: ["ecosystem", "engine", "suitcase"],
+            ans: 0
+          },
+          {
+            q: "The uppermost continuous layer of foliage in a forest is the _______",
+            opts: ["cellar", "canopy", "chimney"],
+            ans: 1
+          },
+          {
+            q: "An animal that hunts and moves mostly at night is _______",
+            opts: ["nocturnal", "cheerful", "plastic"],
+            ans: 0
+          },
+          {
+            q: "Young developing trees planted to restore woodlands are _______",
+            opts: ["pebbles", "saplings", "fences"],
+            ans: 1
+          }
+        ],
+        trueFalse: [
+          { q: "The Amazon produces vital oxygen for living beings.", ans: true },
+          { q: "Leafcutter ants play no role in the forest ecosystem.", ans: false },
+          { q: "Dr. Elena works alongside young wildlife rangers.", ans: true },
+          { q: "The rangers plant native saplings to restore the woodland.", ans: true }
+        ],
+        findInText: [
+          { def: "immense or of great extent", val: "vast" },
+          { def: "bright green in color like a jewel", val: "emerald" },
+          { def: "vital and having the highest importance", val: "essential" },
+          { def: "young developing trees", val: "saplings" }
+        ]
+      },
+      {
+        id: "young-inventor",
+        unitTag: "Creative Thinking & STEM",
+        unitTitle: "INVENTIONS",
+        lessonTitle: "Lesson 3 • Maya's Solar Reading Lamp",
+        pageTag: "Page 3/3",
+        standardText: "CCSS.ELA-LITERACY.W.5.2 • Write informative texts examining a process and conveying ideas clearly.",
+        pageNumber: "95",
+        sceneLabel: "Young Inventor Workshop Scene",
+        caption: "Maya assembling sustainable photovoltaic circuits for student reading lamps",
+        imageSrc: "images/creative_writing.jpg",
+        storyTitle: "Maya's Solar Reading Lamp",
+        storyText: `Ten-year-old <b>Maya</b> spent her Saturday mornings exploring her grandfather's workshop, a marvelous room brimming with brass screws, wooden rulers, and discarded mechanical gears. When an unexpected thunderstorm caused an evening blackout in her neighborhood, Maya realized how difficult it was for students to read their English assignments in the dark.<br><br>Determined to find an eco-friendly answer, Maya gathered an empty glass jar, two efficient LED bulbs, and a small solar cell salvaged from an old garden fixture. With steady patience, she soldered the copper contacts, attached a rechargeable battery, and set the device on her sunlit windowsill. By dusk, the compact lantern radiated a warm, steady glow that illuminated her entire desk. Her clever sustainable prototype earned top honors at the district academy fair.`,
+        comprehension: [
+          { q: "Where did Maya spend her Saturday mornings tinkering?", a: "In her grandfather's workshop filled with tools and mechanical parts." },
+          { q: "What problem did Maya encounter that inspired her invention?", a: "An evening thunderstorm blackout made it hard for students to read assignments." },
+          { q: "Which recycled materials did Maya assemble to build her lamp?", a: "An empty glass jar, LED bulbs, and a salvaged solar cell." },
+          { q: "How did Maya charge the lantern before nightfall?", a: "She placed the device on her sunlit windowsill to absorb sunlight." },
+          { q: "How was Maya's invention recognized at school?", a: "Her sustainable prototype earned top honors at the district academy fair." }
+        ],
+        vocabChoices: [
+          {
+            q: "A person who designs new machines and solutions is an _______",
+            opts: ["inventor", "astronaut", "iceberg"],
+            ans: 0
+          },
+          {
+            q: "Capable of being sustained without depleting natural energy is _______",
+            opts: ["fragile", "sustainable", "noisy"],
+            ans: 1
+          },
+          {
+            q: "To experiment with and adjust mechanical components is to _______",
+            opts: ["tinker", "whistle", "freeze"],
+            ans: 0
+          },
+          {
+            q: "A preliminary working model of an invention is called a _______",
+            opts: ["prototype", "sentence", "chalkboard"],
+            ans: 0
+          }
+        ],
+        trueFalse: [
+          { q: "Maya built a solar-powered lamp using recycled items.", ans: true },
+          { q: "The lamp required a wall electrical socket during the blackout.", ans: false },
+          { q: "Maya charged the device using solar energy on her windowsill.", ans: true },
+          { q: "Maya's prototype received honors at the district academy fair.", ans: true }
+        ],
+        findInText: [
+          { def: "small mechanical tools or apparatuses", val: "gadgets" },
+          { def: "shined brightly or sent forth light", val: "radiated" },
+          { def: "rescued or reclaimed from scrap", val: "salvaged" },
+          { def: "first working experimental model", val: "prototype" }
+        ]
+      }
+    ];
+
+    // HIGH-FIDELITY ELA TEXTBOOK SHOWCASE GENERATOR (Modular, Multi-Lesson, Pure Pedagogical ELA)
+    function generateTextbookShowcase(lessonIndex = 0) {
+      currentMode = 'textbook';
+      currentTextbookLessonIndex = Math.max(0, Math.min(lessonIndex, textbookLessons.length - 1));
+      const lesson = textbookLessons[currentTextbookLessonIndex];
+
+      const modeBadge = document.getElementById('active-mode-badge');
+      if (modeBadge) modeBadge.innerText = 'Textbook';
+
+      // Update sidebar switcher buttons
+      for (let i = 0; i < 3; i++) {
+        const btn = document.getElementById(`tb-btn-${i}`);
+        if (btn) {
+          if (i === currentTextbookLessonIndex) {
+            btn.className = "py-1.5 px-2 rounded-lg bg-sky-600 text-white font-bold text-[10px] flex flex-col items-center justify-center transition-all shadow-sm active:scale-95 text-center leading-tight ring-2 ring-sky-300";
+          } else {
+            btn.className = "py-1.5 px-2 rounded-lg bg-slate-800/80 hover:bg-sky-700/80 text-sky-200 hover:text-white font-bold text-[10px] flex flex-col items-center justify-center transition-all border border-sky-500/30 active:scale-95 text-center leading-tight";
+          }
+        }
+      }
+      const activePill = document.getElementById('textbook-active-pill');
+      if (activePill) activePill.innerText = `Lesson ${currentTextbookLessonIndex + 1}`;
+
+      // 1. Force the premium ELA Book Theme!
+      const paper = document.getElementById('worksheet-paper');
+      if (paper) {
+        const allThemes = [
+          'theme-classic-corporate', 'theme-midnight-tech', 'theme-nordic-pastel', 
+          'theme-vibrant-gamifier', 'theme-emerald-scholar', 'theme-sunset-minimalist', 
+          'theme-cyberpunk-edgy', 'theme-oceanic-trust', 'theme-ela-book'
+        ];
+        allThemes.forEach(t => paper.classList.remove(t));
+        paper.classList.add('theme-ela-book');
+        
+        const themeSelect = document.getElementById('theme-select');
+        if (themeSelect) themeSelect.value = 'ela-book';
+      }
+
+      // Hide the default illustration container as we are rendering bespoke cartoon headers
+      const illContainer = document.getElementById('ws-illustration-container');
+      if (illContainer) illContainer.classList.add('hidden');
+
+      // 2. Build the exact gorgeous, centered textbook header with Boy & Girl waving mascots
+      const headerBox = document.getElementById('worksheet-header');
+      if (headerBox) {
+        headerBox.className = "border-b-4 border-[#0e56b2] pb-6 mb-6 flex flex-col items-center justify-center relative select-none pt-2";
+        headerBox.innerHTML = `
+          <!-- Page info top corners -->
+          <div class="absolute top-0 left-0 text-[10px] font-bold text-[#0e56b2] bg-blue-50 px-2.5 py-0.5 rounded uppercase tracking-wider border border-blue-200">${lesson.unitTag}</div>
+          <div class="absolute top-0 right-0 text-[10px] font-bold text-slate-600 bg-slate-100 px-2.5 py-0.5 rounded uppercase tracking-wider border border-slate-200">${lesson.pageTag}</div>
+
+          <div class="w-full flex items-center justify-between gap-4 max-w-xl mt-3">
+            <!-- Cartoon Boy Waving (Bespoke vector art) -->
+            <div class="w-16 h-16 sm:w-20 sm:h-20 flex-shrink-0 animate-bounce" style="animation-duration: 3s;">
+              <svg viewBox="0 0 100 100" class="w-full h-full">
+                <!-- Hair -->
+                <path d="M25 40 C25 20, 75 20, 75 40 C75 35, 60 25, 50 25 C40 25, 25 35, 25 40" fill="#2d1500" />
+                <path d="M20 40 C20 25, 45 15, 50 15 C55 15, 80 25, 80 40" fill="#1a0b00" />
+                <!-- Ears -->
+                <circle cx="28" cy="48" r="6" fill="#fbcfe8" />
+                <circle cx="28" cy="48" r="3" fill="#f472b6" />
+                <circle cx="72" cy="48" r="6" fill="#fbcfe8" />
+                <circle cx="72" cy="48" r="3" fill="#f472b6" />
+                <!-- Face -->
+                <circle cx="50" cy="50" r="22" fill="#fed7aa" />
+                <!-- Blushes -->
+                <circle cx="38" cy="56" r="3" fill="#f43f5e" opacity="0.4" />
+                <circle cx="62" cy="56" r="3" fill="#f43f5e" opacity="0.4" />
+                <!-- Eyes -->
+                <circle cx="42" cy="48" r="3" fill="#1e293b" />
+                <circle cx="42" cy="48" r="1" fill="#ffffff" transform="translate(-1, -1)" />
+                <circle cx="58" cy="48" r="3" fill="#1e293b" />
+                <circle cx="58" cy="48" r="1" fill="#ffffff" transform="translate(-1, -1)" />
+                <!-- Smile -->
+                <path d="M44 58 Q50 64 56 58" stroke="#be123c" stroke-width="2.5" fill="none" stroke-linecap="round" />
+                <!-- Cap/Clothes -->
+                <path d="M35 70 C35 70, 50 72, 65 70 L70 85 H30 Z" fill="#0284c7" />
+                <!-- Waving Arm -->
+                <path d="M20 70 Q10 50 15 45 Q20 40 24 50" fill="#fed7aa" stroke="#0284c7" stroke-width="2" />
+                <circle cx="15" cy="43" r="5" fill="#fed7aa" />
+              </svg>
+            </div>
+
+            <!-- Central Title Banner (Royal Blue #0e56b2) -->
+            <div class="flex-1 flex flex-col items-center text-center">
+              <div class="bg-[#0e56b2] text-white text-2xl sm:text-3xl font-black px-10 py-3 rounded-2xl shadow-md tracking-wider uppercase">
+                ${lesson.unitTitle}
+              </div>
+              <div class="border-2 border-[#0e56b2] text-[#0e56b2] text-[11px] font-black px-4 py-1 rounded-full mt-2 bg-white/95 shadow-sm uppercase tracking-wide">
+                ${lesson.lessonTitle}
+              </div>
+            </div>
+
+            <!-- Cartoon Girl Waving (Bespoke vector art) -->
+            <div class="w-16 h-16 sm:w-20 sm:h-20 flex-shrink-0 animate-bounce" style="animation-duration: 3s; animation-delay: 0.5s;">
+              <svg viewBox="0 0 100 100" class="w-full h-full">
+                <!-- Hair (Pigtails) -->
+                <circle cx="24" cy="35" r="10" fill="#b45309" />
+                <circle cx="76" cy="35" r="10" fill="#b45309" />
+                <path d="M25 40 C25 20, 75 20, 75 40" fill="#d97706" />
+                <!-- Face -->
+                <circle cx="50" cy="48" r="22" fill="#fed7aa" />
+                <!-- Blushes -->
+                <circle cx="38" cy="54" r="3.5" fill="#f43f5e" opacity="0.4" />
+                <circle cx="62" cy="54" r="3.5" fill="#f43f5e" opacity="0.4" />
+                <!-- Eyes -->
+                <circle cx="42" cy="46" r="3" fill="#1e293b" />
+                <circle cx="58" cy="46" r="3" fill="#1e293b" />
+                <!-- Smile -->
+                <path d="M44 56 Q50 62 56 56" stroke="#be123c" stroke-width="2.5" fill="none" stroke-linecap="round" />
+                <!-- Hair clips -->
+                <path d="M30 35 L35 32" stroke="#f43f5e" stroke-width="3" stroke-linecap="round" />
+                <path d="M70 35 L65 32" stroke="#f43f5e" stroke-width="3" stroke-linecap="round" />
+                <!-- Pink shirt -->
+                <path d="M35 68 C35 68, 50 70, 65 68 L70 85 H30 Z" fill="#ec4899" />
+                <!-- Waving Arm -->
+                <path d="M80 68 Q90 48 85 43 Q80 38 76 48" fill="#fed7aa" stroke="#ec4899" stroke-width="2" />
+                <circle cx="85" cy="41" r="5" fill="#fed7aa" />
+              </svg>
+            </div>
+          </div>
+        `;
+      }
+
+      // Update Standard text below header
+      const stdText = document.getElementById('ws-standard-text');
+      if (stdText) {
+        stdText.innerText = lesson.standardText;
+      }
+
+      // 3. Build the textbook body content
+      const body = document.getElementById('worksheet-body');
+      if (!body) return;
+      body.innerHTML = '';
+      body.className = 'space-y-6 animate-fade-in pt-1';
+
+      // --- SECTION 1: READING ---
+      const section1 = document.createElement('div');
+      section1.className = 'space-y-3';
+      section1.innerHTML = `
+        <div class="flex items-center gap-2">
+          <span class="w-7 h-7 rounded-full bg-[#0e56b2] text-white font-bold flex items-center justify-center text-xs shadow-sm">1</span>
+          <span class="bg-[#0e56b2] text-white text-xs font-black px-3 py-1 rounded-lg uppercase tracking-wide">Reading</span>
+          <span class="text-xs font-bold text-slate-700">Read the text carefully.</span>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-12 gap-4 items-stretch">
+          <!-- Illustration Box -->
+          <div class="md:col-span-6 bg-gradient-to-b from-sky-50 to-indigo-50/50 rounded-xl p-3 border-2 border-sky-200 flex flex-col justify-between shadow-sm min-h-[200px]">
+            <div class="flex items-center justify-between text-[9px] font-black uppercase text-sky-800 tracking-wider">
+              <span>${lesson.sceneLabel}</span>
+              <span class="text-sky-600 font-semibold">Visual Literacy</span>
+            </div>
+            
+            <div class="w-full my-auto overflow-hidden rounded-lg border border-sky-300/60 shadow-inner bg-slate-900/5 flex items-center justify-center relative p-1">
+              <img src="${lesson.imageSrc}" alt="${lesson.sceneLabel}" class="w-full h-44 object-cover rounded shadow-sm" onerror="this.classList.add('hidden'); this.nextElementSibling.classList.remove('hidden');">
+              <div class="hidden w-full h-44 p-4 flex flex-col items-center justify-center text-center bg-sky-100/60 rounded">
+                <svg class="w-12 h-12 text-[#0e56b2] mb-1" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20M4 19.5A2.5 2.5 0 0 0 6.5 22H20M4 19.5V3A2.5 2.5 0 0 1 6.5 0.5H20v20H6.5a2.5 2.5 0 0 1-2.5-2.5z"/></svg>
+                <span class="text-xs font-bold text-[#0e56b2]">${lesson.storyTitle}</span>
+              </div>
+            </div>
+
+            <div class="text-[9px] font-semibold text-slate-500 text-center">${lesson.caption}</div>
+          </div>
+
+          <!-- Story Text Box -->
+          <div class="md:col-span-6 p-4 rounded-xl border-2 border-[#0e56b2] bg-blue-50/40 flex flex-col justify-center text-xs leading-relaxed space-y-2 shadow-sm">
+            <h4 contenteditable="true" class="text-sm font-black text-blue-950 border-b border-blue-200 pb-1 flex items-center gap-1.5 outline-none">
+              <svg class="w-4 h-4 text-blue-700" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20M4 19.5A2.5 2.5 0 0 0 6.5 22H20M4 19.5V3A2.5 2.5 0 0 1 6.5 0.5H20v20H6.5a2.5 2.5 0 0 1-2.5-2.5z"/></svg>
+              ${lesson.storyTitle}
+            </h4>
+            <p contenteditable="true" class="text-[11px] text-blue-950 font-serif outline-none leading-relaxed text-justify">
+              ${lesson.storyText}
+            </p>
+          </div>
+        </div>
+      `;
+      body.appendChild(section1);
+
+      // --- SECTION 2: COMPREHENSION ---
+      const section2 = document.createElement('div');
+      section2.className = 'space-y-3';
+      
+      let qHtml = '';
+      lesson.comprehension.forEach((q, idx) => {
+        qHtml += `
+          <div class="space-y-1">
+            <p contenteditable="true" class="font-bold text-slate-950 outline-none">${idx + 1}. ${q.q}</p>
+            <div class="space-y-1">
+              <div contenteditable="true" class="border-b-2 border-dotted border-slate-300 min-h-[22px] px-2 outline-none ${showAnswerKey ? 'text-rose-600 font-extrabold font-handwriting' : 'text-slate-800'}">
+                ${showAnswerKey ? '✓ ' + q.a : ''}
+              </div>
+            </div>
+          </div>
+        `;
+      });
+
+      section2.innerHTML = `
+        <div class="flex items-center gap-2">
+          <span class="w-7 h-7 rounded-full bg-[#15803d] text-white font-bold flex items-center justify-center text-xs shadow-sm">2</span>
+          <span class="bg-[#15803d] text-white text-xs font-black px-3 py-1 rounded-lg uppercase tracking-wide">Comprehension</span>
+          <span class="text-xs font-bold text-slate-700">Answer the questions.</span>
+        </div>
+        <div class="p-4 rounded-xl border border-emerald-100 bg-white shadow-sm text-xs space-y-4">
+          ${qHtml}
+        </div>
+      `;
+      body.appendChild(section2);
+
+      // --- SECTION 3: VOCABULARY IN CONTEXT (Colorful choice pills!) ---
+      const section3 = document.createElement('div');
+      section3.className = 'space-y-3';
+
+      let mcHtml = '';
+      lesson.vocabChoices.forEach((item, qIdx) => {
+        let optHtml = '';
+        item.opts.forEach((opt, oIdx) => {
+          const isCorrect = (oIdx === item.ans);
+          let badgeColor = "bg-slate-100 border-slate-300 text-slate-800";
+          
+          if (showAnswerKey && isCorrect) {
+            badgeColor = "bg-rose-500 border-rose-600 text-white font-black shadow-sm ring-2 ring-rose-300";
+          } else {
+            if (oIdx === 0) badgeColor = "bg-purple-100/70 border-purple-200 text-purple-900 hover:bg-purple-200";
+            if (oIdx === 1) badgeColor = "bg-sky-100/70 border-sky-200 text-sky-900 hover:bg-sky-200";
+            if (oIdx === 2) badgeColor = "bg-emerald-100/70 border-emerald-200 text-emerald-900 hover:bg-emerald-200";
+          }
+
+          optHtml += `
+            <span class="px-3 py-1 border text-[11px] rounded-full cursor-pointer transition-all ${badgeColor}">
+              ${String.fromCharCode(97 + oIdx)}) ${opt}
+            </span>
+          `;
+        });
+
+        mcHtml += `
+          <div class="space-y-1.5">
+            <p contenteditable="true" class="font-bold text-slate-950 outline-none">${qIdx + 1}. ${item.q}</p>
+            <div class="flex flex-wrap gap-2 pt-0.5">
+              ${optHtml}
+            </div>
+          </div>
+        `;
+      });
+
+      section3.innerHTML = `
+        <div class="flex items-center gap-2">
+          <span class="w-7 h-7 rounded-full bg-[#7c3aed] text-white font-bold flex items-center justify-center text-xs shadow-sm">3</span>
+          <span class="bg-[#7c3aed] text-white text-xs font-black px-3 py-1 rounded-lg uppercase tracking-wide">Vocabulary in Context</span>
+          <span class="text-xs font-bold text-slate-700">Choose the correct word.</span>
+        </div>
+        <div class="p-4 rounded-xl border border-violet-100 bg-white shadow-sm text-xs space-y-4">
+          ${mcHtml}
+        </div>
+      `;
+      body.appendChild(section3);
+
+      // --- SECTION 4: TRUE OR FALSE (Interactive Tables) ---
+      const section4 = document.createElement('div');
+      section4.className = 'space-y-3 flex-1 flex flex-col';
+
+      let tfHtml = '';
+      lesson.trueFalse.forEach((item, idx) => {
+        const correctTick = (item.ans && showAnswerKey) ? `<span class="text-emerald-600 font-black">✓</span>` : '';
+        const correctCross = (!item.ans && showAnswerKey) ? `<span class="text-rose-600 font-black">✗</span>` : '';
+
+        tfHtml += `
+          <tr class="border-b border-slate-100">
+            <td contenteditable="true" class="py-2.5 pr-4 text-[11px] font-medium text-slate-900 outline-none leading-tight">${idx + 1}. ${item.q}</td>
+            <td class="py-2.5 text-center">
+              <div class="w-5 h-5 rounded border-2 border-emerald-300 bg-emerald-50/50 flex items-center justify-center mx-auto shadow-inner">
+                ${correctTick}
+              </div>
+            </td>
+            <td class="py-2.5 text-center">
+              <div class="w-5 h-5 rounded border-2 border-rose-300 bg-rose-50/50 flex items-center justify-center mx-auto shadow-inner">
+                ${correctCross}
+              </div>
+            </td>
+          </tr>
+        `;
+      });
+
+      section4.innerHTML = `
+        <div class="flex items-center gap-2">
+          <span class="w-7 h-7 rounded-full bg-[#ea580c] text-white font-bold flex items-center justify-center text-xs shadow-sm">4</span>
+          <span class="bg-[#ea580c] text-white text-xs font-black px-3 py-1 rounded-lg uppercase tracking-wide">True or False</span>
+          <span class="text-xs font-bold text-slate-700">Tick (✓) or cross (X).</span>
+        </div>
+        <div class="p-4 rounded-xl border border-orange-100 bg-white shadow-sm overflow-hidden flex-1">
+          <table class="w-full">
+            <thead>
+              <tr class="border-b-2 border-slate-200 text-[10px] uppercase font-black tracking-wider text-slate-500">
+                <th class="text-left pb-2">Statement</th>
+                <th class="w-12 text-center pb-2 text-emerald-700">✓ Yes</th>
+                <th class="w-12 text-center pb-2 text-rose-700">✗ No</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${tfHtml}
+            </tbody>
+          </table>
+        </div>
+      `;
+
+      // --- SECTION 5: FIND IN THE TEXT ---
+      const section5 = document.createElement('div');
+      section5.className = 'space-y-3 flex-1 flex flex-col';
+
+      let matchHtml = '';
+      lesson.findInText.forEach((item, idx) => {
+        matchHtml += `
+          <div class="flex items-center gap-2 text-[11px]">
+            <span class="font-bold text-slate-500 w-4">${idx + 1}.</span>
+            <div contenteditable="true" class="flex-1 text-slate-900 outline-none font-medium leading-tight">${item.def} =</div>
+            <div contenteditable="true" class="w-[45%] border-b-2 border-dotted border-slate-400 font-serif italic px-2 outline-none min-h-[22px] ${showAnswerKey ? 'text-rose-600 font-extrabold font-handwriting' : 'text-slate-800'}">
+              ${showAnswerKey ? '✓ ' + item.val : ''}
+            </div>
+          </div>
+        `;
+      });
+
+      section5.innerHTML = `
+        <div class="flex items-center gap-2">
+          <span class="w-7 h-7 rounded-full bg-[#0284c7] text-white font-bold flex items-center justify-center text-xs shadow-sm">5</span>
+          <span class="bg-[#0284c7] text-white text-xs font-black px-3 py-1 rounded-lg uppercase tracking-wide">Find in the Text</span>
+          <span class="text-xs font-bold text-slate-700">Find words that mean:</span>
+        </div>
+        <div class="p-4 rounded-xl border border-sky-100 bg-white shadow-sm text-xs space-y-4 flex-1 flex flex-col justify-between">
+          ${matchHtml}
+        </div>
+      `;
+
+      // 4. Combine Section 4 and Section 5 side-by-side in responsive grid
+      const bottomGrid = document.createElement('div');
+      bottomGrid.className = 'grid grid-cols-1 md:grid-cols-2 gap-4 items-stretch';
+      bottomGrid.appendChild(section4);
+      bottomGrid.appendChild(section5);
+      body.appendChild(bottomGrid);
+
+      // 5. Render Centered Textbook Page Number Badge at bottom
+      const pageNumberBadge = document.createElement('div');
+      pageNumberBadge.className = 'w-full flex items-center justify-center py-2 select-none';
+      pageNumberBadge.innerHTML = `
+        <div class="border-4 border-[#0e56b2] text-[#0e56b2] font-black w-10 h-10 rounded-full flex items-center justify-center text-sm bg-white shadow-md animate-pulse">
+          ${lesson.pageNumber}
+        </div>
+      `;
+      body.appendChild(pageNumberBadge);
+
+      // Render Footers dynamically!
+      // Add Mr.Zaafouri Abdelmalek and Ezzine Horchani signature in textbook mode
+      const footerBadge = document.createElement('div');
+      footerBadge.className = 'w-full py-2.5 px-4 bg-[#0e56b2] rounded-xl text-center text-white text-[11px] font-bold tracking-wider uppercase mt-4 flex items-center justify-center gap-2 no-print-corners shadow-sm';
+      footerBadge.innerHTML = `
+        <svg class="w-4 h-4 text-yellow-400 fill-yellow-400 animate-spin" style="animation-duration: 4s;" viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+        <span>© 2026 Mr.Zaafouri Abdelmalek • All Rights Reserved | Ezzine Horchani • Distinguished Senior English Language Teacher</span>
+        <svg class="w-4 h-4 text-yellow-400 fill-yellow-400 animate-spin" style="animation-duration: 4s;" viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+      `;
+      body.appendChild(footerBadge);
+
+      lucide.createIcons();
+      showToast('Textbook Lesson Loaded', `Loaded ${lesson.unitTitle}: ${lesson.lessonTitle}`, 'book-open');
+    }
+
+
+    // ADD CUSTOM EXERCISE ITEM
+    function addCustomQuestion() {
+      const body = document.getElementById('worksheet-body');
+      const customBox = document.createElement('div');
+      customBox.className = 'p-3.5 rounded-xl border-2 border-dashed border-indigo-300 bg-indigo-50/20 space-y-2 text-xs animate-fade-in relative group';
+      
+      customBox.innerHTML = `
+        <div class="flex justify-between items-center text-indigo-900 font-bold">
+          <span>Custom Teacher Exercise</span>
+          <button onclick="this.parentElement.parentElement.remove()" class="text-rose-500 hover:text-rose-700 text-[10px] font-semibold bg-rose-50 px-2 py-0.5 rounded border border-rose-200">Remove</button>
+        </div>
+        <p contenteditable="true" class="font-medium text-slate-900 outline-none bg-white p-2 rounded border border-indigo-200">
+          [Click to type custom question or prompt for your students here]
+        </p>
+        <div class="flex items-center gap-2 pt-1 text-slate-700">
+          <span class="font-medium text-indigo-950">Answer:</span>
+          <span contenteditable="true" class="border-b-2 border-slate-800 flex-1 px-2 text-slate-800 outline-none">
+            [Type answer guide here]
+          </span>
+        </div>
+      `;
+      
+      body.appendChild(customBox);
+      customBox.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+      showToast('Exercise Added', 'New custom editable exercise added to worksheet.');
+    }
+
+    // Clear Worksheet
+    function clearWorksheet() {
+      const body = document.getElementById('worksheet-body');
+      body.innerHTML = `
+        <div class="p-12 text-center border-2 border-dashed border-slate-300 rounded-2xl my-8">
+          <i data-lucide="file-text" class="w-12 h-12 text-slate-300 mx-auto mb-3"></i>
+          <h3 class="text-base font-semibold text-slate-700">Blank English Canvas</h3>
+          <p class="text-xs text-slate-500 mt-1 max-w-sm mx-auto">Select any English generator button from the teacher panel on the left to populate vocabulary, grammar, reading, or writing exercises.</p>
+        </div>
+      `;
+      lucide.createIcons();
+      showToast('Worksheet Cleared', 'Canvas reset to blank.');
+    }
+
+    // Download PDF / Print
+    function downloadPDF() {
+      triggerPrintFromApp();
+    }
+
+    function triggerPrintFromApp() {
+      const modal = document.getElementById('a4-print-controls-modal');
+      if (modal) {
+        modal.classList.remove('hidden');
+        modal.classList.add('flex');
+        lucide.createIcons();
+      }
+    }
+
+    function closeA4PrintControlsModal() {
+      const modal = document.getElementById('a4-print-controls-modal');
+      if (modal) {
+        modal.classList.add('hidden');
+        modal.classList.remove('flex');
+      }
+    }
+
+    let currentPrintMargin = '12mm';
+    function selectPrintMargin(marginVal, btnElement) {
+      currentPrintMargin = marginVal;
+      document.querySelectorAll('.print-margin-btn').forEach(btn => {
+        btn.className = 'print-margin-btn px-2.5 py-2 rounded-xl bg-slate-950 border border-slate-800 hover:border-indigo-500 text-xs font-bold text-slate-300 transition-all cursor-pointer flex flex-col items-center justify-center gap-1';
+      });
+      if (btnElement) {
+        btnElement.className = 'print-margin-btn px-2.5 py-2 rounded-xl bg-indigo-950/50 border border-indigo-500/50 hover:border-indigo-500 text-xs font-bold text-white transition-all cursor-pointer flex flex-col items-center justify-center gap-1 shadow bg-indigo-600/20 border-indigo-500/65';
+      }
+      showToast('Margin Updated', `Page margins configured to ${marginVal}.`, 'info');
+    }
+
+    function updatePrintPreviewLayout() {
+      // Live updates can be previewed synchronously if needed
+    }
+
+    function executeA4Print() {
+      closeA4PrintControlsModal();
+      
+      // 1. Inject the dynamic page margins
+      const styleId = 'custom-print-margins-style';
+      let style = document.getElementById(styleId);
+      if (!style) {
+        style = document.createElement('style');
+        style.id = styleId;
+        document.head.appendChild(style);
+      }
+      style.innerHTML = `@media print { @page { margin: ${currentPrintMargin} !important; } }`;
+
+      // 2. Add classes to paper based on toggles
+      const paper = document.getElementById('worksheet-paper');
+      if (paper) {
+        // Student details
+        if (!document.getElementById('print-toggle-student-info').checked) {
+          paper.classList.add('print-hide-student-info');
+        } else {
+          paper.classList.remove('print-hide-student-info');
+        }
+        // CCSS
+        if (!document.getElementById('print-toggle-ccss').checked) {
+          paper.classList.add('print-hide-ccss');
+        } else {
+          paper.classList.remove('print-hide-ccss');
+        }
+        // Teacher Brand
+        if (!document.getElementById('print-toggle-teacher-brand').checked) {
+          paper.classList.add('print-hide-teacher');
+        } else {
+          paper.classList.remove('print-hide-teacher');
+        }
+        // Illustration
+        if (!document.getElementById('print-toggle-illustration').checked) {
+          paper.classList.add('print-hide-illustration');
+        } else {
+          paper.classList.remove('print-hide-illustration');
+        }
+        // QR Code
+        const qrBadge = document.getElementById('ws-header-qr');
+        if (qrBadge) {
+          if (document.getElementById('print-toggle-qr').checked) {
+            qrBadge.classList.remove('hidden');
+          } else {
+            qrBadge.classList.add('hidden');
+          }
+        }
+        // Answer Key
+        if (!document.getElementById('print-toggle-answers').checked) {
+          paper.classList.add('print-hide-answers');
+        } else {
+          paper.classList.remove('print-hide-answers');
+        }
+        
+        // Dynamic Page Number elements (only if checked)
+        const pageNumCheckbox = document.getElementById('print-toggle-page-numbers');
+        document.querySelectorAll('.print-page-footer').forEach(el => el.remove());
+        
+        if (pageNumCheckbox && pageNumCheckbox.checked) {
+          const body = document.getElementById('worksheet-body');
+          const dividers = body.querySelectorAll('.page-break-divider');
+          dividers.forEach((div, idx) => {
+            const footer = document.createElement('div');
+            footer.className = 'print-page-footer hidden print:flex justify-between items-center text-[10px] text-slate-400 border-t border-slate-200 pt-1.5 mt-2';
+            footer.innerHTML = `
+              <span>Grade Core English Language Arts</span>
+              <span>Page ${idx + 1}</span>
+            `;
+            div.parentNode.insertBefore(footer, div);
+          });
+          // Append final page footer
+          const finalFooter = document.createElement('div');
+          finalFooter.className = 'print-page-footer hidden print:flex justify-between items-center text-[10px] text-slate-400 border-t border-slate-200 pt-1.5 mt-4';
+          finalFooter.innerHTML = `
+            <span>Grade Core English Language Arts</span>
+            <span>Page ${dividers.length + 1}</span>
+          `;
+          body.appendChild(finalFooter);
+        }
+      }
+
+      // 3. Trigger printing
+      setTimeout(() => {
+        if (window.AndroidPrintBridge && typeof window.AndroidPrintBridge.triggerPrint === 'function') {
+          window.AndroidPrintBridge.triggerPrint();
+        } else {
+          window.print();
+        }
+      }, 350);
+    }
+
+    function togglePrintAnswersState() {
+      const paper = document.getElementById('worksheet-paper');
+      const toggleBtn = document.getElementById('answers-toggle-label');
+      if (paper && toggleBtn) {
+        if (paper.classList.contains('print-hide-answers')) {
+          paper.classList.remove('print-hide-answers');
+          toggleBtn.innerText = 'Hide Answers';
+          showToast('Answer Key Visible', 'Answer key will be printed at the bottom.', 'info');
+        } else {
+          paper.classList.add('print-hide-answers');
+          toggleBtn.innerText = 'Show Answers';
+          showToast('Answer Key Hidden', 'Answer key is excluded from print copies.', 'info');
+        }
+      }
+    }
+
+    function prefillAITopic(topic) {
+      const input = document.getElementById('ai-topic-input');
+      if (input) {
+        input.value = topic;
+        input.focus();
+        showToast('Prompt Selected', 'Prefilled topic focus in input area.', 'sparkles');
+      }
+    }
+
+    // Fullscreen AI Studio Workspace Controllers
+    function openFullscreenAIStudio() {
+      const modal = document.getElementById('fullscreen-ai-studio-modal');
+      if (!modal) return;
+
+      // Sync data from sidebar input controls into fullscreen modal controls
+      const sbTopic = document.getElementById('ai-topic-input')?.value || '';
+      const sbGrade = document.getElementById('ai-grade-level')?.value || 'Middle School (Grades 6-8)';
+      const sbActivity = document.getElementById('ai-activity-type')?.value || 'Complete ELA Unit';
+      const sbRigor = document.getElementById('ai-rigor-level')?.value || 'Standard Academic Core';
+      const sbSolutions = document.getElementById('ai-solutions-key')?.value || 'Include complete, detailed Answer Keys at the end';
+
+      document.getElementById('ai-fullscreen-topic-input').value = sbTopic;
+      document.getElementById('fs-grade-level').value = sbGrade;
+      document.getElementById('fs-activity-type').value = sbActivity;
+      document.getElementById('fs-rigor-level').value = sbRigor;
+      document.getElementById('fs-solutions-key').value = sbSolutions;
+
+      // Show the modal
+      modal.classList.remove('hidden');
+      modal.classList.add('flex');
+      updateFullscreenPromptMetrics();
+      lucide.createIcons();
+    }
+
+    function closeFullscreenAIStudio() {
+      const modal = document.getElementById('fullscreen-ai-studio-modal');
+      if (!modal) return;
+
+      // Sync data from fullscreen modal controls back to sidebar controls
+      const fsTopic = document.getElementById('ai-fullscreen-topic-input')?.value || '';
+      const fsGrade = document.getElementById('fs-grade-level')?.value;
+      const fsActivity = document.getElementById('fs-activity-type')?.value;
+      const fsRigor = document.getElementById('fs-rigor-level')?.value;
+      const fsSolutions = document.getElementById('fs-solutions-key')?.value;
+
+      document.getElementById('ai-topic-input').value = fsTopic;
+      document.getElementById('ai-grade-level').value = fsGrade;
+      document.getElementById('ai-activity-type').value = fsActivity;
+      document.getElementById('ai-rigor-level').value = fsRigor;
+      document.getElementById('ai-solutions-key').value = fsSolutions;
+
+      // Close the modal
+      modal.classList.add('hidden');
+      modal.classList.remove('flex');
+    }
+
+    function updateFullscreenPromptMetrics() {
+      const input = document.getElementById('ai-fullscreen-topic-input');
+      const countSpan = document.getElementById('prompt-char-count');
+      const labelSpan = document.getElementById('prompt-completeness-label');
+      const bar = document.getElementById('prompt-completeness-bar');
+
+      if (!input || !countSpan) return;
+
+      const len = input.value.length;
+      countSpan.innerText = `${len} / 1200 chars`;
+
+      let score = Math.min(100, Math.floor(len / 3.5));
+      if (len === 0) score = 0;
+
+      if (bar) bar.style.width = `${score}%`;
+
+      if (score < 15) {
+        labelSpan.innerText = 'Minimal / Too Short';
+        if (bar) bar.className = 'bg-rose-500 h-full transition-all duration-300';
+      } else if (score < 45) {
+        labelSpan.innerText = 'Good Core Focus';
+        if (bar) bar.className = 'bg-amber-500 h-full transition-all duration-300';
+      } else if (score < 75) {
+        labelSpan.innerText = 'Pedagogically Rich';
+        if (bar) bar.className = 'bg-indigo-500 h-full transition-all duration-300';
+      } else {
+        labelSpan.innerText = 'Excellent / Masterful';
+        if (bar) bar.className = 'bg-gradient-to-r from-emerald-400 to-teal-500 h-full transition-all duration-300';
+      }
+    }
+
+    function appendToFullscreenPrompt(suffix) {
+      const input = document.getElementById('ai-fullscreen-topic-input');
+      if (input) {
+        input.value = input.value.trim() + suffix;
+        input.focus();
+        updateFullscreenPromptMetrics();
+        showToast('Appended Template Segment', 'Injected structure snippet into prompt workspace.', 'sparkles');
+      }
+    }
+
+    function prefillFSTopic(topic) {
+      const input = document.getElementById('ai-fullscreen-topic-input');
+      if (input) {
+        input.value = topic;
+        input.focus();
+        updateFullscreenPromptMetrics();
+        showToast('Template Selected', 'Workspace loaded with ELA template.', 'info');
+      }
+    }
+
+    async function generateFullscreenAIWorksheet() {
+      const inputVal = document.getElementById('ai-fullscreen-topic-input')?.value || '';
+      if (!inputVal.trim()) {
+        showToast('Prompt is empty', 'Please describe your lesson topic or use standard template buttons.', 'alert-triangle');
+        return;
+      }
+
+      // If user typed custom CCSS code, automatically inject it into prompt
+      const ccssVal = document.getElementById('fs-ccss-code')?.value || '';
+      if (ccssVal.trim()) {
+        document.getElementById('learning-objective-box').innerHTML = `
+          <div class="text-[10px] font-black text-indigo-700 tracking-wider">CCSS ALIGNMENT GUIDE</div>
+          <div class="text-xs font-bold text-indigo-950">${ccssVal.trim()}</div>
+        `;
+      }
+
+      // Sync and close
+      closeFullscreenAIStudio();
+
+      // Trigger standard generation
+      generateAIWorksheet();
+    }
+
+    // ==========================================
+    // PREMIUM SPLIT BUTTON MENU CONTROLLERS
+    // ==========================================
+    function toggleAISplitMenu(e) {
+      if (e) e.stopPropagation();
+      const menu = document.getElementById('ai-split-menu');
+      const arrow = document.getElementById('ai-split-arrow');
+      if (!menu) return;
+
+      closePrintSplitMenu();
+      closeFSAISplitMenu();
+
+      const isHidden = menu.classList.contains('hidden');
+      if (isHidden) {
+        menu.classList.remove('hidden');
+        if (arrow) arrow.classList.add('rotate-180');
+        lucide.createIcons();
+      } else {
+        closeAISplitMenu();
+      }
+    }
+
+    function closeAISplitMenu() {
+      const menu = document.getElementById('ai-split-menu');
+      const arrow = document.getElementById('ai-split-arrow');
+      if (menu) menu.classList.add('hidden');
+      if (arrow) arrow.classList.remove('rotate-180');
+    }
+
+    function togglePrintSplitMenu(e) {
+      if (e) e.stopPropagation();
+      const menu = document.getElementById('print-split-menu');
+      const arrow = document.getElementById('print-split-arrow');
+      if (!menu) return;
+
+      closeAISplitMenu();
+      closeFSAISplitMenu();
+
+      const isHidden = menu.classList.contains('hidden');
+      if (isHidden) {
+        menu.classList.remove('hidden');
+        if (arrow) arrow.classList.add('rotate-180');
+        lucide.createIcons();
+      } else {
+        closePrintSplitMenu();
+      }
+    }
+
+    function closePrintSplitMenu() {
+      const menu = document.getElementById('print-split-menu');
+      const arrow = document.getElementById('print-split-arrow');
+      if (menu) menu.classList.add('hidden');
+      if (arrow) arrow.classList.remove('rotate-180');
+    }
+
+    function toggleFSAISplitMenu(e) {
+      if (e) e.stopPropagation();
+      const menu = document.getElementById('fs-ai-split-menu');
+      const arrow = document.getElementById('fs-ai-split-arrow');
+      if (!menu) return;
+
+      closeAISplitMenu();
+      closePrintSplitMenu();
+
+      const isHidden = menu.classList.contains('hidden');
+      if (isHidden) {
+        menu.classList.remove('hidden');
+        if (arrow) arrow.classList.add('rotate-180');
+        lucide.createIcons();
+      } else {
+        closeFSAISplitMenu();
+      }
+    }
+
+    function closeFSAISplitMenu() {
+      const menu = document.getElementById('fs-ai-split-menu');
+      const arrow = document.getElementById('fs-ai-split-arrow');
+      if (menu) menu.classList.add('hidden');
+      if (arrow) arrow.classList.remove('rotate-180');
+    }
+
+    // Dismiss active split menus when user clicks outside
+    document.addEventListener('click', (e) => {
+      if (!e.target.closest('#ai-gen-split-trigger') && !e.target.closest('#ai-split-menu')) {
+        closeAISplitMenu();
+      }
+      if (!e.target.closest('#print-split-trigger') && !e.target.closest('#print-split-menu')) {
+        closePrintSplitMenu();
+      }
+      if (!e.target.closest('#fs-ai-split-trigger') && !e.target.closest('#fs-ai-split-menu')) {
+        closeFSAISplitMenu();
+      }
+    });
+
+    // Save Current Worksheet to Library
+    function saveCurrentWorksheet() {
+      const title = document.getElementById('ws-title')?.innerText || 'English Worksheet';
+      const subtitle = document.getElementById('ws-subtitle')?.innerText || '';
+      const standardText = document.getElementById('ws-standard-text')?.innerText || '';
+      const bodyHTML = document.getElementById('worksheet-body')?.innerHTML || '';
+      const teacherName = document.getElementById('ws-teacher-display')?.innerText || '';
+      const themeSelect = document.getElementById('theme-select');
+      const activeTheme = themeSelect ? themeSelect.value : 'classic-corporate';
+
+      const worksheetItem = {
+        id: 'ws_' + Date.now(),
+        title: title,
+        subtitle: subtitle,
+        standardText: standardText,
+        bodyHTML: bodyHTML,
+        teacherName: teacherName,
+        theme: activeTheme,
+        mode: currentMode,
+        savedAt: new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric', hour: '2-digit', minute: '2-digit' })
+      };
+
+      let library = JSON.parse(localStorage.getItem('saved_worksheets_library') || '[]');
+      library.unshift(worksheetItem);
+      localStorage.setItem('saved_worksheets_library', JSON.stringify(library));
+
+      showToast('Worksheet Saved!', 'Added to your Saved Worksheets Library.', 'bookmark');
+    }
+
+    // Open Saved Library Modal
+    function openSavedLibraryModal() {
+      const modal = document.getElementById('saved-library-modal');
+      const listContainer = document.getElementById('saved-worksheets-list');
+      const library = JSON.parse(localStorage.getItem('saved_worksheets_library') || '[]');
+
+      if (library.length === 0) {
+        listContainer.innerHTML = `
+          <div class="p-8 text-center border-2 border-dashed border-slate-700 rounded-2xl my-4">
+            <i data-lucide="bookmark-x" class="w-10 h-10 text-slate-500 mx-auto mb-2"></i>
+            <h4 class="text-sm font-semibold text-slate-300">No Saved Worksheets Yet</h4>
+            <p class="text-xs text-slate-400 mt-1 max-w-xs mx-auto">Click "Save Worksheet" in the sidebar anytime to save your custom generated worksheets here.</p>
+          </div>
+        `;
+      } else {
+        listContainer.innerHTML = library.map((item) => `
+          <div class="p-4 rounded-xl bg-slate-900 border border-slate-700/80 hover:border-indigo-500/50 transition-all space-y-2">
+            <div class="flex items-center justify-between">
+              <span class="px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider bg-indigo-950 text-indigo-300 border border-indigo-800 rounded-md">
+                ${item.mode || 'ELA'}
+              </span>
+              <span class="text-[10px] text-slate-400 font-medium">${item.savedAt}</span>
+            </div>
+            <div>
+              <h4 class="text-sm font-bold text-white leading-snug">${item.title}</h4>
+              <p class="text-xs text-slate-400 line-clamp-1 mt-0.5">${item.subtitle}</p>
+            </div>
+            <div class="flex items-center justify-between pt-2 border-t border-slate-800/80">
+              <span class="text-[10px] text-slate-400">${item.teacherName}</span>
+              <div class="flex items-center gap-2">
+                <button onclick="loadSavedWorksheet('${item.id}')" class="px-3 py-1 bg-indigo-600 hover:bg-indigo-500 text-white font-medium rounded-lg text-xs transition-all flex items-center gap-1 shadow">
+                  <i data-lucide="file-input" class="w-3 h-3"></i>
+                  <span>Load</span>
+                </button>
+                <button onclick="deleteSavedWorksheet('${item.id}')" class="p-1.5 bg-slate-800 hover:bg-rose-950 hover:text-rose-400 text-slate-400 rounded-lg text-xs transition-all" title="Delete">
+                  <i data-lucide="trash-2" class="w-3.5 h-3.5"></i>
+                </button>
+              </div>
+            </div>
+          </div>
+        `).join('');
+      }
+
+      modal.classList.remove('hidden');
+      modal.classList.add('flex');
+      lucide.createIcons();
+    }
+
+    function closeSavedLibraryModal() {
+      const modal = document.getElementById('saved-library-modal');
+      modal.classList.add('hidden');
+      modal.classList.remove('flex');
+    }
+
+    function loadSavedWorksheet(id) {
+      const library = JSON.parse(localStorage.getItem('saved_worksheets_library') || '[]');
+      const item = library.find(w => w.id === id);
+
+      if (!item) {
+        showToast('Error', 'Worksheet not found.', 'alert-circle');
+        return;
+      }
+
+      document.getElementById('ws-title').innerText = item.title;
+      document.getElementById('ws-subtitle').innerText = item.subtitle;
+      document.getElementById('ws-standard-text').innerText = item.standardText;
+      document.getElementById('worksheet-body').innerHTML = item.bodyHTML;
+      
+      if (item.theme) {
+        applyTheme(item.theme);
+        const themeSelect = document.getElementById('theme-select');
+        if (themeSelect) themeSelect.value = item.theme;
+      }
+
+      closeSavedLibraryModal();
+      showToast('Worksheet Loaded!', `Loaded "${item.title.substring(0, 24)}..."`, 'file-check');
+      lucide.createIcons();
+    }
+
+    function deleteSavedWorksheet(id) {
+      let library = JSON.parse(localStorage.getItem('saved_worksheets_library') || '[]');
+      library = library.filter(w => w.id !== id);
+      localStorage.setItem('saved_worksheets_library', JSON.stringify(library));
+      showToast('Deleted', 'Removed worksheet from saved library.', 'trash');
+      openSavedLibraryModal();
+    }
+
+    // Classroom Video Hub Modal Controls
+    function extractYouTubeID(urlOrId) {
+      if (!urlOrId) return '8W_U69_7Sok';
+      if (urlOrId.length === 11 && !urlOrId.includes('/') && !urlOrId.includes('.')) return urlOrId;
+      const match = urlOrId.match(/(?:youtu\.be\/|youtube\.com\/(?:embed\/|v\/|watch\?v=|watch\?.+&v=))([\w-]{11})/);
+      return match ? match[1] : urlOrId.trim();
+    }
+
+    function loadCustomUserVideo() {
+      const input = document.getElementById('custom-video-url-input');
+      if (!input || !input.value.trim()) {
+        showToast('Empty URL', 'Please paste a YouTube URL or video ID.', 'alert-triangle');
+        return;
+      }
+      const vidId = extractYouTubeID(input.value.trim());
+      playEmbeddedVideo(vidId);
+      showToast('Video Loaded', 'Streaming selected video to classroom screen.', 'play');
+    }
+
+    function openVideoModal() {
+      const modal = document.getElementById('classroom-video-modal');
+      if (modal) {
+        modal.classList.remove('hidden');
+        modal.classList.add('flex');
+        
+        // Dynamically update video suggestions based on current ELA focus mode
+        const videoGrid = document.getElementById('video-suggestions-grid');
+        if (videoGrid) {
+          let videos = [
+            { title: "Parts of Speech: Nouns, Verbs & Adjectives", id: "8W_U69_7Sok", desc: "Interactive ELA breakdown of sentence structure and parts of speech." },
+            { title: "Similes and Metaphors in English Literature", id: "0Wrv_ZviMEc", desc: "Clear figurative language examples with animated sentence breakdowns." },
+            { title: "Context Clues Strategy & Reading Skills", id: "_34kU9U0SIs", desc: "Mastering context clues to deduce unknown vocabulary in passages." }
+          ];
+          
+          if (currentMode === 'vocabulary' || currentMode === 'writing') {
+            videos = [
+              { title: "Parts of Speech: Nouns, Verbs & Adjectives", id: "8W_U69_7Sok", desc: "Learn essential parts of speech and sentence building blocks." },
+              { title: "Active Voice vs. Passive Voice Masterclass", id: "L9A7K08Xo6o", desc: "Strengthening writing clarity and grammar mechanics." },
+              { title: "Reading Comprehension & Critical Thinking", id: "v9335NIn4gY", desc: "Strategies for analyzing informational texts and story passages." }
+            ];
+          }
+
+          videoGrid.innerHTML = videos.map((vid, idx) => `
+            <div id="video-card-${vid.id}" class="video-suggestion-card bg-slate-950 p-3 rounded-xl border border-slate-800 flex flex-col justify-between transition-all">
+              <div class="space-y-1.5">
+                <span class="text-[9px] uppercase font-black ${idx === 0 ? 'text-rose-400 font-bold' : 'text-slate-400'} tracking-widest">${idx === 0 ? '★ Now Playing ★' : '★ Recommended Lesson ★'}</span>
+                <h4 class="text-xs font-bold text-slate-100">${vid.title}</h4>
+                <p class="text-[10px] text-slate-400">${vid.desc}</p>
+              </div>
+              <div class="mt-3">
+                <button onclick="playEmbeddedVideo('${vid.id}')" class="w-full py-1.5 bg-rose-600 hover:bg-rose-500 text-white text-[11px] font-bold rounded-lg flex items-center justify-center gap-1 transition-all cursor-pointer">
+                  <i data-lucide="play" class="w-3.5 h-3.5"></i>
+                  <span>${idx === 0 ? 'Playing in Classroom' : 'Play Interactive Video'}</span>
+                </button>
+              </div>
+            </div>
+          `).join('');
+          lucide.createIcons();
+
+          // Automatically play the first educational lesson video on modal load
+          if (videos.length > 0) {
+            playEmbeddedVideo(videos[0].id);
+          }
+        }
+      }
+    }
+
+    function closeVideoModal() {
+      const modal = document.getElementById('classroom-video-modal');
+      if (modal) {
+        modal.classList.add('hidden');
+        modal.classList.remove('flex');
+      }
+      // Stop any playing embedded video by clearing source
+      const playerWrapper = document.getElementById('video-player-wrapper');
+      if (playerWrapper) {
+        playerWrapper.innerHTML = `
+          <div class="flex flex-col items-center justify-center h-full text-slate-500 space-y-2">
+            <i data-lucide="clapperboard" class="w-8 h-8 text-rose-500/50"></i>
+            <span class="text-xs font-medium">Select a recommended presentation lesson video to begin playing</span>
+          </div>
+        `;
+        lucide.createIcons();
+      }
+    }
+
+    function playEmbeddedVideo(rawId) {
+      const cleanId = extractYouTubeID(rawId);
+      const playerWrapper = document.getElementById('video-player-wrapper');
+      if (playerWrapper) {
+        playerWrapper.innerHTML = `
+          <div class="w-full h-full flex flex-col bg-slate-950 rounded-xl overflow-hidden border border-slate-800">
+            <iframe class="w-full flex-1 min-h-[300px]" src="https://www.youtube.com/embed/${cleanId}?autoplay=1&mute=0&enablejsapi=1&rel=0" title="Classroom Educational Video" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
+            <div class="bg-slate-900/90 border-t border-slate-800 p-2 px-3 flex items-center justify-between text-[11px] text-slate-300">
+              <span class="flex items-center gap-1.5 text-slate-400 font-medium">
+                <i data-lucide="check-circle" class="w-3.5 h-3.5 text-emerald-400"></i>
+                <span>Active Classroom Video Stream</span>
+              </span>
+              <a href="https://www.youtube.com/watch?v=${cleanId}" target="_blank" rel="noopener noreferrer" class="px-2.5 py-1 bg-rose-600/30 hover:bg-rose-600 text-rose-200 hover:text-white rounded-lg font-bold flex items-center gap-1.5 transition-all text-[11px]" title="Open video in new YouTube tab if iframe is restricted">
+                <i data-lucide="external-link" class="w-3 h-3"></i>
+                <span>Open in YouTube ↗</span>
+              </a>
+            </div>
+          </div>
+        `;
+        lucide.createIcons();
+      }
+      // Update visual card highlights
+      document.querySelectorAll('.video-suggestion-card').forEach(card => {
+        card.classList.remove('border-rose-500', 'bg-rose-950/20');
+        card.classList.add('border-slate-800', 'bg-slate-950');
+      });
+      const activeCard = document.getElementById(`video-card-${cleanId}`);
+      if (activeCard) {
+        activeCard.classList.remove('border-slate-800', 'bg-slate-950');
+        activeCard.classList.add('border-rose-500', 'bg-rose-950/20');
+      }
+    }
+
+    // QR Code Modal & Student Version Link Functions
+    function openQRCodeModal() {
+      const modal = document.getElementById('student-qr-modal');
+      const studentUrl = window.location.href.split('#')[0] + '?studentMode=true';
+      const encodedUrl = encodeURIComponent(studentUrl);
+      
+      const qrApiUrl = `https://api.qrserver.com/v1/create-qr-code/?size=220x220&data=${encodedUrl}&color=1e1b4b&bgcolor=ffffff`;
+      
+      const modalQrImg = document.getElementById('modal-qr-img');
+      const headerQrImg = document.getElementById('ws-header-qr-img');
+      
+      if (modalQrImg) modalQrImg.src = qrApiUrl;
+      if (headerQrImg) headerQrImg.src = qrApiUrl;
+      
+      const linkInput = document.getElementById('student-link-input');
+      if (linkInput) linkInput.value = studentUrl;
+
+      modal.classList.remove('hidden');
+      modal.classList.add('flex');
+      lucide.createIcons();
+    }
+
+    function closeQRCodeModal() {
+      const modal = document.getElementById('student-qr-modal');
+      modal.classList.add('hidden');
+      modal.classList.remove('flex');
+    }
+
+    function toggleHeaderQRCode(enabled) {
+      const headerQr = document.getElementById('ws-header-qr');
+      if (enabled) {
+        headerQr.classList.remove('hidden');
+        showToast('QR Code Stamped', 'Added QR code to the printable worksheet header.', 'qr-code');
+      } else {
+        headerQr.classList.add('hidden');
+        showToast('QR Code Removed', 'Removed QR code from header.', 'info');
+      }
+    }
+
+    function copyStudentLink() {
+      const linkInput = document.getElementById('student-link-input');
+      if (linkInput) {
+        linkInput.select();
+        navigator.clipboard.writeText(linkInput.value);
+        showToast('Link Copied!', 'Student link copied to clipboard.', 'copy');
+      }
+    }
+  

@@ -1,0 +1,121 @@
+      currentScale = 1.0;
+      document.getElementById('zoom-wrapper').style.transform = `scale(1.0)`;
+    }
+
+    // Reset Textbook Header to Standard Worksheet Header layout
+    function resetStandardHeader() {
+      const headerBox = document.getElementById('worksheet-header');
+      if (!headerBox) return;
+
+      // Force the premium ELA Book Theme automatically for all worksheets!
+      const paper = document.getElementById('worksheet-paper');
+      if (paper) {
+        const allThemes = [
+          'theme-classic-corporate', 'theme-midnight-tech', 'theme-nordic-pastel', 
+          'theme-vibrant-gamifier', 'theme-emerald-scholar', 'theme-sunset-minimalist', 
+          'theme-cyberpunk-edgy', 'theme-oceanic-trust', 'theme-ela-book'
+        ];
+        allThemes.forEach(t => paper.classList.remove(t));
+        paper.classList.add('theme-ela-book');
+        const themeSelect = document.getElementById('theme-select');
+        if (themeSelect) themeSelect.value = 'ela-book';
+      }
+
+      headerBox.className = "border-b-4 border-[#0e56b2] pb-6 mb-6 flex flex-col items-center justify-center relative select-none pt-2";
+      headerBox.innerHTML = `
+          <!-- Page info top corners -->
+          <div class="absolute top-0 left-0 text-[10px] font-bold text-[#0e56b2] bg-blue-50 px-2 py-0.5 rounded uppercase tracking-wider">Unit: English</div>
+          <div class="absolute top-0 right-0 text-[10px] font-bold text-slate-500 bg-slate-100 px-2 py-0.5 rounded uppercase tracking-wider flex items-center gap-1">
+            <span>Name:</span>
+            <span contenteditable="true" class="min-w-[100px] border-b border-slate-400 inline-block px-1 outline-none font-handwriting text-indigo-700"></span>
+          </div>
+
+          <div class="w-full flex items-center justify-between gap-4 max-w-xl mt-3">
+            <!-- Cartoon Boy Waving (Highly polished vector art) -->
+            <div class="w-16 h-16 sm:w-20 sm:h-20 flex-shrink-0 animate-bounce" style="animation-duration: 3s;">
+              <svg viewBox="0 0 100 100" class="w-full h-full">
+                <path d="M25 40 C25 20, 75 20, 75 40 C75 35, 60 25, 50 25 C40 25, 25 35, 25 40" fill="#2d1500" />
+                <path d="M20 40 C20 25, 45 15, 50 15 C55 15, 80 25, 80 40" fill="#1a0b00" />
+                <circle cx="28" cy="48" r="6" fill="#fbcfe8" />
+                <circle cx="28" cy="48" r="3" fill="#f472b6" />
+                <circle cx="72" cy="48" r="6" fill="#fbcfe8" />
+                <circle cx="72" cy="48" r="3" fill="#f472b6" />
+                <circle cx="50" cy="50" r="22" fill="#fed7aa" />
+                <circle cx="38" cy="56" r="3" fill="#f43f5e" opacity="0.4" />
+                <circle cx="62" cy="56" r="3" fill="#f43f5e" opacity="0.4" />
+                <circle cx="42" cy="48" r="3" fill="#1e293b" />
+                <circle cx="42" cy="48" r="1" fill="#ffffff" transform="translate(-1, -1)" />
+                <circle cx="58" cy="48" r="3" fill="#1e293b" />
+                <circle cx="58" cy="48" r="1" fill="#ffffff" transform="translate(-1, -1)" />
+                <path d="M44 58 Q50 64 56 58" stroke="#be123c" stroke-width="2.5" fill="none" stroke-linecap="round" />
+                <path d="M35 70 C35 70, 50 72, 65 70 L70 85 H30 Z" fill="#0284c7" />
+                <path d="M20 70 Q10 50 15 45 Q20 40 24 50" fill="#fed7aa" stroke="#0284c7" stroke-width="2" />
+                <circle cx="15" cy="43" r="5" fill="#fed7aa" />
+              </svg>
+            </div>
+
+            <!-- Central Title Banner -->
+            <div class="flex-1 flex flex-col items-center text-center">
+              <div id="ws-title" contenteditable="true" class="bg-[#0e56b2] outline-none text-white text-base sm:text-xl font-black px-4 sm:px-8 py-2 sm:py-3.5 rounded-2xl shadow-md tracking-wider uppercase leading-tight min-w-[250px]">
+                Worksheet
+              </div>
+              <div id="ws-subtitle" contenteditable="true" class="border-2 border-[#0e56b2] outline-none text-[#0e56b2] text-[9px] sm:text-[10px] font-black px-4 py-1 rounded-full mt-2 bg-white/90 shadow-sm uppercase tracking-wide">
+                English Language Arts
+              </div>
+            </div>
+
+            <!-- Cartoon Girl Waving -->
+            <div class="w-16 h-16 sm:w-20 sm:h-20 flex-shrink-0 animate-bounce" style="animation-duration: 3s; animation-delay: 0.5s;">
+              <svg viewBox="0 0 100 100" class="w-full h-full">
+                <circle cx="24" cy="35" r="10" fill="#b45309" />
+                <circle cx="76" cy="35" r="10" fill="#b45309" />
+                <path d="M25 40 C25 20, 75 20, 75 40" fill="#d97706" />
+                <circle cx="50" cy="48" r="22" fill="#fed7aa" />
+                <circle cx="38" cy="54" r="3.5" fill="#f43f5e" opacity="0.4" />
+                <circle cx="62" cy="54" r="3.5" fill="#f43f5e" opacity="0.4" />
+                <circle cx="42" cy="46" r="3" fill="#1e293b" />
+                <circle cx="58" cy="46" r="3" fill="#1e293b" />
+                <path d="M44 56 Q50 62 56 56" stroke="#be123c" stroke-width="2.5" fill="none" stroke-linecap="round" />
+                <path d="M30 35 L35 32" stroke="#f43f5e" stroke-width="3" stroke-linecap="round" />
+                <path d="M70 35 L65 32" stroke="#f43f5e" stroke-width="3" stroke-linecap="round" />
+                <path d="M35 68 C35 68, 50 70, 65 68 L70 85 H30 Z" fill="#ec4899" />
+                <path d="M80 68 Q90 48 85 43 Q80 38 76 48" fill="#fed7aa" stroke="#ec4899" stroke-width="2" />
+                <circle cx="85" cy="41" r="5" fill="#fed7aa" />
+              </svg>
+            </div>
+          </div>
+      `;
+      const teacherName = document.getElementById('teacher-name-input').value;
+      updateTeacherHeader(teacherName);
+    }
+
+    // Interactive Slideshow Presentation Engine
+    function setViewMode(mode) {
+      viewMode = mode;
+      const btnWorksheet = document.getElementById('btn-view-worksheet');
+      const btnPresentation = document.getElementById('btn-view-presentation');
+      const zoomWrapper = document.getElementById('zoom-wrapper');
+      const presentationContainer = document.getElementById('presentation-container');
+      
+      if (mode === 'worksheet') {
+        btnWorksheet.className = "px-4 py-2 rounded-lg text-xs font-bold flex items-center gap-2 transition-all bg-indigo-600 text-white shadow";
+        btnPresentation.className = "px-4 py-2 rounded-lg text-xs font-bold flex items-center gap-2 transition-all text-slate-400 hover:text-slate-200";
+        if (zoomWrapper) zoomWrapper.classList.remove('hidden');
+        if (presentationContainer) presentationContainer.classList.add('hidden');
+        
+        const previewBar = document.getElementById('preview-mode-bar');
+        if (previewBar) {
+          previewBar.classList.remove('max-w-6xl', 'max-w-full');
+          previewBar.classList.add('max-w-4xl');
+        }
+
+        const splitBtn = document.getElementById('btn-split-page');
+        if (splitBtn) splitBtn.classList.remove('hidden');
+      } else {
+        btnWorksheet.className = "px-4 py-2 rounded-lg text-xs font-bold flex items-center gap-2 transition-all text-slate-400 hover:text-slate-200";
+        btnPresentation.className = "px-4 py-2 rounded-lg text-xs font-bold flex items-center gap-2 transition-all bg-indigo-600 text-white shadow";
+        if (zoomWrapper) zoomWrapper.classList.add('hidden');
+        if (presentationContainer) presentationContainer.classList.remove('hidden');
+        
+        const previewBar = document.getElementById('preview-mode-bar');
+        if (previewBar) {
