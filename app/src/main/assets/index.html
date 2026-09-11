@@ -1576,7 +1576,15 @@
                 <option value="Complete ELA Unit" selected>Complete Unit</option>
                 <option value="Vocabulary & Context">Vocabulary Focus</option>
                 <option value="Reading Comprehension">Reading Comprehension</option>
-                <option value="Grammar & Editing">Grammar & Editing</option>
+                <optgroup label="Grammar & Mechanics">
+                  <option value="Grammar: Parts of Speech">Parts of Speech (Nouns, Verbs, etc.)</option>
+                  <option value="Grammar: Tenses & Conjugation">Tenses & Verb Conjugation</option>
+                  <option value="Grammar: Sentence Structure">Sentence Structure (Simple/Compound/Complex)</option>
+                  <option value="Grammar: Punctuation & Mechanics">Punctuation & Mechanics</option>
+                  <option value="Grammar: Active vs. Passive Voice">Active vs. Passive Voice</option>
+                  <option value="Grammar: Clauses & Phrases">Clauses & Phrases</option>
+                  <option value="Grammar & Editing (General)">General Grammar & Editing</option>
+                </optgroup>
                 <option value="Creative Writing">Creative Writing</option>
               </select>
             </div>
@@ -2581,7 +2589,7 @@ Please design a rigorous, beautifully structured ELA worksheet that includes:
 4. Active Exercise Items:
    - If vocabulary-focused: Start with the header "Word Bank: [word1, word2, word3, word4]" containing vocabulary words in brackets, followed by fill-in-the-blank questions (numbered 1. 2. 3. 4.).
    - If reading comprehension: Start with the header "Reading Passage: [Title of story]" followed by a short passage, then followed by comprehension questions (numbered 1. 2. 3. 4.).
-   - If grammar: A numbered list (1. 2. 3. 4.) of sentences with parenthesis forms or correction exercises.
+   - If grammar-focused (e.g. Parts of speech, Tenses, Sentence Structure, Punctuation, Active/Passive Voice, Clauses, Mechanics): Start with a clear "Grammar Rules & Examples" instructional block. Then provide a numbered list (1. 2. 3. 4.) of targeted grammar drills requiring students to identify, correct, conjugate, or rewrite sentences based on the target. 
    - If multiple-choice questions: Format each option as a separate line starting with letters A) B) C) D) (e.g., A) Option 1\\nB) Option 2).
 5. At the very end of the worksheet, include a distinct section starting with the header "Answer Key" containing solutions for each numbered question.
 
@@ -3117,8 +3125,21 @@ Please format the output in clean Markdown with bold headers and double-spaced p
           }
           body.appendChild(card);
           itemCount++;
+        } else if (/^(#+\s*)?(grammar rules|grammar:|grammar instruction|grammar focus|rules & examples)/i.test(trimmed)) {
+          // 4. Grammar Instructional Block
+          card.className = 'p-5 rounded-2xl border-2 border-emerald-200 bg-emerald-50/50 shadow-sm text-slate-800 font-serif text-xs leading-relaxed space-y-3 relative page-break-inside-avoid';
+          let formattedText = trimmed.replace(/\*\*(.*?)\*\*/g, '<strong class="text-emerald-950 font-bold">$1</strong>');
+          card.innerHTML = `
+            <div class="flex items-center gap-1.5 text-[10px] font-bold text-emerald-700 uppercase tracking-widest">
+              <i data-lucide="spell-check" class="w-3.5 h-3.5"></i>
+              <span>Grammar Rules & Examples</span>
+            </div>
+            <div class="whitespace-pre-line border-l-4 border-emerald-500 pl-3.5 text-slate-700">${formattedText}</div>
+          `;
+          body.appendChild(card);
+          itemCount++;
         } else {
-          // 4. Default Block
+          // 5. Default Block
           card.className = 'exercise-block p-4.5 rounded-xl border border-indigo-100 bg-indigo-50/20 text-slate-800 font-serif text-xs leading-relaxed space-y-2 relative page-break-inside-avoid';
           let formattedText = trimmed.replace(/\*\*(.*?)\*\*/g, '<strong class="text-indigo-950 font-bold">$1</strong>');
           card.innerHTML = `<div class="whitespace-pre-line">${formattedText}</div>`;
@@ -8666,7 +8687,15 @@ Schema for each slide object:
                     <option value="Complete ELA Unit" selected>Complete Unit</option>
                     <option value="Reading Passages & Questions">Reading Passage</option>
                     <option value="Vocabulary Builder Exercises">Vocabulary Drill</option>
-                    <option value="Grammar & Mechanics Drills">Grammar Drills</option>
+                    <optgroup label="Grammar & Mechanics">
+                      <option value="Grammar: Parts of Speech">Parts of Speech (Nouns, Verbs, etc.)</option>
+                      <option value="Grammar: Tenses & Conjugation">Tenses & Verb Conjugation</option>
+                      <option value="Grammar: Sentence Structure">Sentence Structure (Simple/Compound/Complex)</option>
+                      <option value="Grammar: Punctuation & Mechanics">Punctuation & Mechanics</option>
+                      <option value="Grammar: Active vs. Passive Voice">Active vs. Passive Voice</option>
+                      <option value="Grammar: Clauses & Phrases">Clauses & Phrases</option>
+                      <option value="Grammar & Mechanics Drills">General Grammar Drills</option>
+                    </optgroup>
                     <option value="Creative Essay Writing Outlines">Essay Outline</option>
                   </select>
                 </div>
