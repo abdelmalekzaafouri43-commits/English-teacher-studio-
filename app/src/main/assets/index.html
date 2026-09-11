@@ -2923,24 +2923,22 @@
 
         if (apiKey) {
           try {
-            const masterPrompt = `You are an expert English Language Arts (ELA) and ESL educator. Generate a comprehensive, highly engaging, professional educational worksheet strictly in the ENGLISH LANGUAGE for Grade: ${gradeText}.
-
-The topic or concept requested by the teacher is: "${topicText}".
+            const masterPrompt = `You are an expert curriculum designer and educator. Generate a comprehensive, highly engaging, professional educational worksheet for Grade: ${gradeText}.
+The topic or concept requested by the user is: "${topicText}".
 The activity focus is: "${activityText}".
 The curriculum rigor level is: "${rigorText}".
 ${solutionsText}.
 
-STRICT ELA & TOPIC ALIGNMENT MANDATES:
-1. ALL output MUST be 100% in the ENGLISH LANGUAGE and strictly focused on English Language Arts (ELA) skills (reading comprehension, vocabulary, grammar, writing, phonics, sentence mechanics, or literary analysis).
-2. The topic "${topicText}" MUST be the primary thematic subject of the worksheet. Even if the topic relates to cross-curricular themes (e.g. science, history, space, nature, sports, mystery), frame it entirely as an ELA Reading Passage, Contextual Vocabulary Word Bank, Grammar/Sentence Mechanics Drills, and Reading Comprehension Questions in English.
-3. NEVER generate pure math calculations, non-English text, or non-ELA content.
-4. Structuring required:
+CRITICAL CONTENT ACCURACY INSTRUCTION:
+1. The worksheet MUST be 100% focused on the exact topic requested: "${topicText}". Do NOT substitute or generalize with an unrelated topic.
+2. Provide substantive, accurate, rich educational content, factual explanations, and contextual details specific to "${topicText}".
+3. Structure required:
    - Clear, Catchy Title and Subtitle reflecting "${topicText}".
-   - List of CCSS (Common Core State Standards for ELA) addressed.
-   - Warm-up Explanation or Reading Passage: A short story or informational text introducing "${topicText}".
-   - Vocabulary Word Bank: Header "Word Bank: [word1, word2, word3, word4, word5]" containing key vocabulary words in brackets.
+   - List of relevant curriculum standards addressed.
+   - Informational Reading Passage / Concept Overview: A detailed, well-written passage explaining "${topicText}" thoroughly and accurately.
+   - Vocabulary Word Bank: Header "Word Bank: [term1, term2, term3, term4, term5]" containing key domain vocabulary terms in brackets.
    - Active Exercise Items (Numbered 1. 2. 3. 4. 5.):
-     - Include vocabulary fill-in-the-blanks, multiple-choice comprehension questions (formatted with A) B) C) D) on separate lines), grammar identification/editing drills, and open-ended text analysis questions.
+     - Include vocabulary fill-in-the-blanks, multiple-choice comprehension questions (formatted with A) B) C) D) on separate lines), conceptual analysis drills, and open-ended application questions specifically about "${topicText}".
    - At the very end of the worksheet, include a distinct section starting with the header "Answer Key" containing complete solutions for each numbered item.
 
 Format the output in clean Markdown with bold headers and double-spaced paragraphs between sections.`;
@@ -3607,224 +3605,264 @@ Format the output in clean Markdown with bold headers and double-spaced paragrap
       const actSelect = document.getElementById('ai-activity-type')?.value || 'Complete Educational Unit';
 
       const subEl = document.getElementById('ws-subtitle');
-      if (subEl) subEl.innerText = `Grade Level: ${gradeSelect} • ${actSelect} • Read directions and complete all exercises.`;
+      if (subEl) subEl.innerText = `Topic: ${cleanTitle} • Grade Level: ${gradeSelect} • ${actSelect}`;
 
       const stdEl = document.getElementById('ws-standard-text');
-      if (stdEl) stdEl.innerText = 'CCSS.ELA-LITERACY Curriculum Standards • English Language Arts Core';
+      if (stdEl) stdEl.innerText = 'Curriculum Standards Alignment • Core Academic Competencies';
+      
       const body = document.getElementById('worksheet-body');
       if (!body) return;
       body.innerHTML = '';
       body.className = 'space-y-4 animate-fade-in pt-1';
 
-      // Extract keywords from prompt
-      const rawWords = promptText
-        .replace(/[^a-zA-Z0-9\s]/g, ' ')
-        .split(/\s+/)
-        .filter(w => w.length > 2 && !['for', 'the', 'and', 'with', 'about', 'from', 'into', 'that', 'this', 'have', 'grade', 'level', 'unit', 'lesson', 'worksheet', 'story', 'prompt', 'create', 'generate', 'write', 'make', 'please', 'just', 'english'].includes(w.toLowerCase()));
-      const mainKeyword = rawWords.length > 0 ? rawWords.join(' ') : cleanTitle;
+      const promptLower = promptText.toLowerCase().trim();
 
-      let category = 'reading';
-      if (/verb|noun|adjective|adverb|pronoun|preposition|conjunction|punctuation|comma|apostrophe|tense|passive|active|clause|sentence|grammar|mechanics|capitalization|speech/i.test(promptText)) {
-        category = 'grammar';
-      } else if (/simile|metaphor|personification|hyperbole|figurative|onomatopoeia|alliteration|imagery|idiom|symbolism|analogy/i.test(promptText)) {
-        category = 'figurative';
-      } else if (/vocabulary|word bank|synonym|antonym|root|prefix|suffix|affix|etymology|tier-2|meaning|definition/i.test(promptText)) {
-        category = 'vocabulary';
-      } else if (/poe|shakespeare|raven|macbeth|romeo|juliet|character|plot|conflict|setting|gothic|poetry|rhyme|stanza|drama|novel|literature/i.test(promptText)) {
-        category = 'literature';
+      // Determine subject domain and build tailored passage + exercises matching promptText
+      let domain = 'general';
+      if (/photosynthes|cell|plant|biology|ecosystem|dna|atom|chemistry|physics|science|gravity|energy|planet|space|earth|weather|water|cycle/i.test(promptText)) {
+        domain = 'science';
+      } else if /history|war|revolution|ancient|rome|egypt|president|empire|civil|constitution|century|government|geography/i.test(promptText)) {
+        domain = 'history';
+      } else if (/fraction|math|algebra|equation|geometry|multiply|divide|number|calculus|probability|statistic|math/i.test(promptText)) {
+        domain = 'math';
+      } else if (/poe|shakespeare|novel|story|character|plot|metaphor|poem|literature|author|literary|book|drama|tragedy/i.test(promptText)) {
+        domain = 'literature';
+      } else if (/python|code|programming|computer|algorithm|software|data|cyber|digital|tech/i.test(promptText)) {
+        domain = 'tech';
       }
-
-      // Hero Image Selection
-      const heroImage = document.createElement('div');
-      heroImage.className = 'w-full flex justify-center mb-3';
-      let imgSrc = 'images/magical_storybook.jpg';
-      if (category === 'grammar' || category === 'vocabulary') imgSrc = 'images/classroom_hero.jpg';
-      heroImage.innerHTML = `<img src="${imgSrc}" class="w-full max-w-[500px] rounded-xl shadow-md border-2 border-slate-200" alt="Worksheet Header Image">`;
-      body.appendChild(heroImage);
 
       let passageText = '';
       let wordBankList = [];
       let exercises = [];
 
-      if (category === 'grammar') {
-        passageText = `Grammar and sentence mechanics form the structural foundation of clear communication in English Language Arts. When studying "${cleanTitle}", writers must pay close attention to syntax, agreement, punctuation, and clause structure. Applying proper grammatical conventions ensures that sentences express complete thoughts clearly and maintain audience engagement across all genres of writing.`;
-        wordBankList = [mainKeyword, 'Syntax', 'Agreement', 'Predicate', 'Auxiliary', 'Convention'];
+      if (domain === 'science') {
+        passageText = `In the study of ${cleanTitle}, scientists and students explore the fundamental mechanisms that govern natural systems. By examining core principles, empirical evidence, and interactive processes, we gain a deeper understanding of how ${cleanTitle} functions in the physical world. Careful observation, data collection, and analytical reasoning are essential for mastering this scientific concept.`;
+        wordBankList = [cleanTitle.split(' ')[0], 'Hypothesis', 'Empirical Evidence', 'Mechanism', 'Variable', 'Analysis'];
         exercises = [
           {
             num: 1,
             type: 'fill-in',
-            question: `1. Rule Application Drill: Fill in the blank with the appropriate form or concept related to ${cleanTitle}: "When revising a draft, a student writer must check that each sentence demonstrates proper ________."`,
-            placeholder: `e.g., ${mainKeyword} / syntax / agreement`,
-            answer: mainKeyword
+            question: `1. Core Concept Fill-in: Complete the sentence regarding ${cleanTitle}: "When investigating ${cleanTitle}, researchers rely on systematic observation and verifiable ________ to draw valid conclusions."`,
+            placeholder: 'empirical evidence (e.g. data / evidence)',
+            answer: 'empirical evidence'
           },
           {
             num: 2,
             type: 'mc',
-            question: `2. Multiple Choice Identification: Which of the following sentences correctly applies standard English grammar principles regarding ${cleanTitle}?`,
+            question: `2. Multiple Choice Conceptual Analysis: Which of the following best describes the primary function or significance of ${cleanTitle} within its natural system?`,
             options: [
-              `A) The student carefully reviewed the draft to apply standard ${mainKeyword} rules.`,
-              `B) The student carefully review the draft with missing punctuation everywhere.`,
-              `C) Carefully the student review without proper grammar or agreement structure.`,
-              `D) Reviewing student draft without subject verb or proper syntax.`
+              `A) It drives key biological, chemical, or physical processes essential to equilibrium and function.`,
+              `B) It remains entirely static without interacting with surrounding environmental factors.`,
+              `C) It functions independently of energy transfer or systemic cause-and-effect laws.`,
+              `D) It has no measurable impact on surrounding physical or biological structures.`
             ],
             answer: 'A'
           },
           {
             num: 3,
             type: 'open',
-            question: `3. Sentence Revision Drill: Read the unedited sentence below:\n"the students was studying ${mainKeyword} in english class yesterday when the teacher asked a question"\nTask: Rewrite the sentence above in correct English using proper capitalization, punctuation, and subject-verb agreement.`,
-            placeholder: 'Write your corrected English sentence here...',
-            answer: `The students were studying ${mainKeyword} in English class yesterday when the teacher asked a question.`
+            question: `3. Cause and Effect Drill: Explain the primary cause-and-effect relationship associated with ${cleanTitle}. How do changes in initial conditions affect the final outcome?`,
+            placeholder: 'Describe cause and effect...',
+            answer: `Changes in initial conditions directly alter the systemic output of ${cleanTitle}, demonstrating proportional cause and effect.`
           },
           {
             num: 4,
             type: 'open',
-            question: `4. Structural Analysis: Explain why applying correct ${cleanTitle} rules improves the clarity and effectiveness of a written passage. Cite an example from your writing.`,
-            placeholder: 'Student response area...',
-            answer: `Proper ${cleanTitle} conventions allow readers to follow the author's logic without grammatical confusion.`
+            question: `4. Scientific Inquiry Question: Design a simple observational or experimental method to test a hypothesis regarding ${cleanTitle}. What variables would you control?`,
+            placeholder: 'Describe your experimental design...',
+            answer: `An experiment testing ${cleanTitle} would isolate one independent variable while keeping environmental and experimental controls constant.`
           },
           {
             num: 5,
             type: 'open',
-            question: `5. Creative Application: Write two original English sentences that demonstrate your complete understanding of ${cleanTitle}. Underline the target structure in each sentence.`,
-            placeholder: 'Sentence 1:\nSentence 2:',
-            answer: `Student responses will vary. Each sentence must correctly demonstrate ${cleanTitle}.`
+            question: `5. Comprehensive Synthesis: Write a short paragraph (3-4 sentences) summarizing why understanding ${cleanTitle} is vital for modern scientific literacy.`,
+            placeholder: 'Write your scientific synthesis...',
+            answer: `Understanding ${cleanTitle} enables students to comprehend complex natural phenomena and apply empirical reasoning to real-world problems.`
           }
         ];
-      } else if (category === 'figurative') {
-        passageText = `Figurative language elevates writing by painting vivid sensory imagery in the reader's mind. When exploring "${cleanTitle}", authors compare unlike items, endow objects with human traits, or exaggerate for dramatic effect. Understanding how these literary devices operate allows readers to analyze tone, mood, atmosphere, and deeper thematic meaning in English literature.`;
-        wordBankList = [mainKeyword, 'Simile', 'Metaphor', 'Imagery', 'Personification', 'Sensory Details'];
+      } else if (domain === 'history') {
+        passageText = `Historical inquiry into ${cleanTitle} reveals the complex interplay of human motivations, political shifts, and socioeconomic forces that shaped past eras. By examining primary source documents, temporal contexts, and causal relationships, historians reconstruct how ${cleanTitle} influenced societies and left a lasting legacy on the modern world.`;
+        wordBankList = [cleanTitle.split(' ')[0], 'Primary Source', 'Socioeconomic', 'Legacy', 'Chronology', 'Causation'];
         exercises = [
           {
             num: 1,
             type: 'fill-in',
-            question: `1. Device Classification (${cleanTitle}): Identify the figurative language term: "A comparison between two unlike things using 'like' or 'as' is a simile, whereas stating one thing directly IS another is a ________."`,
-            placeholder: 'metaphor (e.g. metaphor / personification)',
-            answer: 'metaphor'
+            question: `1. Historical Context Drill: Complete the statement: "When analyzing historical events such as ${cleanTitle}, historians rely heavily on eyewitness accounts and ________ sources to verify facts."`,
+            placeholder: 'primary source (e.g. primary source / document)',
+            answer: 'primary source'
           },
           {
             num: 2,
             type: 'mc',
-            question: `2. Multiple Choice Identification: Read the quote: "The old library books were ancient treasures waiting to reveal their secrets." What figurative device is featured?`,
+            question: `2. Multiple Choice Historical Significance: What was one of the most significant long-term impacts resulting from ${cleanTitle}?`,
             options: [
-              'A) Metaphor (direct comparison without using like or as)',
-              'B) Simile (comparison using like or as)',
-              'C) Onomatopoeia (sound word representation)',
-              'D) Literal statement of facts'
+              `A) It catalyzed major political, social, or structural transformations that reshaped subsequent eras.`,
+              `B) It caused an immediate return to identical pre-existing societal conditions without change.`,
+              `C) It had negligible influence on neighboring regions or future generations.`,
+              `D) It was restricted entirely to local records without broader historical consequence.`
             ],
             answer: 'A'
           },
           {
             num: 3,
             type: 'open',
-            question: `3. Figurative Transformation Drill:\nPlain Sentence: "The storm was very loud and scary."\nTask: Rewrite this plain sentence into a powerful, evocative English statement incorporating ${cleanTitle} and vivid sensory details.`,
-            placeholder: 'Write your transformed figurative sentence here...',
-            answer: `Sample: "The storm roared like an enraged lion, its thunderous claws shaking the fragile windowpanes."`
+            question: `3. Source Analysis Drill: Identify two distinct perspectives or factions involved during ${cleanTitle}. How did their differing viewpoints shape outcomes?`,
+            placeholder: 'Perspective 1 / Perspective 2...',
+            answer: `Different groups held competing economic and political priorities during ${cleanTitle}, leading to negotiation, conflict, or reform.`
           },
           {
             num: 4,
             type: 'open',
-            question: `4. Textual Analysis & Impact: How does the author's choice to incorporate ${cleanTitle} influence the reader's emotional connection to the passage?`,
-            placeholder: 'Explain emotional impact and sensory imagery...',
-            answer: `${cleanTitle} creates memorable imagery and emotional depth, making the narrative atmosphere far more engaging.`
+            question: `4. Cause and Consequence: Explain how long-term socioeconomic conditions contributed to the emergence of ${cleanTitle}.`,
+            placeholder: 'Explain socioeconomic background...',
+            answer: `Accumulated economic pressures, governance challenges, and social friction created the catalyst for ${cleanTitle}.`
           },
           {
             num: 5,
             type: 'open',
-            question: `5. Creative Writing Composition: Write a short descriptive paragraph (3-4 sentences) set in a bustling school or atmospheric wilderness. Include at least two distinct examples of ${cleanTitle}.`,
-            placeholder: 'Write your original descriptive paragraph...',
-            answer: 'Student paragraphs will vary. Must feature 2 distinct examples of figurative language.'
+            question: `5. Historical Legacy Essay: Write a short reflection explaining what lessons contemporary society can learn from the study of ${cleanTitle}.`,
+            placeholder: 'Write your historical reflection...',
+            answer: `Studying ${cleanTitle} teaches modern societies about the complexities of political change, human cooperation, and conflict resolution.`
           }
         ];
-      } else if (category === 'vocabulary') {
-        passageText = `Expanding vocabulary and mastering context clues are vital components of reading fluency and analytical writing. In our lesson on "${cleanTitle}", students encounter key terms, analyze prefixes and roots, and decipher word meanings in passage context. Utilizing high-level English vocabulary allows writers to express complex ideas with precision and confidence.`;
-        wordBankList = [mainKeyword, 'Context Clues', 'Synonym', 'Antonym', 'Etymology', 'Nuance'];
+      } else if (domain === 'math') {
+        passageText = `Mathematical proficiency in ${cleanTitle} requires rigorous logical reasoning, precise computation, and the application of established formulas and axioms. By working through structured problem sets and conceptual proofs, students develop problem-solving strategies that unlock advanced analytical capabilities.`;
+        wordBankList = [cleanTitle.split(' ')[0], 'Algorithm', 'Variable', 'Ratio', 'Theorem', 'Solution'];
         exercises = [
           {
             num: 1,
             type: 'fill-in',
-            question: `1. Contextual Vocabulary Drill: Complete the sentence using a target word from the lesson on ${cleanTitle}: "When encountering an unfamiliar word in an English text, readers examine surrounding ________ to infer its definition."`,
-            placeholder: 'context clues (e.g. context clues / punctuation)',
-            answer: 'context clues'
+            question: `1. Mathematical Principle Drill: Complete the rule for ${cleanTitle}: "To solve equations or problems involving ${cleanTitle}, one must systematically apply inverse operations and maintain mathematical ________."`,
+            placeholder: 'equality (e.g. equality / balance)',
+            answer: 'equality'
           },
           {
             num: 2,
             type: 'mc',
-            question: `2. Multiple Choice Vocabulary Definition: What is the primary purpose of studying Tier-2 vocabulary and contextual synonyms in English class?`,
+            question: `2. Multiple Choice Problem Solving: Which step is mathematically correct when evaluating expressions related to ${cleanTitle}?`,
             options: [
-              `A) To enrich reading comprehension and enable precise, descriptive writing in essays and stories.`,
-              `B) To replace all simple words with complex terms regardless of sentence meaning.`,
-              `C) To memorize definitions without understanding how words function in sentences.`,
-              `D) To avoid reading full passages and focus only on isolated word lists.`
+              `A) Follow the order of operations and apply algebraic rules systematically to isolate the unknown variable.`,
+              `B) Disregard negative signs and combine arbitrary numbers without regard to place value.`,
+              `C) Guess the final numerical outcome without performing computational verification.`,
+              `D) Assume all variables equate to zero in every operational scenario.`
             ],
             answer: 'A'
           },
           {
             num: 3,
             type: 'open',
-            question: `3. Sentence Enrichment Drill:\nSimple Sentence: "The teacher gave a good lesson."\nTask: Rewrite the sentence replacing "good" with a sophisticated Tier-2 synonym related to ${cleanTitle} (e.g., captivating, resplendent, insightful, exemplary).`,
-            placeholder: 'Write your enriched sentence here...',
-            answer: `Sample: "The teacher delivered an exceptionally insightful and captivating English lesson."`
+            question: `3. Step-by-Step Calculation Drill: Outline the step-by-step mathematical procedure required to solve a standard problem involving ${cleanTitle}.`,
+            placeholder: 'Step 1:
+Step 2:
+Step 3:',
+            answer: `Step 1: Identify given parameters. Step 2: Set up the equation for ${cleanTitle}. Step 3: Compute the final numerical result.`
           },
           {
             num: 4,
             type: 'open',
-            question: `4. Antonym & Synonym Analysis: Define ${mainKeyword} in your own words. Provide one accurate synonym and one accurate antonym in English.`,
-            placeholder: 'Definition:\nSynonym:\nAntonym:',
-            answer: `Definition and usage will vary based on ${mainKeyword}. Synonym and antonym should accurately reflect core meaning.`
+            question: `4. Word Problem Application: Create and solve a brief word problem set in a real-world scenario that requires ${cleanTitle}.`,
+            placeholder: 'Write word problem and solution...',
+            answer: `Scenario applying ${cleanTitle} to calculate real-world quantities, yielding an exact numerical answer.`
           },
           {
             num: 5,
             type: 'open',
-            question: `5. Vocabulary Application Paragraph: Write a 3-sentence narrative or informative paragraph incorporating ${cleanTitle} and at least two words from the Word Bank above.`,
-            placeholder: 'Write your original paragraph...',
-            answer: 'Student paragraphs will vary. Must demonstrate accurate usage of target vocabulary.'
+            question: `5. Conceptual Proof: Explain in your own words *why* the standard formula or rule for ${cleanTitle} works mathematically.`,
+            placeholder: 'Explain mathematical reasoning...',
+            answer: `The underlying axioms and properties of numbers guarantee that ${cleanTitle} holds true across all valid inputs.`
+          }
+        ];
+      } else if (domain === 'literature') {
+        passageText = `Literary exploration of ${cleanTitle} invites readers into an immersive examination of theme, character motivation, narrative structure, and symbolic resonance. Through close reading and textual analysis, students uncover the layers of meaning crafted by the author.`;
+        wordBankList = [cleanTitle.split(' ')[0], 'Symbolism', 'Motif', 'Protagonist', 'Theme', 'Subtext'];
+        exercises = [
+          {
+            num: 1,
+            type: 'fill-in',
+            question: `1. Literary Device Drill: Complete the statement: "In analyzing ${cleanTitle}, the underlying central message or universal lesson conveyed by the author is known as the ________."`,
+            placeholder: 'theme (e.g. theme / motif)',
+            answer: 'theme'
+          },
+          {
+            num: 2,
+            type: 'mc',
+            question: `2. Multiple Choice Literary Analysis: What is the primary purpose of examining character development and conflict in ${cleanTitle}?`,
+            options: [
+              `A) To understand how internal and external conflicts drive narrative progression and reveal thematic depth.`,
+              `B) To memorize character names without paying attention to plot arcs or motivations.`,
+              `C) To ignore the author's stylistic choices and focus solely on surface plot events.`,
+              `D) To assume characters never experience emotional growth or change.`
+            ],
+            answer: 'A'
+          },
+          {
+            num: 3,
+            type: 'open',
+            question: `3. Textual Evidence Drill: Describe the central conflict in ${cleanTitle}. Cite a specific thematic element or motif that highlights this conflict.`,
+            placeholder: 'Central Conflict:
+Textual Motif:',
+            answer: `The central conflict in ${cleanTitle} tests the protagonist's values, illuminated by recurring motifs of choice and consequence.`
+          },
+          {
+            num: 4,
+            type: 'open',
+            question: `4. Character & Motivation Analysis: Analyze the primary motivations driving the key figures or narrator in ${cleanTitle}. How do their choices influence the outcome?`,
+            placeholder: 'Analyze character motivations...',
+            answer: `Character decisions in ${cleanTitle} stem from internal desires and external pressures, directly shaping the narrative resolution.`
+          },
+          {
+            num: 5,
+            type: 'open',
+            question: `5. Thematic Essay Response: Write a short paragraph reflecting on the enduring cultural or emotional resonance of ${cleanTitle}.`,
+            placeholder: 'Write your literary reflection...',
+            answer: `${cleanTitle} resonates with readers because it addresses universal human experiences, moral dilemmas, and emotional truths.`
           }
         ];
       } else {
-        // Reading Comprehension, Literature Analysis, and ELA Unit on requested topic
-        passageText = `Reading comprehension and active text analysis expand through engaging informational prose and narrative stories in English Language Arts. In our reading unit on "${cleanTitle}", students analyze key details, contextual vocabulary, and authorial purpose while building core ELA competencies. Understanding how main ideas connect with supporting textual evidence allows readers to draw logical inferences, evaluate character motivations, and communicate ideas with clarity.`;
-        wordBankList = [mainKeyword, 'Comprehension', 'Context Clues', 'Main Idea', 'Textual Evidence', 'Inference'];
+        // General / Tech / Custom Topic Dynamic Fallback
+        passageText = `In this educational unit focusing on "${cleanTitle}", students engage in comprehensive reading comprehension, vocabulary acquisition, and critical analysis. Exploring "${cleanTitle}" provides essential conceptual frameworks, domain-specific terminology, and real-world applications. Through structured exercises and analytical writing, learners develop a thorough mastery of the subject matter.`;
+        wordBankList = [cleanTitle.split(' ')[0], 'Concept', 'Analysis', 'Application', 'Synthesis', 'Framework'];
         exercises = [
           {
             num: 1,
             type: 'fill-in',
-            question: `1. Contextual Reading Drill: Complete the sentence based on your reading of ${cleanTitle}: "In English Language Arts reading analysis, identifying the author's primary ________ allows us to understand the central lesson or message of the passage."`,
-            placeholder: 'main idea (e.g. main idea / punctuation)',
-            answer: 'main idea'
+            question: `1. Vocabulary & Core Definition Drill (${cleanTitle}): Complete the sentence using key terminology: "When examining ${cleanTitle}, it is essential to understand its foundational ________ and operational framework."`,
+            placeholder: 'principles (e.g. principles / concepts)',
+            answer: 'principles'
           },
           {
             num: 2,
             type: 'mc',
-            question: `2. Multiple Choice Reading Analysis: When analyzing a text or story focusing on ${cleanTitle}, what is the most effective reading strategy?`,
+            question: `2. Multiple Choice Conceptual Assessment: What is the primary objective when studying ${cleanTitle} in an academic setting?`,
             options: [
-              `A) Combine key passage details with specific textual evidence to construct a deep, accurate response.`,
-              `B) Read quickly through the text without checking the meaning of unfamiliar words.`,
-              `C) Memorize random facts without connecting them to the main theme of the story.`,
-              `D) Ignore the author's purpose and skip reading the conclusion of the passage.`
+              `A) To synthesize core theoretical concepts with practical applications to achieve comprehensive mastery.`,
+              `B) To memorize isolated facts without understanding how systems operate.`,
+              `C) To disregard foundational definitions and rely solely on guesswork.`,
+              `D) To avoid structured problem-solving and analysis.`
             ],
             answer: 'A'
           },
           {
             num: 3,
             type: 'open',
-            question: `3. Textual Evidence & Main Idea Analysis: Re-read the introductory passage on ${cleanTitle}. State the main idea in one sentence and cite one piece of supporting textual evidence from the passage.`,
-            placeholder: 'Main Idea:\nTextual Evidence:',
-            answer: `Main Idea: Analyzing ${cleanTitle} develops essential reading comprehension and evidence-based analytical skills. Evidence: Supporting details allow readers to draw logical inferences.`
+            question: `3. Analytical Breakdown: Review the core principles of ${cleanTitle}. Identify two key components or factors that influence success in this area.`,
+            placeholder: 'Factor 1:
+Factor 2:',
+            answer: `Key components of ${cleanTitle} include structural organization and rigorous analytical application.`
           },
           {
             num: 4,
             type: 'open',
-            question: `4. Sentence Mechanics & Proofreading Drill:\nUnedited Sentence: "when students read about ${mainKeyword} they learns valuable english skills and vocabulary"\nTask: Rewrite the sentence above with correct English capitalization, subject-verb agreement, and ending punctuation.`,
-            placeholder: 'Write your corrected English sentence here...',
-            answer: `When students read about ${mainKeyword}, they learn valuable English skills and vocabulary.`
+            question: `4. Real-World Application: Describe a practical scenario where knowledge of ${cleanTitle} is applied to solve a real-world problem or challenge.`,
+            placeholder: 'Describe practical application...',
+            answer: `Applying ${cleanTitle} in practical contexts allows professionals and students to streamline workflows and solve complex challenges.`
           },
           {
             num: 5,
             type: 'open',
-            question: `5. Creative Synthesis Response: Write a short English paragraph (3-4 sentences) summarizing what you learned about ${cleanTitle} today. Use at least two words from the Word Bank above.`,
-            placeholder: 'Write your synthesis response here...',
-            answer: 'Student responses will vary. Paragraph must accurately address topic and include target word bank terms.'
+            question: `5. Summary & Synthesis: Write a 3-4 sentence paragraph summarizing the most important takeaway regarding ${cleanTitle}. Use at least two words from the Word Bank above.`,
+            placeholder: 'Write your summary...',
+            answer: `Mastering ${cleanTitle} empowers learners with critical analytical skills, structured frameworks, and enduring domain knowledge.`
           }
         ];
       }
@@ -3836,7 +3874,7 @@ Format the output in clean Markdown with bold headers and double-spaced paragrap
       passageCard.innerHTML = `
         <div class="flex items-center gap-1.5 text-[10px] font-bold text-indigo-700 uppercase tracking-widest">
           <i data-lucide="book-open" class="w-3.5 h-3.5"></i>
-          <span>ELA Reading Passage & Lesson Focus</span>
+          <span>Informational Reading Passage & Lesson Overview (${cleanTitle})</span>
         </div>
         <div class="whitespace-pre-line border-l-4 border-indigo-500 pl-3.5 italic text-slate-800 font-medium">${passageText}</div>
       `;
@@ -3850,7 +3888,7 @@ Format the output in clean Markdown with bold headers and double-spaced paragrap
       wbCard.innerHTML = `
         <div class="flex items-center gap-1 text-[10px] font-black uppercase tracking-wider text-indigo-600">
           <i data-lucide="brain-circuit" class="w-3.5 h-3.5"></i>
-          <span>ELA Word Bank & Target Vocabulary</span>
+          <span>Key Vocabulary Word Bank (${cleanTitle})</span>
         </div>
         <div class="flex flex-wrap gap-2 pt-1">${wbHTML}</div>
       `;
@@ -3922,7 +3960,7 @@ Format the output in clean Markdown with bold headers and double-spaced paragrap
         <div class="flex items-center justify-between border-b border-rose-200 pb-2">
           <div class="flex items-center gap-1.5 text-xs font-black uppercase tracking-wider text-rose-800">
             <i data-lucide="key-round" class="w-4 h-4"></i>
-            <span>Teacher Answer Key & Solutions Guide (ELA)</span>
+            <span>Teacher Answer Key & Solutions Guide (${cleanTitle})</span>
           </div>
           <span class="text-[10px] font-bold px-2 py-0.5 rounded bg-rose-100 text-rose-800">Confidential / Educator Reference</span>
         </div>
@@ -3933,9 +3971,7 @@ Format the output in clean Markdown with bold headers and double-spaced paragrap
       if (typeof lucide !== 'undefined' && lucide.createIcons) {
         lucide.createIcons();
       }
-}
-
-function switchDashboardTab(tabId) {
+    }function switchDashboardTab(tabId) {
       // Hide all contents safely
       const g = document.getElementById('tab-generators-content');
       const d = document.getElementById('tab-design-content');
