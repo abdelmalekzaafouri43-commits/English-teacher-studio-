@@ -1544,6 +1544,13 @@
 
   <!-- LEFT DASHBOARD SIDEBAR DRAWER -->
   <aside id="dashboard-sidebar" class="fixed inset-y-0 left-0 z-40 w-80 lg:w-80 xl:w-96 bg-slate-900/98 backdrop-blur-2xl border-r border-indigo-500/25 flex flex-col h-full transform -translate-x-full lg:translate-x-0 transition-transform duration-300 ease-in-out shadow-2xl no-print overflow-hidden ring-1 ring-white/10">
+    <!-- Fallback inputs for legacy script compatibility -->
+    <div class="hidden" aria-hidden="true">
+      <span id="active-mode-badge">Worksheet</span>
+      <input type="hidden" id="teacher-name-input" value="Mrs. Davis • English Dept.">
+      <select id="grade-level-select"><option value="intermediate" selected>Intermediate</option></select>
+      <select id="item-count-select"><option value="5" selected>5</option></select>
+    </div>
     
     <!-- Dashboard Header -->
     <div class="p-4 border-b border-indigo-500/20 flex items-center justify-between bg-slate-950/80">
@@ -2491,6 +2498,10 @@
       lucide.createIcons();
       loadSavedApiKey();
       initWorksheetDragAndDrop();
+      const wsBody = document.getElementById('worksheet-body');
+      if (wsBody && wsBody.children.length === 0) {
+        renderAISynthesizedFallback('Figurative Language: Metaphors & Similes');
+      }
     });
 
     // =========================================================================
@@ -2878,6 +2889,9 @@
 
     // Generate AI Worksheet & Slide Deck via Gemini API or instant AI synthesis
     async function generateAIWorksheet() {
+      // 1. Immediately switch view mode to worksheet so user sees output
+      setViewMode('worksheet');
+
       const topicInput = document.getElementById('ai-topic-input');
       let topicText = topicInput ? topicInput.value.trim() : '';
       if (!topicText) {
@@ -2900,7 +2914,7 @@
       if (genBtn) {
         genBtn.disabled = true;
         genBtn.innerHTML = '<i data-lucide="loader-2" class="w-3.5 h-3.5 animate-spin"></i> <span>Generating Worksheet & Deck...</span>';
-        lucide.createIcons();
+        if (typeof lucide !== 'undefined' && lucide.createIcons) lucide.createIcons();
       }
 
       try {
@@ -2910,7 +2924,6 @@
 
         if (apiKey) {
           try {
-            // Construct rich master prompt
             const masterPrompt = `You are an expert English Language Arts (ELA) and ESL educator. 
 Generate a comprehensive, highly engaging, professional educational worksheet for Grade: ${gradeText}.
 The topic or concept to focus on is: "${topicText}".
@@ -2926,13 +2939,13 @@ Please design a rigorous, beautifully structured ELA worksheet that includes:
    - If vocabulary-focused: Start with the header "Word Bank: [word1, word2, word3, word4]" containing vocabulary words in brackets, followed by fill-in-the-blank questions (numbered 1. 2. 3. 4.).
    - If reading comprehension: Start with the header "Reading Passage: [Title of story]" followed by a short passage, then followed by comprehension questions (numbered 1. 2. 3. 4.).
    - If grammar-focused (e.g. Parts of speech, Tenses, Sentence Structure, Punctuation, Active/Passive Voice, Clauses, Mechanics): Start with a clear "Grammar Rules & Examples" instructional block. Then provide a numbered list (1. 2. 3. 4.) of targeted grammar drills requiring students to identify, correct, conjugate, or rewrite sentences based on the target. 
-   - If multiple-choice questions: Format each option as a separate line starting with letters A) B) C) D) (e.g., A) Option 1\\nB) Option 2).
+   - If multiple-choice questions: Format each option as a separate line starting with letters A) B) C) D) (e.g., A) Option 1\nB) Option 2).
 5. At the very end of the worksheet, include a distinct section starting with the header "Answer Key" containing solutions for each numbered question.
 
 Please format the output in clean Markdown with bold headers and double-spaced paragraphs between sections to assist in parsing.`;
 
             const controller = new AbortController();
-            const timeoutId = setTimeout(() => controller.abort(), 10000); // 10s wait time for API
+            const timeoutId = setTimeout(() => controller.abort(), 10000); // 10s timeout
 
             const endpoint = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`;
             const response = await fetch(endpoint, {
@@ -2971,18 +2984,26 @@ Please format the output in clean Markdown with bold headers and double-spaced p
 
         // Also synthesize and link matching classroom presentation slide deck!
         try {
-          const autoDeck = synthesizeELASlideDeck(topicText, 5, 'middle-school', 'classroom-interactive', 'slide-theme-clean');
-          if (Array.isArray(autoDeck) && autoDeck.length > 0) {
-            generatedAIDeckSlides = autoDeck;
-            presentationSlides = [...autoDeck];
+          if (typeof synthesizeELASlideDeck === 'function') {
+            const autoDeck = synthesizeELASlideDeck(topicText, 5, 'middle-school', 'classroom-interactive', 'slide-theme-clean');
+            if (Array.isArray(autoDeck) && autoDeck.length > 0) {
+              generatedAIDeckSlides = autoDeck;
+              presentationSlides = [...autoDeck];
+            }
           }
         } catch (deckErr) {
           console.warn('Auto deck synthesis notice:', deckErr);
         }
 
+        // Auto-close sidebar on mobile/tablet if open so user immediately sees worksheet
+        const sidebar = document.getElementById('dashboard-sidebar');
+        if (sidebar && !sidebar.classList.contains('-translate-x-full') && window.innerWidth < 1024) {
+          toggleDashboard();
+        }
+
         const paper = document.getElementById('worksheet-paper');
         if (paper) {
-          paper.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+          paper.scrollIntoView({ behavior: 'smooth', block: 'start' });
         }
       } catch (mainErr) {
         console.error('generateAIWorksheet error:', mainErr);
@@ -2996,7 +3017,7 @@ Please format the output in clean Markdown with bold headers and double-spaced p
         if (genBtn) {
           genBtn.disabled = false;
           genBtn.innerHTML = '<i data-lucide="sparkles" class="w-4 h-4"></i> <span>Generate Worksheet & Deck</span>';
-          lucide.createIcons();
+          if (typeof lucide !== 'undefined' && lucide.createIcons) lucide.createIcons();
         }
       }
     }
@@ -3345,11 +3366,15 @@ Please format the output in clean Markdown with bold headers and double-spaced p
     function renderAIResultOnPaper(promptText, resultText) {
       resetStandardHeader();
       const cleanTitle = formatWorksheetTitle(promptText);
-      document.getElementById('ws-title').innerText = cleanTitle;
-      document.getElementById('ws-subtitle').innerText = 'Read the directions carefully and complete each English exercise below.';
-      document.getElementById('ws-standard-text').innerText = 'CCSS.ELA-LITERACY • Core Language Arts Curriculum Standards';
+      const titleEl = document.getElementById('ws-title');
+      if (titleEl) titleEl.innerText = cleanTitle;
+      const subEl = document.getElementById('ws-subtitle');
+      if (subEl) subEl.innerText = 'Read the directions carefully and complete each English exercise below.';
+      const stdEl = document.getElementById('ws-standard-text');
+      if (stdEl) stdEl.innerText = 'CCSS.ELA-LITERACY • Core Language Arts Curriculum Standards';
 
       const body = document.getElementById('worksheet-body');
+      if (!body) return;
       body.innerHTML = '';
       body.className = 'space-y-4 animate-fade-in pt-1';
 
@@ -3573,11 +3598,15 @@ Please format the output in clean Markdown with bold headers and double-spaced p
     function renderAISynthesizedFallback(promptText) {
       resetStandardHeader();
       const cleanTitle = formatWorksheetTitle(promptText);
-      document.getElementById('ws-title').innerText = cleanTitle;
-      document.getElementById('ws-subtitle').innerText = 'Read the directions and answer each question with complete sentences.';
-      document.getElementById('ws-standard-text').innerText = 'CCSS.ELA-LITERACY • Core Language Arts Standards';
+      const titleEl = document.getElementById('ws-title');
+      if (titleEl) titleEl.innerText = cleanTitle;
+      const subEl = document.getElementById('ws-subtitle');
+      if (subEl) subEl.innerText = 'Read the directions and answer each question with complete sentences.';
+      const stdEl = document.getElementById('ws-standard-text');
+      if (stdEl) stdEl.innerText = 'CCSS.ELA-LITERACY • Core Language Arts Standards';
 
       const body = document.getElementById('worksheet-body');
+      if (!body) return;
       body.innerHTML = '';
       body.className = 'space-y-4 animate-fade-in pt-1';
 
@@ -3777,17 +3806,22 @@ Please format the output in clean Markdown with bold headers and double-spaced p
         card.innerHTML = html;
         body.appendChild(card);
       });
+      if (typeof lucide !== 'undefined' && lucide.createIcons) { lucide.createIcons(); }
     }
 
     // Switch Dashboard Drawer Tabs (Create, Style, Tools) to Reduce Complexity
     function switchDashboardTab(tabId) {
-      // Hide all contents
-      document.getElementById('tab-generators-content').classList.add('hidden');
-      document.getElementById('tab-design-content').classList.add('hidden');
-      document.getElementById('tab-tools-content').classList.add('hidden');
+      // Hide all contents safely
+      const g = document.getElementById('tab-generators-content');
+      const d = document.getElementById('tab-design-content');
+      const t = document.getElementById('tab-tools-content');
+      if (g) g.classList.add('hidden');
+      if (d) d.classList.add('hidden');
+      if (t) t.classList.add('hidden');
       
       // Show target content
-      document.getElementById('tab-' + tabId + '-content').classList.remove('hidden');
+      const target = document.getElementById('tab-' + tabId + '-content');
+      if (target) target.classList.remove('hidden');
       
       // Reset all tab button styles
       const tabs = ['generators', 'design', 'tools'];
@@ -4478,71 +4512,57 @@ Please format the output in clean Markdown with bold headers and double-spaced p
         if (themeSelect) themeSelect.value = 'ela-book';
       }
 
-      headerBox.className = "border-b-4 border-[#0e56b2] pb-6 mb-6 flex flex-col items-center justify-center relative select-none pt-2";
+      const teacherName = document.getElementById('teacher-name-input')?.value || 'Mrs. Davis • English Dept.';
+
+      headerBox.className = "border-b-2 border-slate-800 pb-4 mb-5 flex flex-wrap justify-between items-center gap-4";
       headerBox.innerHTML = `
-          <!-- Page info top corners -->
-          <div class="absolute top-0 left-0 text-[10px] font-bold text-[#0e56b2] bg-blue-50 px-2 py-0.5 rounded uppercase tracking-wider">Unit: English</div>
-          <div class="absolute top-0 right-0 text-[10px] font-bold text-slate-500 bg-slate-100 px-2 py-0.5 rounded uppercase tracking-wider flex items-center gap-1">
-            <span>Name:</span>
-            <span contenteditable="true" class="min-w-[100px] border-b border-slate-400 inline-block px-1 outline-none font-handwriting text-indigo-700"></span>
-          </div>
-
-          <div class="w-full flex items-center justify-between gap-4 max-w-xl mt-3">
-            <!-- Cartoon Boy Waving (Highly polished vector art) -->
-            <div class="w-16 h-16 sm:w-20 sm:h-20 flex-shrink-0 animate-bounce" style="animation-duration: 3s;">
-              <svg viewBox="0 0 100 100" class="w-full h-full">
-                <path d="M25 40 C25 20, 75 20, 75 40 C75 35, 60 25, 50 25 C40 25, 25 35, 25 40" fill="#2d1500" />
-                <path d="M20 40 C20 25, 45 15, 50 15 C55 15, 80 25, 80 40" fill="#1a0b00" />
-                <circle cx="28" cy="48" r="6" fill="#fbcfe8" />
-                <circle cx="28" cy="48" r="3" fill="#f472b6" />
-                <circle cx="72" cy="48" r="6" fill="#fbcfe8" />
-                <circle cx="72" cy="48" r="3" fill="#f472b6" />
-                <circle cx="50" cy="50" r="22" fill="#fed7aa" />
-                <circle cx="38" cy="56" r="3" fill="#f43f5e" opacity="0.4" />
-                <circle cx="62" cy="56" r="3" fill="#f43f5e" opacity="0.4" />
-                <circle cx="42" cy="48" r="3" fill="#1e293b" />
-                <circle cx="42" cy="48" r="1" fill="#ffffff" transform="translate(-1, -1)" />
-                <circle cx="58" cy="48" r="3" fill="#1e293b" />
-                <circle cx="58" cy="48" r="1" fill="#ffffff" transform="translate(-1, -1)" />
-                <path d="M44 58 Q50 64 56 58" stroke="#be123c" stroke-width="2.5" fill="none" stroke-linecap="round" />
-                <path d="M35 70 C35 70, 50 72, 65 70 L70 85 H30 Z" fill="#0284c7" />
-                <path d="M20 70 Q10 50 15 45 Q20 40 24 50" fill="#fed7aa" stroke="#0284c7" stroke-width="2" />
-                <circle cx="15" cy="43" r="5" fill="#fed7aa" />
-              </svg>
-            </div>
-
-            <!-- Central Title Banner -->
-            <div class="flex-1 flex flex-col items-center text-center">
-              <div id="ws-title" contenteditable="true" class="bg-[#0e56b2] outline-none text-white text-base sm:text-xl font-black px-4 sm:px-8 py-2 sm:py-3.5 rounded-2xl shadow-md tracking-wider uppercase leading-tight min-w-[250px]">
-                Worksheet
+            <div class="flex-1 min-w-[200px] flex items-center gap-4">
+              <!-- Dynamic Educational Illustration -->
+              <div id="ws-illustration-container" class="w-16 h-16 sm:w-20 sm:h-20 flex-shrink-0 bg-slate-50 border border-slate-200 rounded-xl p-1.5 shadow-sm flex items-center justify-center transition-all duration-300">
+                <svg viewBox="0 0 100 100" class="w-full h-full">
+                  <circle cx="50" cy="50" r="45" fill="#e0e7ff" stroke="#6366f1" stroke-width="2"/>
+                  <path d="M30 65 L50 35 L70 65 Z" fill="#4f46e5"/>
+                  <circle cx="50" cy="35" r="5" fill="#f43f5e"/>
+                </svg>
               </div>
-              <div id="ws-subtitle" contenteditable="true" class="border-2 border-[#0e56b2] outline-none text-[#0e56b2] text-[9px] sm:text-[10px] font-black px-4 py-1 rounded-full mt-2 bg-white/90 shadow-sm uppercase tracking-wide">
-                English Language Arts
+              <div>
+                <div class="flex items-center gap-2 mb-1 text-[11px] font-semibold text-indigo-700 uppercase tracking-wider no-print-corners">
+                  <span id="ws-teacher-display" contenteditable="true">${teacherName}</span>
+                </div>
+                <h1 id="ws-title" contenteditable="true" class="text-2xl font-bold tracking-tight text-slate-900 outline-none">AI Worksheet Workspace</h1>
+                <p id="ws-subtitle" contenteditable="true" class="text-xs text-slate-600 mt-1 outline-none">Use the AI Generator in the dashboard to create a comprehensive English lesson.</p>
               </div>
             </div>
-
-            <!-- Cartoon Girl Waving -->
-            <div class="w-16 h-16 sm:w-20 sm:h-20 flex-shrink-0 animate-bounce" style="animation-duration: 3s; animation-delay: 0.5s;">
-              <svg viewBox="0 0 100 100" class="w-full h-full">
-                <circle cx="24" cy="35" r="10" fill="#b45309" />
-                <circle cx="76" cy="35" r="10" fill="#b45309" />
-                <path d="M25 40 C25 20, 75 20, 75 40" fill="#d97706" />
-                <circle cx="50" cy="48" r="22" fill="#fed7aa" />
-                <circle cx="38" cy="54" r="3.5" fill="#f43f5e" opacity="0.4" />
-                <circle cx="62" cy="54" r="3.5" fill="#f43f5e" opacity="0.4" />
-                <circle cx="42" cy="46" r="3" fill="#1e293b" />
-                <circle cx="58" cy="46" r="3" fill="#1e293b" />
-                <path d="M44 56 Q50 62 56 56" stroke="#be123c" stroke-width="2.5" fill="none" stroke-linecap="round" />
-                <path d="M30 35 L35 32" stroke="#f43f5e" stroke-width="3" stroke-linecap="round" />
-                <path d="M70 35 L65 32" stroke="#f43f5e" stroke-width="3" stroke-linecap="round" />
-                <path d="M35 68 C35 68, 50 70, 65 68 L70 85 H30 Z" fill="#ec4899" />
-                <path d="M80 68 Q90 48 85 43 Q80 38 76 48" fill="#fed7aa" stroke="#ec4899" stroke-width="2" />
-                <circle cx="85" cy="41" r="5" fill="#fed7aa" />
-              </svg>
+            
+            <div class="flex items-center gap-3">
+              <!-- Printable Header QR Code Badge (Toggleable) -->
+              <div id="ws-header-qr" class="hidden flex flex-col items-center justify-center p-1.5 bg-white border border-slate-300 rounded-lg shadow-sm text-center">
+                <img id="ws-header-qr-img" src="" alt="Student QR Code" class="w-12 h-12 object-contain">
+                <span class="text-[8px] font-bold text-slate-700 mt-0.5 tracking-tighter uppercase leading-none">Scan Digital</span>
+              </div>
+              <div id="ws-student-info" class="flex flex-col gap-1.5 text-xs font-medium text-slate-700 border-l-2 border-slate-200 pl-4">
+                <div class="flex items-center gap-1">
+                  <span>Student Name:</span>
+                  <span contenteditable="true" class="min-w-[120px] border-b border-slate-400 inline-block px-1 outline-none"></span>
+                </div>
+                <div class="flex items-center gap-1">
+                  <span>Date:</span>
+                  <span contenteditable="true" class="min-w-[120px] border-b border-slate-400 inline-block px-1 outline-none"></span>
+                </div>
+                <div class="flex items-center gap-1">
+                  <span>Class / Period:</span>
+                  <span contenteditable="true" class="min-w-[80px] border-b border-slate-400 inline-block px-1 outline-none"></span>
+                </div>
+              </div>
             </div>
-          </div>
       `;
-      const teacherName = document.getElementById('teacher-name-input').value;
+
+      // Always restore standard features
+      const standardIllustration = document.getElementById('ws-illustration-container');
+      const standardFooter = document.getElementById('standard-worksheet-footer');
+      if (standardIllustration) standardIllustration.classList.remove('hidden');
+      if (standardFooter) standardFooter.classList.remove('hidden');
+
       updateTeacherHeader(teacherName);
     }
 
@@ -4551,12 +4571,16 @@ Please format the output in clean Markdown with bold headers and double-spaced p
       viewMode = mode;
       const btnWorksheet = document.getElementById('btn-view-worksheet');
       const btnPresentation = document.getElementById('btn-view-presentation');
+      const dashWs = document.getElementById('dash-btn-view-ws');
+      const dashPres = document.getElementById('dash-btn-view-pres');
       const zoomWrapper = document.getElementById('zoom-wrapper');
       const presentationContainer = document.getElementById('presentation-container');
       
       if (mode === 'worksheet') {
-        btnWorksheet.className = "px-4 py-2 rounded-lg text-xs font-bold flex items-center gap-2 transition-all bg-indigo-600 text-white shadow";
-        btnPresentation.className = "px-4 py-2 rounded-lg text-xs font-bold flex items-center gap-2 transition-all text-slate-400 hover:text-slate-200";
+        if (btnWorksheet) btnWorksheet.className = "px-4 py-2 rounded-lg text-xs font-bold flex items-center gap-2 transition-all bg-indigo-600 text-white shadow";
+        if (btnPresentation) btnPresentation.className = "px-4 py-2 rounded-lg text-xs font-bold flex items-center gap-2 transition-all text-slate-400 hover:text-slate-200";
+        if (dashWs) dashWs.className = "flex-1 py-1.5 rounded-lg text-xs font-bold transition-all bg-indigo-600 text-white shadow";
+        if (dashPres) dashPres.className = "flex-1 py-1.5 rounded-lg text-xs font-bold transition-all text-slate-400 hover:text-white";
         if (zoomWrapper) zoomWrapper.classList.remove('hidden');
         if (presentationContainer) presentationContainer.classList.add('hidden');
         
@@ -4569,8 +4593,10 @@ Please format the output in clean Markdown with bold headers and double-spaced p
         const splitBtn = document.getElementById('btn-split-page');
         if (splitBtn) splitBtn.classList.remove('hidden');
       } else {
-        btnWorksheet.className = "px-4 py-2 rounded-lg text-xs font-bold flex items-center gap-2 transition-all text-slate-400 hover:text-slate-200";
-        btnPresentation.className = "px-4 py-2 rounded-lg text-xs font-bold flex items-center gap-2 transition-all bg-indigo-600 text-white shadow";
+        if (btnWorksheet) btnWorksheet.className = "px-4 py-2 rounded-lg text-xs font-bold flex items-center gap-2 transition-all text-slate-400 hover:text-slate-200";
+        if (btnPresentation) btnPresentation.className = "px-4 py-2 rounded-lg text-xs font-bold flex items-center gap-2 transition-all bg-indigo-600 text-white shadow";
+        if (dashWs) dashWs.className = "flex-1 py-1.5 rounded-lg text-xs font-bold transition-all text-slate-400 hover:text-white";
+        if (dashPres) dashPres.className = "flex-1 py-1.5 rounded-lg text-xs font-bold transition-all bg-indigo-600 text-white shadow";
         if (zoomWrapper) zoomWrapper.classList.add('hidden');
         if (presentationContainer) presentationContainer.classList.remove('hidden');
         
@@ -8419,16 +8445,21 @@ Schema for each slide object:
 
     // VOCABULARY & WORD MATCH GENERATOR
     function generateVocabularyWorksheet() {
+      setViewMode('worksheet');
       resetStandardHeader();
       currentMode = 'vocabulary';
-      document.getElementById('active-mode-badge').innerText = 'Vocabulary';
+      const badge = document.getElementById('active-mode-badge');
+      if (badge) badge.innerText = 'Vocabulary';
 
-      document.getElementById('ws-title').innerText = 'English Vocabulary & Context Clues';
-      document.getElementById('ws-subtitle').innerText = 'Review the word bank, then match each target vocabulary word to its correct context or definition.';
-      document.getElementById('ws-standard-text').innerText = 'CCSS.ELA-LITERACY.L.5.4 • Determine or clarify the meaning of unknown words using context clues and word definitions.';
+      const titleEl = document.getElementById('ws-title');
+      if (titleEl) titleEl.innerText = 'English Vocabulary & Context Clues';
+      const subEl = document.getElementById('ws-subtitle');
+      if (subEl) subEl.innerText = 'Review the word bank, then match each target vocabulary word to its correct context or definition.';
+      const stdEl = document.getElementById('ws-standard-text');
+      if (stdEl) stdEl.innerText = 'CCSS.ELA-LITERACY.L.5.4 • Determine or clarify the meaning of unknown words using context clues and word definitions.';
 
-      const grade = document.getElementById('grade-level-select').value;
-      const count = parseInt(document.getElementById('item-count-select').value, 10);
+      const grade = document.getElementById('grade-level-select')?.value || document.getElementById('ai-grade-level')?.value || 'intermediate';
+      const count = parseInt(document.getElementById('item-count-select')?.value || '5', 10);
       const items = (vocabData[grade] || vocabData['intermediate']).slice(0, count);
 
       const body = document.getElementById('worksheet-body');
@@ -8480,15 +8511,20 @@ Schema for each slide object:
 
     // GRAMMAR & SYNTAX GENERATOR
     function generateGrammarWorksheet() {
+      setViewMode('worksheet');
       resetStandardHeader();
       currentMode = 'grammar';
-      document.getElementById('active-mode-badge').innerText = 'Grammar';
+      const badge = document.getElementById('active-mode-badge');
+      if (badge) badge.innerText = 'Grammar';
 
-      document.getElementById('ws-title').innerText = 'English Grammar & Usage Practice';
-      document.getElementById('ws-subtitle').innerText = 'Select the correct word form in parentheses to complete each grammatically correct sentence.';
-      document.getElementById('ws-standard-text').innerText = 'CCSS.ELA-LITERACY.L.5.1 • Demonstrate command of the conventions of standard English grammar and usage when writing or speaking.';
+      const titleEl = document.getElementById('ws-title');
+      if (titleEl) titleEl.innerText = 'English Grammar & Usage Practice';
+      const subEl = document.getElementById('ws-subtitle');
+      if (subEl) subEl.innerText = 'Select the correct word form in parentheses to complete each grammatically correct sentence.';
+      const stdEl = document.getElementById('ws-standard-text');
+      if (stdEl) stdEl.innerText = 'CCSS.ELA-LITERACY.L.5.1 • Demonstrate command of the conventions of standard English grammar and usage when writing or speaking.';
 
-      const count = parseInt(document.getElementById('item-count-select').value, 10);
+      const count = parseInt(document.getElementById('item-count-select')?.value || '5', 10);
       const items = grammarData.slice(0, count);
 
       const body = document.getElementById('worksheet-body');
@@ -8522,15 +8558,20 @@ Schema for each slide object:
 
     // PUNCTUATION & PROOFREADING GENERATOR
     function generateProofreadingWorksheet() {
+      setViewMode('worksheet');
       resetStandardHeader();
       currentMode = 'proofreading';
-      document.getElementById('active-mode-badge').innerText = 'Punctuation';
+      const badge = document.getElementById('active-mode-badge');
+      if (badge) badge.innerText = 'Punctuation';
 
-      document.getElementById('ws-title').innerText = 'Editing & Proofreading Drills';
-      document.getElementById('ws-subtitle').innerText = 'Rewrite each incorrect sentence below, correcting capitalization, punctuation, and spelling errors.';
-      document.getElementById('ws-standard-text').innerText = 'CCSS.ELA-LITERACY.L.6.2 • Demonstrate command of the conventions of standard English capitalization, punctuation, and spelling.';
+      const titleEl = document.getElementById('ws-title');
+      if (titleEl) titleEl.innerText = 'Editing & Proofreading Drills';
+      const subEl = document.getElementById('ws-subtitle');
+      if (subEl) subEl.innerText = 'Rewrite each incorrect sentence below, correcting capitalization, punctuation, and spelling errors.';
+      const stdEl = document.getElementById('ws-standard-text');
+      if (stdEl) stdEl.innerText = 'CCSS.ELA-LITERACY.L.6.2 • Demonstrate command of the conventions of standard English capitalization, punctuation, and spelling.';
 
-      const count = parseInt(document.getElementById('item-count-select').value, 10);
+      const count = parseInt(document.getElementById('item-count-select')?.value || '5', 10);
       const items = proofreadingData.slice(0, count);
 
       const body = document.getElementById('worksheet-body');
@@ -8564,13 +8605,18 @@ Schema for each slide object:
 
     // READING COMPREHENSION GENERATOR
     function generateReadingWorksheet() {
+      setViewMode('worksheet');
       resetStandardHeader();
       currentMode = 'reading';
-      document.getElementById('active-mode-badge').innerText = 'Reading';
+      const badge = document.getElementById('active-mode-badge');
+      if (badge) badge.innerText = 'Reading';
 
-      document.getElementById('ws-title').innerText = 'Reading Comprehension & Evidence';
-      document.getElementById('ws-subtitle').innerText = 'Read the passage carefully, then answer the comprehension questions using text evidence.';
-      document.getElementById('ws-standard-text').innerText = 'CCSS.ELA-LITERACY.RL.5.1 • Quote accurately from a text when explaining what the text says explicitly and when drawing inferences.';
+      const titleEl = document.getElementById('ws-title');
+      if (titleEl) titleEl.innerText = 'Reading Comprehension & Evidence';
+      const subEl = document.getElementById('ws-subtitle');
+      if (subEl) subEl.innerText = 'Read the passage carefully, then answer the comprehension questions using text evidence.';
+      const stdEl = document.getElementById('ws-standard-text');
+      if (stdEl) stdEl.innerText = 'CCSS.ELA-LITERACY.RL.5.1 • Quote accurately from a text when explaining what the text says explicitly and when drawing inferences.';
 
       const story = readingStories[Math.floor(Math.random() * readingStories.length)];
 
@@ -8619,15 +8665,20 @@ Schema for each slide object:
 
     // FIGURATIVE LANGUAGE GENERATOR
     function generateFigurativeLanguageWorksheet() {
+      setViewMode('worksheet');
       resetStandardHeader();
       currentMode = 'figurative';
-      document.getElementById('active-mode-badge').innerText = 'Figurative';
+      const badge = document.getElementById('active-mode-badge');
+      if (badge) badge.innerText = 'Figurative';
 
-      document.getElementById('ws-title').innerText = 'Literary Devices & Figurative Language';
-      document.getElementById('ws-subtitle').innerText = 'Identify whether each sentence contains a Simile, Metaphor, Personification, Alliteration, or Hyperbole.';
-      document.getElementById('ws-standard-text').innerText = 'CCSS.ELA-LITERACY.RL.6.4 • Determine the meaning of words and phrases as they are used in a text, including figurative and connotative meanings.';
+      const titleEl = document.getElementById('ws-title');
+      if (titleEl) titleEl.innerText = 'Literary Devices & Figurative Language';
+      const subEl = document.getElementById('ws-subtitle');
+      if (subEl) subEl.innerText = 'Identify whether each sentence contains a Simile, Metaphor, Personification, Alliteration, or Hyperbole.';
+      const stdEl = document.getElementById('ws-standard-text');
+      if (stdEl) stdEl.innerText = 'CCSS.ELA-LITERACY.RL.6.4 • Determine the meaning of words and phrases as they are used in a text, including figurative and connotative meanings.';
 
-      const count = parseInt(document.getElementById('item-count-select').value, 10);
+      const count = parseInt(document.getElementById('item-count-select')?.value || '5', 10);
       const items = figurativeData.slice(0, count);
 
       const body = document.getElementById('worksheet-body');
@@ -8669,13 +8720,18 @@ Schema for each slide object:
 
     // WRITING & ESSAY GENERATOR
     function generateWritingWorksheet() {
+      setViewMode('worksheet');
       resetStandardHeader();
       currentMode = 'writing';
-      document.getElementById('active-mode-badge').innerText = 'Writing';
+      const badge = document.getElementById('active-mode-badge');
+      if (badge) badge.innerText = 'Writing';
 
-      document.getElementById('ws-title').innerText = 'Guided English Essay & Writing Prompt';
-      document.getElementById('ws-subtitle').innerText = 'Write a structured multi-paragraph response using vivid adjectives, strong verb choices, and clear topic sentences.';
-      document.getElementById('ws-standard-text').innerText = 'CCSS.ELA-LITERACY.W.5.2 • Write informative/explanatory texts to examine a topic and convey ideas clearly.';
+      const titleEl = document.getElementById('ws-title');
+      if (titleEl) titleEl.innerText = 'Guided English Essay & Writing Prompt';
+      const subEl = document.getElementById('ws-subtitle');
+      if (subEl) subEl.innerText = 'Write a structured multi-paragraph response using vivid adjectives, strong verb choices, and clear topic sentences.';
+      const stdEl = document.getElementById('ws-standard-text');
+      if (stdEl) stdEl.innerText = 'CCSS.ELA-LITERACY.W.5.2 • Write informative/explanatory texts to examine a topic and convey ideas clearly.';
 
       const body = document.getElementById('worksheet-body');
       body.innerHTML = '';
