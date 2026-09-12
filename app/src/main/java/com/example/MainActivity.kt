@@ -2,6 +2,7 @@ package com.example
 
 import android.annotation.SuppressLint
 import android.content.Context
+import java.io.File
 import android.os.Bundle
 import android.print.PrintAttributes
 import android.print.PrintManager
@@ -25,6 +26,15 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
+
+        // Ensure WebView cache subdirectories exist to prevent Chromium first-run missing directory logs
+        runCatching {
+            val defaultCacheDir = File(cacheDir, "WebView/Default")
+            File(defaultCacheDir, "HTTP Cache/Code Cache/js").mkdirs()
+            File(defaultCacheDir, "HTTP Cache/Code Cache/wasm").mkdirs()
+            File(defaultCacheDir, "GPUCache").mkdirs()
+        }
+
         setContent {
             MyApplicationTheme {
                 Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
@@ -87,7 +97,7 @@ fun WorksheetWebViewScreen(
                     builtInZoomControls = true
                     displayZoomControls = false
                     mediaPlaybackRequiresUserGesture = false
-                    cacheMode = WebSettings.LOAD_DEFAULT
+                    cacheMode = WebSettings.LOAD_NO_CACHE
                     mixedContentMode = WebSettings.MIXED_CONTENT_ALWAYS_ALLOW
                 }
                 var webViewRef: WebView? = this
