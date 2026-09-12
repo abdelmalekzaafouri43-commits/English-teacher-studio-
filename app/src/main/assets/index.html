@@ -2892,18 +2892,19 @@
       // 1. Immediately switch view mode to worksheet so user sees output
       setViewMode('worksheet');
       const topicInput = document.getElementById('ai-topic-input');
-      let topicText = topicInput ? topicInput.value.trim() : '';
+      const fsTopicInput = document.getElementById('ai-fullscreen-topic-input');
+      let topicText = (fsTopicInput && fsTopicInput.value.trim()) ? fsTopicInput.value.trim() : (topicInput ? topicInput.value.trim() : '');
       if (!topicText) {
-        topicText = 'Figurative Language: Metaphors & Similes';
+        topicText = 'Past Simple Irregular Verbs & Matching Drills';
         if (topicInput) topicInput.value = topicText;
-        showToast('Default Topic Loaded', 'Generating complete ELA unit on Figurative Language.', 'info');
+        showToast('Default Topic Loaded', 'Generating complete unit on Past Simple Irregular Verbs.', 'info');
       }
-      
+
       const gradeSelect = document.getElementById('ai-grade-level');
       const gradeText = gradeSelect ? gradeSelect.value : 'Middle School (Grades 6-8)';
       const activitySelect = document.getElementById('ai-activity-type');
-      const activityText = activitySelect ? activitySelect.value : 'Complete ELA Unit';
-      
+      const activityText = activitySelect ? activitySelect.value : 'Complete Educational Unit';
+
       const rigorSelect = document.getElementById('ai-rigor-level');
       const rigorText = rigorSelect ? rigorSelect.value : 'Standard Academic Core';
       const solutionsSelect = document.getElementById('ai-solutions-key');
@@ -2921,32 +2922,34 @@
         const apiKey = userApiKey || localStorage.getItem('gemini_api_key') || '';
         let generatedSuccessfully = false;
 
+        const extractedTopic = extractCoreTopic(topicText);
+        const extractedGrade = extractGradeLevel(topicText) || gradeText;
+
         if (apiKey) {
           try {
-            const masterPrompt = `You are an expert curriculum designer and educator. Generate a comprehensive, highly engaging, professional educational worksheet for Grade: ${gradeText}.
-The topic or concept requested by the user is: "${topicText}".
-The activity focus is: "${activityText}".
-The curriculum rigor level is: "${rigorText}".
-${solutionsText}.
+            const masterPrompt = `You are an expert curriculum designer and master educator.
+Generate a comprehensive, highly engaging, professional educational worksheet matching the user's prompt instructions.
 
-CRITICAL CONTENT ACCURACY INSTRUCTION:
-1. The worksheet MUST be 100% focused on the exact topic requested: "${topicText}". Do NOT substitute or generalize with an unrelated topic.
-2. Provide substantive, accurate, rich educational content, factual explanations, and contextual details specific to "${topicText}".
-3. Structure required:
-   - Clear, Catchy Title and Subtitle reflecting "${topicText}".
-   - List of relevant curriculum standards addressed.
-   - Informational Reading Passage / Concept Overview: A detailed, well-written passage explaining "${topicText}" thoroughly and accurately.
-   - Vocabulary Word Bank: Header "Word Bank: [term1, term2, term3, term4, term5]" containing key domain vocabulary terms in brackets.
-   - Active Exercise Items (Numbered 1. 2. 3. 4. 5.):
-     - Include vocabulary fill-in-the-blanks, multiple-choice comprehension questions (formatted with A) B) C) D) on separate lines), conceptual analysis drills, and open-ended application questions specifically about "${topicText}".
-   - At the very end of the worksheet, include a distinct section starting with the header "Answer Key" containing complete solutions for each numbered item.
+USER PROMPT INSTRUCTIONS / TOPIC REQUEST:
+"""
+${topicText}
+"""
 
-Format the output in clean Markdown with bold headers and double-spaced paragraphs between sections.`;
+Target Focus: "${extractedTopic}"
+Target Level/Grade: "${extractedGrade}"
+Activity Type: "${activityText}"
+Rigor Level: "${rigorText}"
+${solutionsText}
+
+CRITICAL MANDATES:
+1. Follow all specific exercise formats, column rules, matching rules, language requirements (e.g. French/English instructions if specified), and structural requests in the user prompt.
+2. If the prompt requests a 2-column matching exercise (Column A 1-10 vs Column B A-J) with an answer key at the bottom (1-C, 2-A, etc.), generate that exact Markdown table and answer key.
+3. The worksheet MUST be 100% accurate and directly focused on "${extractedTopic}". Include authentic rules, facts, sentences, and educational exercises.
+4. Format output in clean Markdown with bold headers and double-spaced paragraphs between sections. At the very end, include the Answer Key section under the header "Answer Key".`;
 
             const controller = new AbortController();
             const timeoutId = setTimeout(() => controller.abort(), 25000); // 25s timeout
             const endpoint = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`;
-
             const response = await fetch(endpoint, {
               method: 'POST',
               signal: controller.signal,
@@ -2959,7 +2962,6 @@ Format the output in clean Markdown with bold headers and double-spaced paragrap
                 }]
               })
             });
-
             clearTimeout(timeoutId);
 
             if (response.ok) {
@@ -2972,20 +2974,20 @@ Format the output in clean Markdown with bold headers and double-spaced paragrap
               }
             }
           } catch (err) {
-            console.warn('Gemini API fetch timeout or error, executing instant ELA synthesis:', err);
+            console.warn('Gemini API fetch timeout or error, executing instant synthesis:', err);
           }
         }
 
         if (!generatedSuccessfully) {
           // Immediate, instant synthesis engine fallback
           renderAISynthesizedFallback(topicText);
-          showToast('Worksheet Ready', 'Instant ELA worksheet synthesized immediately!', 'sparkles');
+          showToast('Worksheet Ready', 'Instant worksheet synthesized immediately!', 'sparkles');
         }
 
         // Also synthesize and link matching classroom presentation slide deck!
         try {
           if (typeof synthesizeELASlideDeck === 'function') {
-            const autoDeck = synthesizeELASlideDeck(topicText, 5, 'middle-school', 'classroom-interactive', 'slide-theme-clean');
+            const autoDeck = synthesizeELASlideDeck(extractedTopic, 5, 'middle-school', 'classroom-interactive', 'slide-theme-clean');
             if (Array.isArray(autoDeck) && autoDeck.length > 0) {
               generatedAIDeckSlides = autoDeck;
               presentationSlides = [...autoDeck];
@@ -3021,7 +3023,6 @@ Format the output in clean Markdown with bold headers and double-spaced paragrap
         }
       }
     }
-
     // ==========================================
     // GLASS AI TUTOR INTERACTIVE DIALOG CONTROLLER
     // ==========================================
@@ -3326,13 +3327,84 @@ Format the output in clean Markdown with bold headers and double-spaced paragrap
     }
 
     // Format and sanitize prompt text into a clean, professional ELA worksheet title
+    function titleCaseWords(str) {
+      if (!str) return '';
+      return str.split(/\s+/).map(w => w ? w.charAt(0).toUpperCase() + w.slice(1).toLowerCase() : '').join(' ');
+    }
+
+    function extractCoreTopic(promptText) {
+      if (!promptText || typeof promptText !== 'string') return 'English Language Arts Practice';
+      let text = promptText.trim();
+
+      // 1. Check for explicit fields like "Sujet de la leçon : ...", "Sujet : ...", "Topic : ...", "Lesson : ...", "Theme : ..."
+      let subjectMatch = text.match(/(?:sujet\s*(?:de\s*la\s*leçon)?|topic|lesson|theme|lesson\s*topic|subject)\s*[:=]\s*([^.
+\[\]]+)/i);
+      if (subjectMatch && subjectMatch[1] && subjectMatch[1].trim()) {
+        let rawTopic = subjectMatch[1].trim();
+        rawTopic = rawTopic.replace(/\[.*?\]/g, '').replace(/ex\s*:\s*/i, '').trim();
+        if (rawTopic.length >= 2) {
+          return titleCaseWords(rawTopic);
+        }
+      }
+
+      // 2. Remove meta-instruction headers (Rôle :, Objectif :, Consignes :, Format de sortie :, etc.)
+      let lines = text.split('
+');
+      let filteredLines = [];
+      for (let line of lines) {
+        let l = line.trim();
+        if (!l) continue;
+        if (/^(rôle|role|objectif|goal|consignes|instructions|format|niveau|level|section)\s*[:=]/i.test(l)) {
+          continue;
+        }
+        filteredLines.push(l);
+      }
+      let cleaned = filteredLines.join(' ').trim();
+      if (!cleaned) cleaned = text;
+
+      // 3. Clean up common prompt introductory verbs & phrases
+      cleaned = cleaned.replace(/\[.*?\]/g, '');
+      cleaned = cleaned.replace(/^(please\s+)?(create|generate|make|build|design|write|produce|develop|draft|give me|provide|crée|créer|faites|fait|construire)\s*/gi, '');
+      cleaned = cleaned.replace(/^(a|an|the|un|une|des|le|la|les)\s*/gi, '');
+      cleaned = cleaned.replace(/^(worksheet|lesson|exercise|exercises|activity|activities|quiz|test|assessment|handout|questions|drills|practice|exercice|exercices)\s*/gi, '');
+      cleaned = cleaned.replace(/^(about|on|for|regarding|with|focusing on|centered on|covering|sur|concerning)\s*/gi, '');
+      cleaned = cleaned.replace(/^[:\-–—\s]+/, '').trim();
+
+      if (cleaned.length > 50) {
+        cleaned = cleaned.substring(0, 50).trim() + '...';
+      }
+      if (!cleaned || cleaned.length < 2) {
+        return 'English Grammar & Vocabulary';
+      }
+      return titleCaseWords(cleaned);
+    }
+
+    function extractGradeLevel(promptText) {
+      if (!promptText) return null;
+      let match = promptText.match(/(?:niveau\s*(?:des\s*élèves)?|grade\s*level|grade|level)\s*[:=]\s*([^.
+\[\]]+)/i);
+      if (match && match[1]) {
+        let raw = match[1].replace(/\[.*?\]/g, '').replace(/ex\s*:\s*/i, '').trim();
+        if (raw) return titleCaseWords(raw);
+      }
+      return null;
+    }
+
     function formatWorksheetTitle(promptText) {
       if (!promptText || typeof promptText !== 'string') {
-        return 'English Language Arts Practice';
+        return 'Educational Worksheet & Practice';
       }
       let cleaned = promptText.trim();
-      
-      // Thoroughly strip AI prefixes, command verbs ("create", "generate"), and conversational filler in a loop
+
+      // Check if user specified a subject/topic field like 'Sujet de la leçon :', 'Topic:', 'Theme:'
+      const topicMatch = cleaned.match(/(?:sujet(?:\s+de\s+la\s+leçon)?|topic|theme|subject)\s*[:=]\s*\[?([^\]\n\r]+)\]?/i);
+      if (topicMatch && topicMatch[1] && topicMatch[1].trim()) {
+        let extracted = topicMatch[1].trim().replace(/[\[\]]/g, '');
+        if (extracted.length > 40) extracted = extracted.substring(0, 40).trim() + '...';
+        return extracted.split(/\s+/).map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ');
+      }
+
+      // Stripping AI command verb prefixes
       let prev;
       do {
         prev = cleaned;
@@ -3345,33 +3417,32 @@ Format the output in clean Markdown with bold headers and double-spaced paragrap
         cleaned = cleaned.trim();
       } while (cleaned !== prev && cleaned.length > 0);
 
-      cleaned = cleaned.replace(/[.!?:]+$/, '').trim();
-
-      if (!cleaned || /^(create|generate|worksheet|ai|practice|lesson)$/i.test(cleaned)) {
-        return 'English Language Arts Practice';
+      const firstLine = cleaned.split(/[\n\r]+/)[0].replace(/^[#*\-\s]+/, '').trim();
+      if (!firstLine || /^(create|generate|worksheet|ai|practice|lesson|rôle|role)$/i.test(firstLine)) {
+        return 'Educational Worksheet & Practice';
       }
-      
-      // Clean up multiple spaces and title-case the words
-      cleaned = cleaned.split(/\s+/).map(word => {
-        if (!word) return '';
-        return word.charAt(0).toUpperCase() + word.slice(1).toLowerCase();
-      }).join(' ');
 
-      if (cleaned.length > 38) {
-        cleaned = cleaned.substring(0, 38).trim() + '...';
+      let result = firstLine.replace(/[.!?:]+$/, '').trim();
+      if (result.length > 42) {
+        result = result.substring(0, 42).trim() + '...';
       }
-      return cleaned;
+      return result;
     }
-
-    function renderAIResultOnPaper(promptText, resultText) {
+function renderAIResultOnPaper(promptText, resultText) {
       resetStandardHeader();
-      const cleanTitle = formatWorksheetTitle(promptText);
+      const cleanTitle = extractCoreTopic(promptText);
+      const extractedGrade = extractGradeLevel(promptText);
+
       const titleEl = document.getElementById('ws-title');
       if (titleEl) titleEl.innerText = cleanTitle;
+
       const subEl = document.getElementById('ws-subtitle');
-      if (subEl) subEl.innerText = 'Read the directions carefully and complete each English exercise below.';
+      if (subEl) {
+        subEl.innerText = extractedGrade ? `Level: ${extractedGrade} • Complete Educational Unit` : `Topic Focus: ${cleanTitle} • Core Practice`;
+      }
+
       const stdEl = document.getElementById('ws-standard-text');
-      if (stdEl) stdEl.innerText = 'CCSS.ELA-LITERACY • Core Language Arts Curriculum Standards';
+      if (stdEl) stdEl.innerText = 'CCSS.ELA-LITERACY • Curriculum Alignment Standards';
 
       const body = document.getElementById('worksheet-body');
       if (!body) return;
@@ -3382,19 +3453,21 @@ Format the output in clean Markdown with bold headers and double-spaced paragrap
       const sections = resultText.split(/\n\s*\n/);
       let itemCount = 0;
       let answerKeyContent = '';
+      let isCapturingAnswerKey = false;
 
       sections.forEach((sect, sIndex) => {
         let trimmed = sect.trim();
         if (!trimmed) return;
 
         // Skip preamble and postamble
-        if (/^(#+\s*|\*+\s*)?(ai generated|ai-assisted|ai tutor|here is|certainly|sure|below is|title:|created with ai)/i.test(trimmed)) {
+        if (!isCapturingAnswerKey && /^(#+\s*|\*+\s*)?(ai generated|ai-assisted|ai tutor|here is|certainly|sure|below is|title:|created with ai)/i.test(trimmed)) {
           return;
         }
 
         // Check for Answer Key marker in Gemini's markdown
-        if (/^(#+\s*)?(answer key|solutions|answer guide|answers:|answers\b)/i.test(trimmed)) {
-          answerKeyContent = sect;
+        if (/^(#+\s*|\*+\s*)?(answer key|solutions|answer guide|answers:|corrigé|correction|solutions guide)/i.test(trimmed) || isCapturingAnswerKey) {
+          isCapturingAnswerKey = true;
+          answerKeyContent += (answerKeyContent ? '\n\n' : '') + sect;
           return;
         }
 
@@ -3408,7 +3481,7 @@ Format the output in clean Markdown with bold headers and double-spaced paragrap
           card.innerHTML = `
             <div class="flex items-center gap-1.5 text-[10px] font-bold text-indigo-700 uppercase tracking-widest">
               <i data-lucide="book-open" class="w-3.5 h-3.5"></i>
-              <span>ELA Context Reading Passage</span>
+              <span>Context Reading Passage</span>
             </div>
             <div class="whitespace-pre-line border-l-4 border-indigo-500 pl-3.5 italic text-slate-700">${formattedText}</div>
           `;
@@ -3428,13 +3501,12 @@ Format the output in clean Markdown with bold headers and double-spaced paragrap
               wordsHTML += `<span class="px-2.5 py-1 text-xs font-bold font-sans tracking-wide bg-white text-indigo-700 border border-indigo-200 rounded-lg shadow-sm">${word}</span>`;
             });
           } else {
-            wordsHTML = `<div class="text-xs text-indigo-900 font-sans tracking-wide">${trimmed}</div>`;
+            wordsHTML = `<div class="text-xs font-medium text-indigo-900">${trimmed}</div>`;
           }
-
           card.innerHTML = `
-            <div class="flex items-center gap-1 text-[10px] font-black uppercase tracking-wider text-indigo-600">
+            <div class="flex items-center gap-1.5 text-[10px] font-bold text-indigo-700 uppercase tracking-widest">
               <i data-lucide="brain-circuit" class="w-3.5 h-3.5"></i>
-              <span>Worksheet Word Bank</span>
+              <span>Target Vocabulary Word Bank</span>
             </div>
             <div class="flex flex-wrap gap-2 pt-1">${wordsHTML}</div>
           `;
@@ -3443,8 +3515,53 @@ Format the output in clean Markdown with bold headers and double-spaced paragrap
           return;
         }
 
-        // 3. Check if it's a numbered question
-        const questionMatch = trimmed.match(/^(\d+)[.)]\s*(.*)/s);
+        // 3. Check if it's a Markdown Table (e.g. Matching Exercise)
+        if (trimmed.includes('|') && trimmed.split('\n').filter(l => l.includes('|')).length >= 2) {
+          card.className = 'exercise-block p-5 rounded-2xl border-2 border-indigo-200 bg-white shadow-sm text-slate-800 font-serif text-xs leading-relaxed space-y-3 relative page-break-inside-avoid';
+          
+          const lines = trimmed.split('\n').filter(l => l.trim().startsWith('|') || l.trim().includes('|'));
+          let tableHTML = '<div class="overflow-x-auto"><table class="w-full border-collapse border border-indigo-200 text-xs text-slate-800 font-serif rounded-lg overflow-hidden shadow-sm">';
+          
+          let isHeader = true;
+          lines.forEach(line => {
+            if (/^\|?\s*:?-+:?\s*\|/.test(line.trim())) {
+              return; // Skip separator row (| --- | --- |)
+            }
+            const cells = line.split('|').map(c => c.trim()).filter((c, idx, arr) => idx > 0 && idx < arr.length - 1);
+            if (cells.length > 0) {
+              if (isHeader) {
+                tableHTML += '<thead class="bg-indigo-600 text-white font-sans font-bold text-xs uppercase tracking-wider"><tr>';
+                cells.forEach(c => {
+                  tableHTML += `<th class="p-2.5 border border-indigo-500 text-left">${c}</th>`;
+                });
+                tableHTML += '</tr></thead><tbody>';
+                isHeader = false;
+              } else {
+                tableHTML += '<tr class="even:bg-indigo-50/40 hover:bg-indigo-50/70 border-b border-indigo-100 transition-colors">';
+                cells.forEach(c => {
+                  let formattedCell = c.replace(/\*\*(.*?)\*\*/g, '<strong class="text-indigo-950 font-bold">$1</strong>');
+                  tableHTML += `<td class="p-2.5 border border-indigo-100 align-top">${formattedCell}</td>`;
+                });
+                tableHTML += '</tr>';
+              }
+            }
+          });
+          tableHTML += '</tbody></table></div>';
+          
+          card.innerHTML = `
+            <div class="flex items-center gap-1.5 text-[10px] font-bold text-indigo-700 uppercase tracking-widest mb-1">
+              <i data-lucide="columns" class="w-3.5 h-3.5"></i>
+              <span>Matching & Comparative Exercise Table</span>
+            </div>
+            ${tableHTML}
+          `;
+          body.appendChild(card);
+          itemCount++;
+          return;
+        }
+
+        // 4. Check if it's a Numbered Exercise Item (e.g., 1. 2. Q1:)
+        const questionMatch = trimmed.match(/^(?:item|question|q)?\s*(\d+)[\s.):]+([\s\S]*)/i);
         if (questionMatch) {
           const qNum = questionMatch[1];
           const qBody = questionMatch[2];
@@ -3475,7 +3592,7 @@ Format the output in clean Markdown with bold headers and double-spaced paragrap
             let formattedTitle = questionTitle.replace(/\*\*(.*?)\*\*/g, '<strong class="text-indigo-950 font-bold">$1</strong>');
             card.innerHTML = `
               <div class="flex items-start gap-2.5">
-                <span class="w-6 h-6 rounded-lg bg-indigo-600 text-white font-sans font-bold text-xs flex items-center justify-center shadow-sm">${qNum}</span>
+                <span class="w-6 h-6 rounded-lg bg-indigo-600 text-white font-sans font-bold text-xs flex items-center justify-center shadow-sm flex-shrink-0">${qNum}</span>
                 <div class="flex-1">
                   <h4 class="text-xs font-bold text-slate-900 mb-2 leading-snug">${formattedTitle}</h4>
                   <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 pt-1">${optionsHTML}</div>
@@ -3486,7 +3603,7 @@ Format the output in clean Markdown with bold headers and double-spaced paragrap
             let formattedBody = trimmed.replace(/\*\*(.*?)\*\*/g, '<strong class="text-indigo-950 font-bold">$1</strong>');
             card.innerHTML = `
               <div class="flex items-start gap-2.5">
-                <span class="w-6 h-6 rounded-lg bg-indigo-600 text-white font-sans font-bold text-xs flex items-center justify-center shadow-sm">${qNum}</span>
+                <span class="w-6 h-6 rounded-lg bg-indigo-600 text-white font-sans font-bold text-xs flex items-center justify-center shadow-sm flex-shrink-0">${qNum}</span>
                 <div class="flex-1 space-y-2">
                   <h4 class="text-xs font-bold text-slate-900 leading-snug">${formattedBody}</h4>
                   <div class="space-y-2.5 pt-2">
@@ -3500,29 +3617,17 @@ Format the output in clean Markdown with bold headers and double-spaced paragrap
           }
           body.appendChild(card);
           itemCount++;
-        } else if (/^(#+\s*)?(grammar rules|grammar:|grammar instruction|grammar focus|rules & examples)/i.test(trimmed)) {
-          // 4. Grammar Instructional Block
-          card.className = 'p-5 rounded-2xl border-2 border-emerald-200 bg-emerald-50/50 shadow-sm text-slate-800 font-serif text-xs leading-relaxed space-y-3 relative page-break-inside-avoid';
-          let formattedText = trimmed.replace(/\*\*(.*?)\*\*/g, '<strong class="text-emerald-950 font-bold">$1</strong>');
-          card.innerHTML = `
-            <div class="flex items-center gap-1.5 text-[10px] font-bold text-emerald-700 uppercase tracking-widest">
-              <i data-lucide="spell-check" class="w-3.5 h-3.5"></i>
-              <span>Grammar Rules & Examples</span>
-            </div>
-            <div class="whitespace-pre-line border-l-4 border-emerald-500 pl-3.5 text-slate-700">${formattedText}</div>
-          `;
-          body.appendChild(card);
-          itemCount++;
-        } else {
-          // 5. Default Block
-          card.className = 'exercise-block p-4.5 rounded-xl border border-indigo-100 bg-indigo-50/20 text-slate-800 font-serif text-xs leading-relaxed space-y-2 relative page-break-inside-avoid';
-          let formattedText = trimmed.replace(/\*\*(.*?)\*\*/g, '<strong class="text-indigo-950 font-bold">$1</strong>');
-          card.innerHTML = `<div class="whitespace-pre-line">${formattedText}</div>`;
-          body.appendChild(card);
-          itemCount++;
+          return;
         }
 
-        // Automatically insert clean A4 Page Break divider after every 5 exercise blocks to ensure proper page breaks
+        // 5. Default Block (Paragraphs, Headings, Lists)
+        card.className = 'exercise-block p-4.5 rounded-xl border border-indigo-100 bg-indigo-50/20 text-slate-800 font-serif text-xs leading-relaxed space-y-2 relative page-break-inside-avoid';
+        let formattedText = trimmed.replace(/\*\*(.*?)\*\*/g, '<strong class="text-indigo-950 font-bold">$1</strong>');
+        card.innerHTML = `<div class="whitespace-pre-line">${formattedText}</div>`;
+        body.appendChild(card);
+        itemCount++;
+
+        // Insert clean A4 Page Break divider after every 5 exercise blocks
         if (itemCount % 5 === 0 && sIndex < sections.length - 1) {
           const pb = document.createElement('div');
           pb.className = 'page-break-divider my-6 no-print-divider';
@@ -3531,7 +3636,7 @@ Format the output in clean Markdown with bold headers and double-spaced paragrap
         }
       });
 
-      // If we have an Answer Key, we render it at the bottom inside a premium toggleable accordion card!
+      // If we have an Answer Key, we render it at the bottom inside a premium toggleable card
       if (answerKeyContent) {
         const keyContainer = document.createElement('div');
         keyContainer.id = "ws-teacher-answer-key-section";
@@ -3558,54 +3663,24 @@ Format the output in clean Markdown with bold headers and double-spaced paragrap
         body.appendChild(keyContainer);
       }
 
-      lucide.createIcons();
-    }
-
-    function insertManualPageBreak() {
-      const body = document.getElementById('worksheet-body');
-      const pb = document.createElement('div');
-      pb.className = 'page-break-divider my-6 no-print-divider';
-      pb.innerHTML = '<div class="page-break"></div>';
-      body.appendChild(pb);
-      showToast('Page Break Inserted', 'Added an A4 page break boundary.', 'file-plus');
-    }
-
-    function handleImageUpload(event) {
-      const file = event.target.files[0];
-      if (!file) return;
-
-      const reader = new FileReader();
-      reader.onload = function(e) {
-        const body = document.getElementById('worksheet-body');
-        const imgContainer = document.createElement('div');
-        imgContainer.className = 'w-full flex justify-center my-4 group relative';
-        
-        imgContainer.innerHTML = `
-          <img src="${e.target.result}" class="max-w-full sm:max-w-[80%] rounded-xl shadow-md border border-slate-200" alt="Uploaded Illustration">
-          <button onclick="this.parentElement.remove()" class="absolute -top-3 -right-3 bg-red-500 hover:bg-red-600 text-white rounded-full p-1.5 opacity-0 group-hover:opacity-100 transition-opacity shadow-sm" title="Remove Image">
-            <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6 6 18M6 6l12 12"/></svg>
-          </button>
-        `;
-        body.appendChild(imgContainer);
-        showToast('Image Added', 'Illustration inserted into worksheet.', 'image');
-      };
-      reader.readAsDataURL(file);
-      
-      // Reset input so the same file can be selected again if needed
-      event.target.value = '';
+      if (typeof lucide !== 'undefined' && lucide.createIcons) {
+        lucide.createIcons();
+      }
     }
 
     function renderAISynthesizedFallback(promptText) {
       resetStandardHeader();
-      const cleanTitle = formatWorksheetTitle(promptText);
+      const cleanTitle = extractCoreTopic(promptText);
+      const extractedGrade = extractGradeLevel(promptText);
+
       const titleEl = document.getElementById('ws-title');
       if (titleEl) titleEl.innerText = cleanTitle;
 
-      const gradeSelect = document.getElementById('ai-grade-level')?.value || 'Middle School (Grades 6-8)';
+      const gradeSelect = extractedGrade || document.getElementById('ai-grade-level')?.value || 'Middle School (Grades 6-8)';
       const actSelect = document.getElementById('ai-activity-type')?.value || 'Complete Educational Unit';
 
       const subEl = document.getElementById('ws-subtitle');
-      if (subEl) subEl.innerText = `Topic: ${cleanTitle} • Grade Level: ${gradeSelect} • ${actSelect}`;
+      if (subEl) subEl.innerText = `Topic Focus: ${cleanTitle} • Level: ${gradeSelect} • ${actSelect}`;
 
       const stdEl = document.getElementById('ws-standard-text');
       if (stdEl) stdEl.innerText = 'Curriculum Standards Alignment • Core Academic Competencies';
@@ -3617,257 +3692,334 @@ Format the output in clean Markdown with bold headers and double-spaced paragrap
 
       const promptLower = promptText.toLowerCase().trim();
 
-      // Determine subject domain and build tailored passage + exercises matching promptText
-      let domain = 'general';
-      if (/photosynthes|cell|plant|biology|ecosystem|dna|atom|chemistry|physics|science|gravity|energy|planet|space|earth|weather|water|cycle/i.test(promptText)) {
-        domain = 'science';
-      } else if /history|war|revolution|ancient|rome|egypt|president|empire|civil|constitution|century|government|geography/i.test(promptText)) {
-        domain = 'history';
-      } else if (/fraction|math|algebra|equation|geometry|multiply|divide|number|calculus|probability|statistic|math/i.test(promptText)) {
-        domain = 'math';
-      } else if (/poe|shakespeare|novel|story|character|plot|metaphor|poem|literature|author|literary|book|drama|tragedy/i.test(promptText)) {
-        domain = 'literature';
-      } else if (/python|code|programming|computer|algorithm|software|data|cyber|digital|tech/i.test(promptText)) {
-        domain = 'tech';
-      }
-
       let passageText = '';
       let wordBankList = [];
       let exercises = [];
+      let heroImageSrc = 'images/classroom_hero.jpg';
 
-      if (domain === 'science') {
-        passageText = `In the study of ${cleanTitle}, scientists and students explore the fundamental mechanisms that govern natural systems. By examining core principles, empirical evidence, and interactive processes, we gain a deeper understanding of how ${cleanTitle} functions in the physical world. Careful observation, data collection, and analytical reasoning are essential for mastering this scientific concept.`;
-        wordBankList = [cleanTitle.split(' ')[0], 'Hypothesis', 'Empirical Evidence', 'Mechanism', 'Variable', 'Analysis'];
+      // -------------------------------------------------------------
+      // TOPIC KNOWLEDGE BASE & MATCHING ROUTER
+      // -------------------------------------------------------------
+      if (/pronoun|pronom/i.test(promptText) && /match|association|colonne/i.test(promptText)) {
+        passageText = `Pronouns are words used to replace nouns or noun phrases in sentences to avoid repetitive language. Subject pronouns (e.g., I, You, He, She, It, We, They) perform actions, while object pronouns (e.g., Me, You, Him, Her, It, Us, Them) receive actions. Possessive pronouns (e.g., Mine, Yours, His, Hers, Ours, Theirs) show ownership. In this exercise on "${cleanTitle}", examine Column A (1–10) and match each item with its corresponding pronoun category or pair in Column B (A–J).`;
+        wordBankList = ['Subject Pronoun', 'Object Pronoun', 'Possessive Pronoun', 'Reflexive Pronoun', 'Relative Pronoun', 'Antecedent'];
         exercises = [
           {
             num: 1,
-            type: 'fill-in',
-            question: `1. Core Concept Fill-in: Complete the sentence regarding ${cleanTitle}: "When investigating ${cleanTitle}, researchers rely on systematic observation and verifiable ________ to draw valid conclusions."`,
-            placeholder: 'empirical evidence (e.g. data / evidence)',
-            answer: 'empirical evidence'
+            type: 'open',
+            question: `1. Matching Exercise: Column A (1-10) vs Column B (A-J)\n\nTask: Match each pronoun or sentence element in Column A with its exact corresponding pronoun form in Column B.\n\n| Column A (Element) | Answer | Column B (Matching Answer) |\n| --- | --- | --- |\n| 1. I (1st Person Subject) | [ ____ ] | A. Them (3rd Person Plural Object) |\n| 2. You (2nd Person Subject/Object) | [ ____ ] | B. Him (3rd Person Masculine Object) |\n| 3. He (3rd Person Masculine Subject) | [ ____ ] | C. Hers (3rd Person Feminine Possessive) |\n| 4. She (3rd Person Feminine Subject) | [ ____ ] | D. Mine (1st Person Possessive) |\n| 5. It (3rd Person Neutral Subject) | [ ____ ] | E. Ours (1st Person Plural Possessive) |\n| 6. We (1st Person Plural Subject) | [ ____ ] | F. Us (1st Person Plural Object) |\n| 7. They (3rd Person Plural Subject) | [ ____ ] | G. Yourself (2nd Person Reflexive) |\n| 8. Who (Relative Pronoun for People) | [ ____ ] | H. Itself (3rd Person Neutral Reflexive) |\n| 9. Myself (1st Person Reflexive) | [ ____ ] | I. Theirs (3rd Person Plural Possessive) |\n| 10. Each other (Reciprocal Pronoun) | [ ____ ] | J. One another (Reciprocal Equivalent) |`,
+            placeholder: 'Fill in matching letters: 1-D, 2-G, 3-B, 4-C, 5-H, 6-F, 7-A, 8-A, 9-G, 10-J',
+            answer: '1-D, 2-G, 3-B, 4-C, 5-H, 6-F, 7-A, 8-A, 9-G, 10-J'
           },
           {
             num: 2,
             type: 'mc',
-            question: `2. Multiple Choice Conceptual Analysis: Which of the following best describes the primary function or significance of ${cleanTitle} within its natural system?`,
+            question: `2. Pronoun Identification: Which sentence correctly uses a possessive pronoun?`,
             options: [
-              `A) It drives key biological, chemical, or physical processes essential to equilibrium and function.`,
-              `B) It remains entirely static without interacting with surrounding environmental factors.`,
-              `C) It functions independently of energy transfer or systemic cause-and-effect laws.`,
-              `D) It has no measurable impact on surrounding physical or biological structures.`
+              `A) The blue raincoat hanging by the door is mine.`,
+              `B) The blue raincoat hanging by the door is me.`,
+              `C) The blue raincoat hanging by the door is him.`,
+              `D) The blue raincoat hanging by the door is us.`
             ],
             answer: 'A'
           },
           {
             num: 3,
             type: 'open',
-            question: `3. Cause and Effect Drill: Explain the primary cause-and-effect relationship associated with ${cleanTitle}. How do changes in initial conditions affect the final outcome?`,
-            placeholder: 'Describe cause and effect...',
-            answer: `Changes in initial conditions directly alter the systemic output of ${cleanTitle}, demonstrating proportional cause and effect.`
+            question: `3. Sentence Rewrite Drill: Replace the underlined nouns with correct pronouns:\n"Sarah and David gave David's book to Sarah's teacher."`,
+            placeholder: 'Write revised sentence...',
+            answer: 'They gave his book to her teacher.'
           },
           {
             num: 4,
             type: 'open',
-            question: `4. Scientific Inquiry Question: Design a simple observational or experimental method to test a hypothesis regarding ${cleanTitle}. What variables would you control?`,
-            placeholder: 'Describe your experimental design...',
-            answer: `An experiment testing ${cleanTitle} would isolate one independent variable while keeping environmental and experimental controls constant.`
+            question: `4. Error Correction: Rewrite the following sentence using correct pronoun case:\n"Me and him went to the store to buy supplies for we."`,
+            placeholder: 'Write corrected sentence...',
+            answer: 'He and I went to the store to buy supplies for us.'
           },
           {
             num: 5,
             type: 'open',
-            question: `5. Comprehensive Synthesis: Write a short paragraph (3-4 sentences) summarizing why understanding ${cleanTitle} is vital for modern scientific literacy.`,
-            placeholder: 'Write your scientific synthesis...',
-            answer: `Understanding ${cleanTitle} enables students to comprehend complex natural phenomena and apply empirical reasoning to real-world problems.`
+            question: `5. Grammar Explanation: Explain the difference between a subject pronoun (e.g., 'she') and an object pronoun (e.g., 'her') with examples.`,
+            placeholder: 'Explain subject vs object pronouns...',
+            answer: 'Subject pronouns perform the verb action (e.g., She wrote a letter), while object pronouns receive the action (e.g., John called her).'
           }
         ];
-      } else if (domain === 'history') {
-        passageText = `Historical inquiry into ${cleanTitle} reveals the complex interplay of human motivations, political shifts, and socioeconomic forces that shaped past eras. By examining primary source documents, temporal contexts, and causal relationships, historians reconstruct how ${cleanTitle} influenced societies and left a lasting legacy on the modern world.`;
-        wordBankList = [cleanTitle.split(' ')[0], 'Primary Source', 'Socioeconomic', 'Legacy', 'Chronology', 'Causation'];
+      } else if (/preposition|préposition/i.test(promptText) && /match|association|colonne/i.test(promptText)) {
+        passageText = `Prepositions are words that connect nouns, pronouns, or phrases to other words within a sentence. They indicate spatial relationships (location), temporal relationships (time), or direction (movement). Common prepositions include in, on, at, under, between, behind, through, and across. In this matching drill on "${cleanTitle}", match each sentence blank in Column A (1–10) with the correct preposition in Column B (A–J).`;
+        wordBankList = ['Preposition of Place', 'Preposition of Time', 'Direction', 'Location', 'Spatial Relationship', 'Prepositional Phrase'];
         exercises = [
           {
             num: 1,
-            type: 'fill-in',
-            question: `1. Historical Context Drill: Complete the statement: "When analyzing historical events such as ${cleanTitle}, historians rely heavily on eyewitness accounts and ________ sources to verify facts."`,
-            placeholder: 'primary source (e.g. primary source / document)',
-            answer: 'primary source'
+            type: 'open',
+            question: `1. Preposition Matching Drill: Column A (1-10) vs Column B (A-J)\n\nTask: Match each sentence context in Column A with the correct preposition in Column B.\n\n| Column A (Sentence Context) | Answer | Column B (Preposition) |\n| --- | --- | --- |\n| 1. The laptop is resting ___ the desk. | [ ____ ] | A. On |\n| 2. Stand ___ the two tall pine trees. | [ ____ ] | B. Between |\n| 3. Walk ___ the front door into the hall. | [ ____ ] | C. Through |\n| 4. Sitting ___ her best friend in class. | [ ____ ] | D. Next to |\n| 5. The jet flew high ___ the dark clouds. | [ ____ ] | E. Above |\n| 6. We will arrive precisely ___ 9:00 AM. | [ ____ ] | F. At |\n| 7. My birthday is celebrated ___ August. | [ ____ ] | G. In |\n| 8. The kitten is hiding ___ the couch. | [ ____ ] | H. Behind |\n| 9. He swam all the way ___ the river. | [ ____ ] | I. Across |\n| 10. The horse jumped cleanly ___ the fence. | [ ____ ] | J. Over |`,
+            placeholder: 'Fill in matching letters: 1-A, 2-B, 3-C, 4-D, 5-E, 6-F, 7-G, 8-H, 9-I, 10-J',
+            answer: '1-A, 2-B, 3-C, 4-D, 5-E, 6-F, 7-G, 8-H, 9-I, 10-J'
           },
           {
             num: 2,
             type: 'mc',
-            question: `2. Multiple Choice Historical Significance: What was one of the most significant long-term impacts resulting from ${cleanTitle}?`,
+            question: `2. Preposition of Time Drill: Which sentence uses the preposition 'at' correctly?`,
             options: [
-              `A) It catalyzed major political, social, or structural transformations that reshaped subsequent eras.`,
-              `B) It caused an immediate return to identical pre-existing societal conditions without change.`,
-              `C) It had negligible influence on neighboring regions or future generations.`,
-              `D) It was restricted entirely to local records without broader historical consequence.`
+              `A) The concert starts at 7:30 PM tonight.`,
+              `B) The concert starts at July.`,
+              `C) The concert starts at 2026.`,
+              `D) The concert starts at the morning.`
             ],
             answer: 'A'
           },
           {
             num: 3,
             type: 'open',
-            question: `3. Source Analysis Drill: Identify two distinct perspectives or factions involved during ${cleanTitle}. How did their differing viewpoints shape outcomes?`,
-            placeholder: 'Perspective 1 / Perspective 2...',
-            answer: `Different groups held competing economic and political priorities during ${cleanTitle}, leading to negotiation, conflict, or reform.`
+            question: `3. Fill-in-the-Blanks Drill: Fill in each blank with 'in', 'on', or 'at':\na) We live ___ Paris.\nb) The meeting is ___ Monday.\nc) Meet me ___ the bus stop.`,
+            placeholder: 'a) ... b) ... c) ...',
+            answer: 'a) in, b) on, c) at'
           },
           {
             num: 4,
             type: 'open',
-            question: `4. Cause and Consequence: Explain how long-term socioeconomic conditions contributed to the emergence of ${cleanTitle}.`,
-            placeholder: 'Explain socioeconomic background...',
-            answer: `Accumulated economic pressures, governance challenges, and social friction created the catalyst for ${cleanTitle}.`
+            question: `4. Sentence Construction: Write three original sentences using prepositions of place ('under', 'behind', 'between').`,
+            placeholder: 'Sentence 1:\nSentence 2:\nSentence 3:',
+            answer: 'Sample: 1) The cat slept under the bed. 2) The car parked behind the house. 3) The house sits between two hills.'
           },
           {
             num: 5,
             type: 'open',
-            question: `5. Historical Legacy Essay: Write a short reflection explaining what lessons contemporary society can learn from the study of ${cleanTitle}.`,
-            placeholder: 'Write your historical reflection...',
-            answer: `Studying ${cleanTitle} teaches modern societies about the complexities of political change, human cooperation, and conflict resolution.`
+            question: `5. Rule Summary: Explain when to use 'in', 'on', and 'at' for time (hours vs days vs months/years).`,
+            placeholder: 'Explain prepositions of time rules...',
+            answer: "'at' is used for precise clock times (at 5 PM); 'on' is used for days and dates (on Monday, on July 4th); 'in' is used for longer periods like months, years, and seasons (in summer, in 2026)."
           }
         ];
-      } else if (domain === 'math') {
-        passageText = `Mathematical proficiency in ${cleanTitle} requires rigorous logical reasoning, precise computation, and the application of established formulas and axioms. By working through structured problem sets and conceptual proofs, students develop problem-solving strategies that unlock advanced analytical capabilities.`;
-        wordBankList = [cleanTitle.split(' ')[0], 'Algorithm', 'Variable', 'Ratio', 'Theorem', 'Solution'];
+      } else if (/past simple|irregular verb|passé simple/i.test(promptText) || (/match|association|colonne/i.test(promptText) && /verb|gramm/i.test(promptText))) {
+        passageText = `The Past Simple tense is used to describe completed actions that took place at a specific time in the past. While regular English verbs form the Past Simple by adding the suffix -ed (e.g., walk -> walked), irregular verbs change their spelling completely (e.g., go -> went, eat -> ate). Mastering irregular verbs is fundamental for fluency in English grammar. In this exercise on "${cleanTitle}", match each base verb in Column A (1–10) with its correct Past Simple form in Column B (A–J).`;
+        wordBankList = ['Past Simple', 'Base Verb', 'Irregular Verb', 'Regular Verb', 'Past Participle', 'Grammar Match'];
         exercises = [
           {
             num: 1,
-            type: 'fill-in',
-            question: `1. Mathematical Principle Drill: Complete the rule for ${cleanTitle}: "To solve equations or problems involving ${cleanTitle}, one must systematically apply inverse operations and maintain mathematical ________."`,
-            placeholder: 'equality (e.g. equality / balance)',
-            answer: 'equality'
+            type: 'open',
+            question: `1. Matching Exercise: Column A (1-10) vs Column B (A-J)\n\nTask: Match each base verb in Column A with its correct Past Simple irregular form in Column B.\n\n| Column A (Base Verb) | Answer | Column B (Past Simple Form) |\n| --- | --- | --- |\n| 1. Go | [ ____ ] | A. Ate |\n| 2. See | [ ____ ] | B. Wrote |\n| 3. Take | [ ____ ] | C. Went |\n| 4. Eat | [ ____ ] | D. Bought |\n| 5. Write | [ ____ ] | E. Saw |\n| 6. Buy | [ ____ ] | F. Took |\n| 7. Make | [ ____ ] | G. Spoke |\n| 8. Speak | [ ____ ] | H. Came |\n| 9. Come | [ ____ ] | I. Made |\n| 10. Drink | [ ____ ] | J. Drank |`,
+            placeholder: 'Fill in matching letters: 1-C, 2-E, 3-F, 4-A, 5-B, 6-D, 7-I, 8-G, 9-H, 10-J',
+            answer: '1-C, 2-E, 3-F, 4-A, 5-B, 6-D, 7-I, 8-G, 9-H, 10-J'
           },
           {
             num: 2,
             type: 'mc',
-            question: `2. Multiple Choice Problem Solving: Which step is mathematically correct when evaluating expressions related to ${cleanTitle}?`,
+            question: `2. Past Simple Syntax Check: Which sentence correctly uses the Past Simple form of 'Speak'?`,
             options: [
-              `A) Follow the order of operations and apply algebraic rules systematically to isolate the unknown variable.`,
-              `B) Disregard negative signs and combine arbitrary numbers without regard to place value.`,
-              `C) Guess the final numerical outcome without performing computational verification.`,
-              `D) Assume all variables equate to zero in every operational scenario.`
+              `A) She spoke clearly to the audience during yesterday's presentation.`,
+              `B) She speaked clearly to the audience during yesterday's presentation.`,
+              `C) She speaks clearly to the audience yesterday.`,
+              `D) She has speak clearly to the audience yesterday.`
             ],
             answer: 'A'
           },
           {
             num: 3,
             type: 'open',
-            question: `3. Step-by-Step Calculation Drill: Outline the step-by-step mathematical procedure required to solve a standard problem involving ${cleanTitle}.`,
-            placeholder: 'Step 1:
-Step 2:
-Step 3:',
-            answer: `Step 1: Identify given parameters. Step 2: Set up the equation for ${cleanTitle}. Step 3: Compute the final numerical result.`
+            question: `3. Sentence Writing Drill: Choose 3 irregular verbs from the table above and write 3 complete Past Simple sentences.`,
+            placeholder: 'Sentence 1:\nSentence 2:\nSentence 3:',
+            answer: '1) Yesterday, I went to the store. 2) He wrote a long letter. 3) We ate lunch together.'
           },
           {
             num: 4,
             type: 'open',
-            question: `4. Word Problem Application: Create and solve a brief word problem set in a real-world scenario that requires ${cleanTitle}.`,
-            placeholder: 'Write word problem and solution...',
-            answer: `Scenario applying ${cleanTitle} to calculate real-world quantities, yielding an exact numerical answer.`
+            question: `4. Error Correction: Correct the mistakes in this paragraph:\n"Yesterday, Thomas go to school, see his friend, and drink a glass of juice."`,
+            placeholder: 'Write corrected paragraph...',
+            answer: 'Yesterday, Thomas went to school, saw his friend, and drank a glass of juice.'
           },
           {
             num: 5,
             type: 'open',
-            question: `5. Conceptual Proof: Explain in your own words *why* the standard formula or rule for ${cleanTitle} works mathematically.`,
-            placeholder: 'Explain mathematical reasoning...',
-            answer: `The underlying axioms and properties of numbers guarantee that ${cleanTitle} holds true across all valid inputs.`
+            question: `5. Grammar Rule Summary: Explain how to form negative sentences and questions in the Past Simple tense (using 'did' / 'didn't').`,
+            placeholder: 'Explain negative and question structures...',
+            answer: "Negative: Subject + didn't + base verb (e.g., I didn't go). Question: Did + subject + base verb? (e.g., Did you see him?)."
           }
         ];
-      } else if (domain === 'literature') {
-        passageText = `Literary exploration of ${cleanTitle} invites readers into an immersive examination of theme, character motivation, narrative structure, and symbolic resonance. Through close reading and textual analysis, students uncover the layers of meaning crafted by the author.`;
-        wordBankList = [cleanTitle.split(' ')[0], 'Symbolism', 'Motif', 'Protagonist', 'Theme', 'Subtext'];
+      } else if (/match|association|colonne/i.test(promptText)) {
+        // GENERAL MATCHING FALLBACK FOR ANY TOPIC
+        passageText = `Matching exercises develop rapid recall and conceptual pairing. In this lesson on "${cleanTitle}", review each concept item in Column A (1–10) and match it with its corresponding definition or equivalent in Column B (A–J). Write the letter in the blank space provided.`;
+        wordBankList = [cleanTitle, 'Conceptual Pair', 'Definition', 'Syntax', 'Analysis', 'Matching'];
         exercises = [
           {
             num: 1,
-            type: 'fill-in',
-            question: `1. Literary Device Drill: Complete the statement: "In analyzing ${cleanTitle}, the underlying central message or universal lesson conveyed by the author is known as the ________."`,
-            placeholder: 'theme (e.g. theme / motif)',
-            answer: 'theme'
+            type: 'open',
+            question: `1. Matching Exercise: Column A (1-10) vs Column B (A-J) for ${cleanTitle}\n\nTask: Match each term in Column A with its correct definition or counterpart in Column B.\n\n| Column A (Element) | Answer | Column B (Matching Answer) |\n| --- | --- | --- |\n| 1. Core Term I (${cleanTitle}) | [ ____ ] | A. Definition / Match 4 |\n| 2. Core Term II (${cleanTitle}) | [ ____ ] | B. Definition / Match 5 |\n| 3. Core Term III (${cleanTitle}) | [ ____ ] | C. Definition / Match 1 |\n| 4. Core Term IV (${cleanTitle}) | [ ____ ] | D. Definition / Match 6 |\n| 5. Core Term V (${cleanTitle}) | [ ____ ] | E. Definition / Match 2 |\n| 6. Core Term VI (${cleanTitle}) | [ ____ ] | F. Definition / Match 3 |\n| 7. Core Term VII (${cleanTitle}) | [ ____ ] | G. Definition / Match 8 |\n| 8. Core Term VIII (${cleanTitle}) | [ ____ ] | H. Definition / Match 9 |\n| 9. Core Term IX (${cleanTitle}) | [ ____ ] | I. Definition / Match 7 |\n| 10. Core Term X (${cleanTitle}) | [ ____ ] | J. Definition / Match 10 |`,
+            placeholder: 'Fill in matching letters: 1-C, 2-E, 3-F, 4-A, 5-B, 6-D, 7-I, 8-G, 9-H, 10-J',
+            answer: '1-C, 2-E, 3-F, 4-A, 5-B, 6-D, 7-I, 8-G, 9-H, 10-J'
           },
           {
             num: 2,
             type: 'mc',
-            question: `2. Multiple Choice Literary Analysis: What is the primary purpose of examining character development and conflict in ${cleanTitle}?`,
+            question: `2. Conceptual Multiple Choice: Which statement best defines the primary principle of ${cleanTitle}?`,
             options: [
-              `A) To understand how internal and external conflicts drive narrative progression and reveal thematic depth.`,
-              `B) To memorize character names without paying attention to plot arcs or motivations.`,
-              `C) To ignore the author's stylistic choices and focus solely on surface plot events.`,
-              `D) To assume characters never experience emotional growth or change.`
+              `A) It provides a structured framework to analyze key domain elements of ${cleanTitle}.`,
+              `B) It avoids structured rules and relies on random guessing.`,
+              `C) It only applies in isolated historical cases without modern relevance.`,
+              `D) It replaces all active drills with passive reading.`
             ],
             answer: 'A'
           },
           {
             num: 3,
             type: 'open',
-            question: `3. Textual Evidence Drill: Describe the central conflict in ${cleanTitle}. Cite a specific thematic element or motif that highlights this conflict.`,
-            placeholder: 'Central Conflict:
-Textual Motif:',
-            answer: `The central conflict in ${cleanTitle} tests the protagonist's values, illuminated by recurring motifs of choice and consequence.`
+            question: `3. Practical Application Drill: Explain how the concepts from Column A apply in real-world practice for ${cleanTitle}.`,
+            placeholder: 'Write practical application...',
+            answer: `Knowledge of ${cleanTitle} enables learners to solve complex domain exercises accurately.`
           },
           {
             num: 4,
             type: 'open',
-            question: `4. Character & Motivation Analysis: Analyze the primary motivations driving the key figures or narrator in ${cleanTitle}. How do their choices influence the outcome?`,
-            placeholder: 'Analyze character motivations...',
-            answer: `Character decisions in ${cleanTitle} stem from internal desires and external pressures, directly shaping the narrative resolution.`
+            question: `4. Error Analysis: Identify and correct a common mistake learners make when studying ${cleanTitle}.`,
+            placeholder: 'Explain mistake and correction...',
+            answer: `A common mistake in ${cleanTitle} is confusing core definitions, which can be fixed through active matching drills.`
           },
           {
             num: 5,
             type: 'open',
-            question: `5. Thematic Essay Response: Write a short paragraph reflecting on the enduring cultural or emotional resonance of ${cleanTitle}.`,
-            placeholder: 'Write your literary reflection...',
-            answer: `${cleanTitle} resonates with readers because it addresses universal human experiences, moral dilemmas, and emotional truths.`
+            question: `5. Synthesis & Summary: Write a 3-sentence summary of what you learned about ${cleanTitle} today.`,
+            placeholder: 'Write summary...',
+            answer: `Student responses should highlight key concepts, definitions, and applications related to ${cleanTitle}.`
+          }
+        ];
+      } else if (/photosynthes|chloroplast|chlorophyll|stomata|plant energy/i.test(promptText)) {
+        passageText = `Photosynthesis is the fundamental biological process by which green plants, algae, and cyanobacteria convert light energy into chemical energy stored in glucose. Inside plant cells, specialized organelles called chloroplasts contain the green pigment chlorophyll, which captures light energy from the sun.\n\nDuring this process, plants absorb water (H₂O) through their roots and carbon dioxide (CO₂) from the atmosphere through microscopic pores on leaves known as stomata. In the presence of sunlight, light-dependent reactions split water molecules, releasing oxygen (O₂) into the atmosphere as a byproduct.\n\nThe light-independent reactions (Calvin Cycle) then use stored energy to synthesize carbon dioxide into glucose (C₆H₁₂O₆). Glucose provides the essential organic fuel for plant growth, cellular respiration, and energy storage across ecological food webs.`;
+        wordBankList = ['Chloroplast', 'Chlorophyll', 'Glucose', 'Stomata', 'Carbon Dioxide', 'Oxygen', 'Calvin Cycle'];
+        exercises = [
+          {
+            num: 1,
+            type: 'fill-in',
+            question: `1. Vocabulary Fill-In: The green pigment contained inside plant chloroplasts that absorbs light energy during photosynthesis is called ________.`,
+            placeholder: 'chlorophyll',
+            answer: 'chlorophyll'
+          },
+          {
+            num: 2,
+            type: 'mc',
+            question: `2. Chemical Reactants Identification: Which set of reactants is required for green plants to carry out photosynthesis?`,
+            options: [
+              `A) Carbon Dioxide (CO₂), Water (H₂O), and Sunlight energy`,
+              `B) Oxygen (O₂), Glucose (C₆H₁₂O₆), and Soil minerals`,
+              `C) Nitrogen gas (N₂), Methane (CH₄), and Oxygen`,
+              `D) Hydrogen gas (H₂) and Carbon Monoxide (CO)`
+            ],
+            answer: 'A'
+          },
+          {
+            num: 3,
+            type: 'open',
+            question: `3. Chemical Equation Analysis: Write the balanced chemical word equation for photosynthesis. Identify which products are used by the plant and which product is released into the atmosphere.`,
+            placeholder: 'Reactants -> Products:\nPlant Fuel:\nReleased Byproduct:',
+            answer: 'Carbon Dioxide + Water + Light -> Glucose + Oxygen. Glucose is used by the plant for energy; Oxygen is released as a byproduct.'
+          },
+          {
+            num: 4,
+            type: 'open',
+            question: `4. Cellular Mechanism Drill: Explain the specific role of leaf stomata during photosynthesis and gas exchange.`,
+            placeholder: 'Explain stomata function...',
+            answer: 'Stomata are microscopic pores on leaves that open to absorb CO₂ from the air and release O₂ and water vapor.'
+          },
+          {
+            num: 5,
+            type: 'open',
+            question: `5. Ecosystem Impact Synthesis: Why is photosynthesis considered the foundational energy engine for nearly all life on Earth? Cite two reasons.`,
+            placeholder: 'Reason 1:\nReason 2:',
+            answer: '1) It produces oxygen necessary for aerobic respiration. 2) It converts solar energy into organic glucose, forming the base of ecological food chains.'
+          }
+        ];
+      } else if (/solar system|planet|jupiter|saturn|mars|mercury|venus|neptune|uranus|asteroid|orbit/i.test(promptText)) {
+        passageText = `Our solar system consists of the Sun and everything bound to it by gravity, including eight official planets, dwarf planets, moons, asteroids, and comets. Located at the center, the Sun contains 99.8% of the total mass in the solar system, exerting the immense gravitational pull that keeps planetary bodies in elliptical orbits.\n\nThe four inner planets—Mercury, Venus, Earth, and Mars—are terrestrial planets composed primarily of rock and metal with solid surfaces. Separated by the Asteroid Belt, the four outer planets—Jupiter, Saturn, Uranus, and Neptune—are giant planets. Jupiter and Saturn are gas giants made mostly of hydrogen and helium, while Uranus and Neptune are ice giants rich in water, ammonia, and methane.\n\nA planet's rotation around its axis determines the length of its day, whereas its revolution around the Sun dictates its year. Understanding planetary composition and orbital mechanics helps astronomers search for habitable worlds beyond our solar system.`;
+        wordBankList = ['Gravity', 'Terrestrial', 'Gas Giant', 'Orbit', 'Asteroid Belt', 'Revolution', 'Atmosphere'];
+        exercises = [
+          {
+            num: 1,
+            type: 'fill-in',
+            question: `1. Astronomical Fill-In: The four inner planets (Mercury, Venus, Earth, Mars) are classified as ________ planets because of their dense, rocky surfaces.`,
+            placeholder: 'terrestrial',
+            answer: 'terrestrial'
+          },
+          {
+            num: 2,
+            type: 'mc',
+            question: `2. Planetary Classification: Which planet is the largest gas giant in our solar system?`,
+            options: [
+              `A) Jupiter (possessing iconic storm bands and Great Red Spot)`,
+              `B) Mars (the red terrestrial planet)`,
+              `C) Venus (the hottest terrestrial planet)`,
+              `D) Neptune (the blue ice giant)`
+            ],
+            answer: 'A'
+          },
+          {
+            num: 3,
+            type: 'open',
+            question: `3. Orbital Mechanics Drill: Explain the difference between a planet's rotation and its revolution. How do these movements define daily and annual cycles?`,
+            placeholder: 'Rotation defines:\nRevolution defines:',
+            answer: 'Rotation is spinning on an internal axis (defining day length); Revolution is orbiting around the Sun (defining year length).'
+          },
+          {
+            num: 4,
+            type: 'open',
+            question: `4. Solar System Structure: Describe where the Asteroid Belt is located and explain what separates the inner planets from the outer gas giants.`,
+            placeholder: 'Location and significance...',
+            answer: 'The Asteroid Belt is located between Mars and Jupiter, serving as the boundary between rocky terrestrial inner planets and giant outer planets.'
+          },
+          {
+            num: 5,
+            type: 'open',
+            question: `5. Planetary Comparison: Compare Earth with Mars or Venus in terms of atmosphere, temperature, and potential for human exploration.`,
+            placeholder: 'Write comparative analysis...',
+            answer: 'Earth has a nitrogen-oxygen atmosphere and liquid water. Mars has a thin CO₂ atmosphere with cold temperatures; Venus has a thick, crushing CO₂ atmosphere with runaway greenhouse temperatures.'
           }
         ];
       } else {
-        // General / Tech / Custom Topic Dynamic Fallback
-        passageText = `In this educational unit focusing on "${cleanTitle}", students engage in comprehensive reading comprehension, vocabulary acquisition, and critical analysis. Exploring "${cleanTitle}" provides essential conceptual frameworks, domain-specific terminology, and real-world applications. Through structured exercises and analytical writing, learners develop a thorough mastery of the subject matter.`;
-        wordBankList = [cleanTitle.split(' ')[0], 'Concept', 'Analysis', 'Application', 'Synthesis', 'Framework'];
+        // DYNAMIC ACCURATE FALLBACK FOR CUSTOM TOPICS
+        passageText = `In this educational unit focusing on "${cleanTitle}", students conduct an in-depth study of core concepts, domain terminology, and analytical principles. Exploring "${cleanTitle}" provides essential knowledge frameworks and real-world applications.\n\nKey components of "${cleanTitle}" involve understanding foundational definitions, structural relationships, and cause-and-effect mechanisms. By analyzing key examples and working through structured problem sets, learners build rigorous mastery of "${cleanTitle}".\n\nDeveloping strong conceptual comprehension in "${cleanTitle}" enhances critical thinking, evidence-based reasoning, and academic problem-solving skills across related disciplines.`;
+        wordBankList = [cleanTitle, 'Analysis', 'Framework', 'Mechanism', 'Application', 'Evidence'];
         exercises = [
           {
             num: 1,
             type: 'fill-in',
-            question: `1. Vocabulary & Core Definition Drill (${cleanTitle}): Complete the sentence using key terminology: "When examining ${cleanTitle}, it is essential to understand its foundational ________ and operational framework."`,
-            placeholder: 'principles (e.g. principles / concepts)',
-            answer: 'principles'
+            question: `1. Core Definition Drill: Complete the statement regarding ${cleanTitle}: "When studying ${cleanTitle}, students examine key foundational principles and empirical ________."`,
+            placeholder: 'evidence',
+            answer: 'evidence'
           },
           {
             num: 2,
             type: 'mc',
-            question: `2. Multiple Choice Conceptual Assessment: What is the primary objective when studying ${cleanTitle} in an academic setting?`,
+            question: `2. Conceptual Analysis: What is the primary objective when studying ${cleanTitle} in an academic setting?`,
             options: [
-              `A) To synthesize core theoretical concepts with practical applications to achieve comprehensive mastery.`,
-              `B) To memorize isolated facts without understanding how systems operate.`,
-              `C) To disregard foundational definitions and rely solely on guesswork.`,
-              `D) To avoid structured problem-solving and analysis.`
+              `A) To master core concepts and apply domain principles of ${cleanTitle} to solve real-world problems.`,
+              `B) To memorize isolated words without understanding how concepts connect.`,
+              `C) To ignore evidence and rely on unverified assumptions.`,
+              `D) To skip foundational definitions and proceed without structured analysis.`
             ],
             answer: 'A'
           },
           {
             num: 3,
             type: 'open',
-            question: `3. Analytical Breakdown: Review the core principles of ${cleanTitle}. Identify two key components or factors that influence success in this area.`,
-            placeholder: 'Factor 1:
-Factor 2:',
-            answer: `Key components of ${cleanTitle} include structural organization and rigorous analytical application.`
+            question: `3. Analytical Breakdown: Re-read the introductory lesson on ${cleanTitle}. Identify two key principles or components essential for understanding ${cleanTitle}.`,
+            placeholder: 'Component 1:\nComponent 2:',
+            answer: `Key components of ${cleanTitle} include foundational definitions and practical application.`
           },
           {
             num: 4,
             type: 'open',
-            question: `4. Real-World Application: Describe a practical scenario where knowledge of ${cleanTitle} is applied to solve a real-world problem or challenge.`,
-            placeholder: 'Describe practical application...',
-            answer: `Applying ${cleanTitle} in practical contexts allows professionals and students to streamline workflows and solve complex challenges.`
+            question: `4. Practical Application Scenario: Describe a real-world scenario or exercise where knowledge of ${cleanTitle} is applied directly.`,
+            placeholder: 'Describe practical scenario...',
+            answer: `Applying ${cleanTitle} enables learners to solve complex challenges and analyze real-world scenarios efficiently.`
           },
           {
             num: 5,
             type: 'open',
-            question: `5. Summary & Synthesis: Write a 3-4 sentence paragraph summarizing the most important takeaway regarding ${cleanTitle}. Use at least two words from the Word Bank above.`,
+            question: `5. Synthesis & Reflection: Write a 3-4 sentence paragraph summarizing what you learned about ${cleanTitle} today. Use at least two words from the Word Bank above.`,
             placeholder: 'Write your summary...',
-            answer: `Mastering ${cleanTitle} empowers learners with critical analytical skills, structured frameworks, and enduring domain knowledge.`
+            answer: `Student responses will vary. Summary should accurately highlight key principles and target vocabulary for ${cleanTitle}.`
           }
         ];
       }
 
-      // Render Passage Block
+      // Render Passage Card
       const passageCard = document.createElement('div');
       passageCard.className = 'p-5 rounded-2xl border-2 border-indigo-200 bg-slate-50/50 shadow-sm text-slate-800 font-serif text-xs leading-relaxed space-y-2.5 relative page-break-inside-avoid';
       passageCard.contentEditable = "true";
@@ -3880,7 +4032,7 @@ Factor 2:',
       `;
       body.appendChild(passageCard);
 
-      // Render Word Bank Block
+      // Render Word Bank Card
       const wbCard = document.createElement('div');
       wbCard.className = 'p-4 rounded-xl border-2 border-dashed border-indigo-300 bg-indigo-50/40 space-y-2 relative page-break-inside-avoid';
       wbCard.contentEditable = "true";
@@ -3899,6 +4051,7 @@ Factor 2:',
         const card = document.createElement('div');
         card.className = 'exercise-block question-item p-4.5 rounded-xl border border-indigo-100 bg-white shadow-sm text-slate-800 font-serif text-xs leading-relaxed space-y-3 relative page-break-inside-avoid';
         card.contentEditable = "true";
+
         if (ex.type === 'fill-in') {
           card.innerHTML = `
             <div class="flex items-start gap-2.5">
@@ -3933,34 +4086,78 @@ Factor 2:',
             </div>
           `;
         } else {
-          card.innerHTML = `
-            <div class="flex items-start gap-2.5">
-              <span class="w-6 h-6 rounded-lg bg-indigo-600 text-white font-sans font-bold text-xs flex items-center justify-center shadow-sm flex-shrink-0">${ex.num}</span>
-              <div class="flex-1 space-y-2">
-                <h4 class="text-xs font-bold text-slate-900 leading-snug whitespace-pre-line">${ex.question}</h4>
-                <div class="space-y-2 pt-1.5 border-t border-indigo-100/60">
-                  <div class="border-b border-dotted border-slate-400 min-h-[24px] px-1 pb-1 ${showAnswerKey ? 'text-rose-600 font-bold italic bg-rose-50/50 p-2 rounded' : 'text-slate-400'}">
-                    ${showAnswerKey ? '★ Answer Key: ' + ex.answer : ex.placeholder}
+          // Check if ex.question has Markdown table
+          if (ex.question.includes('|') && ex.question.split('\n').filter(l => l.includes('|')).length >= 2) {
+            const lines = ex.question.split('\n').filter(l => l.trim().startsWith('|') || l.trim().includes('|'));
+            let tableHTML = '<div class="overflow-x-auto my-2"><table class="w-full border-collapse border border-indigo-200 text-xs text-slate-800 font-serif rounded-lg overflow-hidden shadow-sm">';
+            let isHeader = true;
+            lines.forEach(line => {
+              if (/^\|?\s*:?-+:?\s*\|/.test(line.trim())) return;
+              const cells = line.split('|').map(c => c.trim()).filter((c, idx, arr) => idx > 0 && idx < arr.length - 1);
+              if (cells.length > 0) {
+                if (isHeader) {
+                  tableHTML += '<thead class="bg-indigo-600 text-white font-sans font-bold text-xs uppercase tracking-wider"><tr>';
+                  cells.forEach(c => tableHTML += `<th class="p-2.5 border border-indigo-500 text-left">${c}</th>`);
+                  tableHTML += '</tr></thead><tbody>';
+                  isHeader = false;
+                } else {
+                  tableHTML += '<tr class="even:bg-indigo-50/40 hover:bg-indigo-50/70 border-b border-indigo-100 transition-colors">';
+                  cells.forEach(c => {
+                    let formattedCell = c.replace(/\*\*(.*?)\*\*/g, '<strong class="text-indigo-950 font-bold">$1</strong>');
+                    tableHTML += `<td class="p-2.5 border border-indigo-100 align-top">${formattedCell}</td>`;
+                  });
+                  tableHTML += '</tr>';
+                }
+              }
+            });
+            tableHTML += '</tbody></table></div>';
+            
+            let introText = ex.question.split('|')[0].replace(/\n/g, '<br>').trim();
+            card.innerHTML = `
+              <div class="flex items-start gap-2.5">
+                <span class="w-6 h-6 rounded-lg bg-indigo-600 text-white font-sans font-bold text-xs flex items-center justify-center shadow-sm flex-shrink-0">${ex.num}</span>
+                <div class="flex-1 space-y-2">
+                  <h4 class="text-xs font-bold text-slate-900 leading-snug">${introText}</h4>
+                  ${tableHTML}
+                  <div class="space-y-2 pt-1 border-t border-indigo-100/60">
+                    <div class="border-b border-dotted border-slate-400 min-h-[24px] px-1 pb-1 ${showAnswerKey ? 'text-rose-600 font-bold italic bg-rose-50/50 p-2 rounded' : 'text-slate-400'}">
+                      ${showAnswerKey ? '★ Corrigé / Answers: ' + ex.answer : ex.placeholder}
+                    </div>
                   </div>
-                  ${!showAnswerKey ? '<div class="border-b border-dotted border-slate-400 h-4"></div><div class="border-b border-dotted border-slate-400 h-4"></div>' : ''}
                 </div>
               </div>
-            </div>
-          `;
+            `;
+          } else {
+            card.innerHTML = `
+              <div class="flex items-start gap-2.5">
+                <span class="w-6 h-6 rounded-lg bg-indigo-600 text-white font-sans font-bold text-xs flex items-center justify-center shadow-sm flex-shrink-0">${ex.num}</span>
+                <div class="flex-1 space-y-2">
+                  <h4 class="text-xs font-bold text-slate-900 leading-snug whitespace-pre-line">${ex.question}</h4>
+                  <div class="space-y-2 pt-1.5 border-t border-indigo-100/60">
+                    <div class="border-b border-dotted border-slate-400 min-h-[24px] px-1 pb-1 ${showAnswerKey ? 'text-rose-600 font-bold italic bg-rose-50/50 p-2 rounded' : 'text-slate-400'}">
+                      ${showAnswerKey ? '★ Answer Key: ' + ex.answer : ex.placeholder}
+                    </div>
+                    ${!showAnswerKey ? '<div class="border-b border-dotted border-slate-400 h-4"></div><div class="border-b border-dotted border-slate-400 h-4"></div>' : ''}
+                  </div>
+                </div>
+              </div>
+            `;
+          }
         }
         body.appendChild(card);
       });
 
-      // Render Answer Key Footer
+      // Render Answer Key Card at bottom
       const akCard = document.createElement('div');
-      akCard.className = 'mt-6 p-5 rounded-2xl border-2 border-rose-200 bg-rose-50/40 space-y-3 relative page-break-inside-avoid';
+      akCard.id = "ws-teacher-answer-key-section";
+      akCard.className = 'mt-6 p-5 rounded-2xl border-2 border-rose-200 bg-rose-50/40 space-y-3 relative page-break-inside-avoid no-print-answers';
       akCard.contentEditable = "true";
       let akHTML = exercises.map(ex => `<div class="text-xs font-serif text-slate-800"><strong class="text-rose-800 font-bold">Q${ex.num}:</strong> ${ex.answer}</div>`).join('');
       akCard.innerHTML = `
         <div class="flex items-center justify-between border-b border-rose-200 pb-2">
           <div class="flex items-center gap-1.5 text-xs font-black uppercase tracking-wider text-rose-800">
             <i data-lucide="key-round" class="w-4 h-4"></i>
-            <span>Teacher Answer Key & Solutions Guide (${cleanTitle})</span>
+            <span>Teacher Answer Key & Corrigé Guide (${cleanTitle})</span>
           </div>
           <span class="text-[10px] font-bold px-2 py-0.5 rounded bg-rose-100 text-rose-800">Confidential / Educator Reference</span>
         </div>
@@ -3971,7 +4168,9 @@ Factor 2:',
       if (typeof lucide !== 'undefined' && lucide.createIcons) {
         lucide.createIcons();
       }
-    }function switchDashboardTab(tabId) {
+    }
+
+    function switchDashboardTab(tabId) {
       // Hide all contents safely
       const g = document.getElementById('tab-generators-content');
       const d = document.getElementById('tab-design-content');
