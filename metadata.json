@@ -1,6 +1,6 @@
 {
-  "name": "English Worksheets",
-  "description": "Responsive application to generate custom English language, grammar, vocabulary, reading, writing worksheets and interactive classroom presentations with live preview.",
+  "name": "AI Tutor Hub",
+  "description": "Interactive AI Tutor chat workspace with subject personas, study modes, real-time Gemini AI explanations, voice output, and quick learning prompts.",
   "requestFramePermissions": [],
   "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
 }

@@ -41,8 +41,8 @@ class MainActivity : ComponentActivity() {
 
     private fun printWorksheet(webView: WebView) {
         val printManager = getSystemService(Context.PRINT_SERVICE) as? PrintManager
-        val printAdapter = webView.createPrintDocumentAdapter("English_Worksheet_Export")
-        val jobName = "English Worksheet Document"
+        val printAdapter = webView.createPrintDocumentAdapter("AI_Tutor_Chat_Export")
+        val jobName = "AI Tutor Chat Transcript"
         val attributes = PrintAttributes.Builder()
             .setMediaSize(PrintAttributes.MediaSize.ISO_A4)
             .setColorMode(PrintAttributes.COLOR_MODE_COLOR)
@@ -74,10 +74,12 @@ fun WorksheetWebViewScreen(
         modifier = modifier,
         factory = { context ->
             WebView(context).apply {
-                setLayerType(WebView.LAYER_TYPE_HARDWARE, null)
+                // Software layer prevents Mesa GPU rendernode errors in virtual container environments
+                setLayerType(WebView.LAYER_TYPE_SOFTWARE, null)
                 settings.apply {
                     javaScriptEnabled = true
                     domStorageEnabled = true
+                    databaseEnabled = true
                     allowFileAccess = true
                     allowContentAccess = true
                     useWideViewPort = true
@@ -85,6 +87,7 @@ fun WorksheetWebViewScreen(
                     builtInZoomControls = true
                     displayZoomControls = false
                     mediaPlaybackRequiresUserGesture = false
+                    cacheMode = WebSettings.LOAD_DEFAULT
                     mixedContentMode = WebSettings.MIXED_CONTENT_ALWAYS_ALLOW
                 }
                 var webViewRef: WebView? = this
