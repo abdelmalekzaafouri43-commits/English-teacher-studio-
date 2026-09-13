@@ -34,6 +34,25 @@
           fontFamily: {
             sans: ['Plus Jakarta Sans', 'Inter', 'sans-serif'],
             mono: ['JetBrains Mono', 'monospace'],
+          },
+          keyframes: {
+            'user-msg-in': {
+              '0%': { opacity: '0', transform: 'translateY(12px) translateX(10px) scale(0.97)' },
+              '100%': { opacity: '1', transform: 'translateY(0) translateX(0) scale(1)' }
+            },
+            'ai-msg-in': {
+              '0%': { opacity: '0', transform: 'translateY(12px) translateX(-10px) scale(0.97)' },
+              '100%': { opacity: '1', transform: 'translateY(0) translateX(0) scale(1)' }
+            },
+            'fade-in-up': {
+              '0%': { opacity: '0', transform: 'translateY(8px)' },
+              '100%': { opacity: '1', transform: 'translateY(0)' }
+            }
+          },
+          animation: {
+            'user-msg-in': 'user-msg-in 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards',
+            'ai-msg-in': 'ai-msg-in 0.35s cubic-bezier(0.16, 1, 0.3, 1) forwards',
+            'fade-in-up': 'fade-in-up 0.25s ease-out forwards'
           }
         }
       }
@@ -41,6 +60,33 @@
   </script>
   
   <style>
+    /* Message Entry Animation Fallbacks */
+    @keyframes userMsgIn {
+      0% { opacity: 0; transform: translateY(12px) translateX(10px) scale(0.97); }
+      100% { opacity: 1; transform: translateY(0) translateX(0) scale(1); }
+    }
+    @keyframes aiMsgIn {
+      0% { opacity: 0; transform: translateY(12px) translateX(-10px) scale(0.97); }
+      100% { opacity: 1; transform: translateY(0) translateX(0) scale(1); }
+    }
+    @keyframes fadeInUp {
+      0% { opacity: 0; transform: translateY(8px); }
+      100% { opacity: 1; transform: translateY(0); }
+    }
+
+    .animate-user-msg-in {
+      animation: userMsgIn 0.32s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+      will-change: transform, opacity;
+    }
+    .animate-ai-msg-in {
+      animation: aiMsgIn 0.35s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+      will-change: transform, opacity;
+    }
+    .animate-fade-in-up {
+      animation: fadeInUp 0.25s ease-out forwards;
+      will-change: transform, opacity;
+    }
+
     /* Custom Scrollbar Styling */
     ::-webkit-scrollbar {
       width: 6px;
@@ -760,7 +806,7 @@
     function appendUserMessage(text) {
       const container = document.getElementById('chat-messages-container');
       const msgDiv = document.createElement('div');
-      msgDiv.className = 'flex items-start justify-end gap-3 max-w-3xl ml-auto animate-fade-in';
+      msgDiv.className = 'flex items-start justify-end gap-3 max-w-3xl ml-auto animate-user-msg-in';
 
       msgDiv.innerHTML = `
         <div class="bg-indigo-600 text-white p-4 rounded-2xl rounded-tr-none shadow-md text-xs sm:text-sm leading-relaxed whitespace-pre-line font-sans border border-indigo-500/30">
@@ -780,7 +826,7 @@
       const container = document.getElementById('chat-messages-container');
       const p = PERSONAS[currentPersona];
       const msgDiv = document.createElement('div');
-      msgDiv.className = 'flex items-start gap-3.5 max-w-3xl mr-auto animate-fade-in';
+      msgDiv.className = 'flex items-start gap-3.5 max-w-3xl mr-auto animate-ai-msg-in';
 
       const formattedHTML = formatMarkdownToHTML(markdownText);
 

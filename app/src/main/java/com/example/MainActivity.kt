@@ -84,8 +84,6 @@ fun WorksheetWebViewScreen(
         modifier = modifier,
         factory = { context ->
             WebView(context).apply {
-                // Software layer prevents Mesa GPU rendernode errors in virtual container environments
-                setLayerType(WebView.LAYER_TYPE_SOFTWARE, null)
                 settings.apply {
                     javaScriptEnabled = true
                     domStorageEnabled = true
@@ -97,7 +95,7 @@ fun WorksheetWebViewScreen(
                     builtInZoomControls = true
                     displayZoomControls = false
                     mediaPlaybackRequiresUserGesture = false
-                    cacheMode = WebSettings.LOAD_NO_CACHE
+                    cacheMode = WebSettings.LOAD_DEFAULT
                     mixedContentMode = WebSettings.MIXED_CONTENT_ALWAYS_ALLOW
                 }
                 var webViewRef: WebView? = this
