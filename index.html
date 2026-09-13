@@ -60,6 +60,18 @@
   </script>
   
   <style>
+    /* Base Dark Theme & Canvas Colors */
+    html, body {
+      background-color: #0f172a !important;
+      color: #f8fafc !important;
+      margin: 0;
+      padding: 0;
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+    }
+
     /* Message Entry Animation Fallbacks */
     @keyframes userMsgIn {
       0% { opacity: 0; transform: translateY(12px) translateX(10px) scale(0.97); }
@@ -543,12 +555,26 @@
       }
     };
 
+    function safeCreateIcons() {
+      try {
+        if (window.lucide && typeof window.lucide.createIcons === 'function') {
+          window.lucide.createIcons();
+        }
+      } catch (e) {
+        console.warn("Lucide icon creation deferred or unavailable:", e);
+      }
+    }
+
     // Initialize App
     window.addEventListener('DOMContentLoaded', () => {
-      lucide.createIcons();
-      loadApiKey();
-      updatePersonaUI();
-      initSpeechRecognition();
+      try {
+        safeCreateIcons();
+        loadApiKey();
+        updatePersonaUI();
+        initSpeechRecognition();
+      } catch (err) {
+        console.error("Initialization error handled:", err);
+      }
     });
 
     function loadApiKey() {
@@ -645,7 +671,7 @@
         `).join('');
       }
 
-      lucide.createIcons();
+      safeCreateIcons();
     }
 
     function changeTutoringMode(mode) {
@@ -819,7 +845,7 @@
 
       container.appendChild(msgDiv);
       scrollToBottom();
-      lucide.createIcons();
+      safeCreateIcons();
     }
 
     function appendAIMessage(markdownText) {
@@ -878,7 +904,7 @@
 
       container.appendChild(msgDiv);
       scrollToBottom();
-      lucide.createIcons();
+      safeCreateIcons();
     }
 
     function showTypingIndicator(show) {
@@ -1209,22 +1235,6 @@ Polite and effective communication is essential for professional English emails 
 5. **Sign-off**: *Best regards,* or *Sincerely,*
 
 💡 **Business Practice**: Try writing a 2-sentence formal email request to a supervisor!`;
-      }
-for fruit in fruits:
-    print(f"I enjoy eating {fruit}!")
-
-# Example 2: While Loop with a counter
-count = 1
-while count <= 3:
-    print(f"Count is currently: {count}")
-    count += 1
-\`\`\`
-
-#### Key Takeaways:
-- Use **for loops** when you know the number of iterations or are looping through a collection.
-- Use **while loops** when you want to continue running until a specific condition becomes False.
-
-💡 **Coding Drill**: Write a Python loop that prints numbers from 1 to 5!`;
       }
 
       // Default AI Tutor Response

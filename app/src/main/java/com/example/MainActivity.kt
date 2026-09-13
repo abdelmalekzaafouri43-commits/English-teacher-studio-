@@ -37,7 +37,10 @@ class MainActivity : ComponentActivity() {
 
         setContent {
             MyApplicationTheme {
-                Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
+                Scaffold(
+                    modifier = Modifier.fillMaxSize(),
+                    containerColor = androidx.compose.ui.graphics.Color(0xFF0F172A)
+                ) { innerPadding ->
                     WorksheetWebViewScreen(
                         modifier = Modifier.fillMaxSize(),
                         onPrintRequested = { webView ->
@@ -84,6 +87,7 @@ fun WorksheetWebViewScreen(
         modifier = modifier,
         factory = { context ->
             WebView(context).apply {
+                setBackgroundColor(android.graphics.Color.parseColor("#0F172A"))
                 settings.apply {
                     javaScriptEnabled = true
                     domStorageEnabled = true
